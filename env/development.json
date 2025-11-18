@@ -1,0 +1,5 @@
+{
+    "APP_NAME":"My APP",
+    "IS_PRODUCTION":false,
+    "API_BASE_URL": ""
+}
