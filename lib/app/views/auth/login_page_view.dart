@@ -147,7 +147,7 @@ class Login extends StatelessWidget {
                   );
 
                   // wait
-                  await Future.delayed(const Duration(seconds: 4));
+                  await Future.delayed(const Duration(seconds: 2));
 
                   // hide loader
                   Get.back();

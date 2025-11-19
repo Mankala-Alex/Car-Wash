@@ -19,7 +19,7 @@ class SplashScreenView extends GetView<SplashScreenController> {
       backgroundColor: customTheme.bgColor,
       body: SizedBox.expand(
         child: Image.asset(
-          "assets/carwash/lang_car.png",
+          "assets/carwash/splash_2.jpg",
           fit: BoxFit.cover, // Fills entire screen
         ),
       ),

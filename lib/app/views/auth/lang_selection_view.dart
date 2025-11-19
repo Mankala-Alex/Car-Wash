@@ -13,7 +13,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
         children: [
           Positioned.fill(
             child: Image.asset(
-              "assets/carwash/lang_car.png",
+              "assets/carwash/splash_2.jpg",
               fit: BoxFit.cover,
             ),
           ),

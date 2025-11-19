@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
 class Page4View extends GetView<DashboardController> {
@@ -9,47 +10,40 @@ class Page4View extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: AppColors.secondaryLight,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        backgroundColor: AppColors.secondaryLight,
+        title: const Text(
+          "My Profile",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               const SizedBox(height: 20),
-
               // ---------- AppBar ----------
-              Row(
-                children: [
-                  const SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Container(
-                      height: 42,
-                      width: 42,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                          )
-                        ],
-                      ),
-                      child: const Icon(Icons.arrow_back, size: 22),
-                    ),
-                  ),
-                  const Spacer(),
-                  const Text(
-                    "My Profile",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Spacer(),
-                  const SizedBox(width: 42),
-                ],
-              ),
+              // Center(
+              //   child: Row(
+              //     children: [
+              //       const Text(
+              //         "My Profile",
+              //         style: TextStyle(
+              //           fontSize: 22,
+              //           fontWeight: FontWeight.w600,
+              //         ),
+              //       ),
+              //       const Spacer(),
+              //       const SizedBox(width: 42),
+              //     ],
+              //   ),
+              // ),
 
               const SizedBox(height: 30),
 
@@ -130,7 +124,7 @@ class Page4View extends GetView<DashboardController> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
@@ -142,15 +136,20 @@ class Page4View extends GetView<DashboardController> {
                 ),
                 child: Column(
                   children: [
-                    _menuTile(Icons.directions_car, "My Car"),
+                    _menuTile(Icons.directions_car, "My Car",
+                        () => Get.toNamed(Routes.carlist)),
                     const Divider(height: 0),
-                    _menuTile(Icons.location_on_outlined, "My Locations"),
+                    _menuTile(Icons.location_on_outlined, "My Locations",
+                        () => Get.toNamed(Routes.locationslist)),
                     const Divider(height: 0),
-                    _menuTile(Icons.language, "Language Selection"),
+                    _menuTile(Icons.language, "Language Selection",
+                        () => Get.toNamed(Routes.bookslot)),
                     const Divider(height: 0),
-                    _menuTile(Icons.calendar_month, "My Bookings"),
+                    _menuTile(Icons.calendar_month, "My Bookings",
+                        () => Get.toNamed(Routes.bookslot)),
                     const Divider(height: 0),
-                    _menuTile(Icons.headset_mic_outlined, "Help & Support"),
+                    _menuTile(Icons.headset_mic_outlined, "Help & Support",
+                        () => Get.toNamed(Routes.bookslot)),
                   ],
                 ),
               ),
@@ -191,33 +190,36 @@ class Page4View extends GetView<DashboardController> {
   }
 
   // ---------------- Tile Widget ----------------
-
-  Widget _menuTile(IconData icon, String title) {
-    return SizedBox(
-      height: 62,
-      child: Row(
-        children: [
-          Container(
-            height: 48,
-            width: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xffE9F1FF),
-              borderRadius: BorderRadius.circular(14),
+  Widget _menuTile(IconData icon, String title, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap, // <-- Add this
+      borderRadius: BorderRadius.circular(14),
+      child: SizedBox(
+        height: 62,
+        child: Row(
+          children: [
+            Container(
+              height: 48,
+              width: 48,
+              decoration: BoxDecoration(
+                color: AppColors.secondaryLight,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: AppColors.bgBlackLight, size: 26),
             ),
-            child: Icon(icon, color: Colors.blue, size: 26),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-          const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
-        ],
+            const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }

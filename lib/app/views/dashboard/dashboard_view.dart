@@ -29,110 +29,108 @@ class DashboardView extends GetView<DashboardController> {
     final customTheme = CustomTheme.of(context);
     final textTheme = Theme.of(context).textTheme;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Container(
-          decoration: BoxDecoration(color: CustomTheme.of(context).bgColor),
-          child: Obx(() => _pages[controller.selectedIndex.value]),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        decoration: BoxDecoration(color: CustomTheme.of(context).bgColor),
+        child: Obx(() => _pages[controller.selectedIndex.value]),
+      ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory, // Disables ripple effect
+          highlightColor: const Color.fromARGB(0, 0, 0, 0),
         ),
-        bottomNavigationBar: Theme(
-          data: Theme.of(context).copyWith(
-            splashFactory: NoSplash.splashFactory, // Disables ripple effect
-            highlightColor: const Color.fromARGB(0, 0, 0, 0),
-          ),
-          child: Obx(() {
-            return Container(
-              padding: const EdgeInsets.all(5),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                // border: Border(
-                //   top: BorderSide(
-                //     width: 1,
-                //     color: customTheme.borderLightGray,
-                //   ),
-                // ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 3, // Increases the spread of the shadow
-                    spreadRadius: 1, // Controls how far the shadow extends
-                    offset: Offset(0, -2),
-                  ),
-                ],
+        child: Obx(() {
+          return Container(
+            padding: const EdgeInsets.all(5),
+            decoration: const BoxDecoration(
+              color: AppColors.primaryLight,
+              // border: Border(
+              //   top: BorderSide(
+              //     width: 1,
+              //     color: customTheme.borderLightGray,
+              //   ),
+              // ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 3, // Increases the spread of the shadow
+                  spreadRadius: 1, // Controls how far the shadow extends
+                  offset: Offset(0, -2),
+                ),
+              ],
+            ),
+            child: BottomNavigationBar(
+              elevation: 20,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: AppColors.primaryLight,
+              currentIndex: controller.selectedIndex.value,
+              onTap: controller.updateIndex,
+              selectedItemColor: AppColors.bgBlackLight,
+              unselectedItemColor: customTheme.textLightGray,
+              showUnselectedLabels: true,
+              selectedLabelStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
               ),
-              child: BottomNavigationBar(
-                elevation: 20,
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: AppColors.bgLight,
-                currentIndex: controller.selectedIndex.value,
-                onTap: controller.updateIndex,
-                selectedItemColor: customTheme.primaryColor,
-                unselectedItemColor: customTheme.textLightGray,
-                showUnselectedLabels: true,
-                selectedLabelStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-                items: List.generate(4, (index) {
-                  List<String> labels = [
-                    "home".tr,
-                    "page 2".tr,
-                    "page 3".tr,
-                    "page 4".tr,
-                  ];
-                  List<String> icons = [
-                    'assets/images/home.svg',
-                    'assets/images/appoinment.svg',
-                    'assets/images/records.svg',
-                    'assets/images/user.svg',
-                  ];
-                  return BottomNavigationBarItem(
-                    icon: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        // if (controller.selectedIndex.value == index)
-                        //   Positioned(
-                        //     top: -40.5, // Adjust position above the icon
-                        //     child: Image.asset(
-                        //       "assets/images/active_menu_new.png",
-                        //       width: 100,
-                        //     ),
-                        //   ),
-                        Container(
-                          // margin: EdgeInsets.symmetric(vertical: 10),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 0,
-                          ),
-                          child: SizedBox(
-                            width: screenWidth * 0.06, //25
-                            height: screenHeight * 0.025, //25
-                            child: SvgPicture.asset(
-                              icons[index],
-                              colorFilter: ColorFilter.mode(
-                                controller.selectedIndex.value == index
-                                    ? customTheme.primaryColor
-                                    : customTheme.textLightGray,
-                                BlendMode.srcIn,
-                              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              items: List.generate(4, (index) {
+                List<String> labels = [
+                  "home".tr,
+                  "page 2".tr,
+                  "page 3".tr,
+                  "page 4".tr,
+                ];
+                List<String> icons = [
+                  'assets/images/home.svg',
+                  'assets/images/appoinment.svg',
+                  'assets/images/records.svg',
+                  'assets/images/user.svg',
+                ];
+                return BottomNavigationBarItem(
+                  icon: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      // if (controller.selectedIndex.value == index)
+                      //   Positioned(
+                      //     top: -40.5, // Adjust position above the icon
+                      //     child: Image.asset(
+                      //       "assets/images/active_menu_new.png",
+                      //       width: 100,
+                      //     ),
+                      //   ),
+                      Container(
+                        // margin: EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 0,
+                        ),
+                        child: SizedBox(
+                          width: screenWidth * 0.06, //25
+                          height: screenHeight * 0.025, //25
+                          child: SvgPicture.asset(
+                            icons[index],
+                            colorFilter: ColorFilter.mode(
+                              controller.selectedIndex.value == index
+                                  ? AppColors.bgBlackLight
+                                  : customTheme.textLightGray,
+                              BlendMode.srcIn,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    label: labels[index],
-                  );
-                }),
-              ),
-            );
-          }),
-        ),
+                      ),
+                    ],
+                  ),
+                  label: labels[index],
+                );
+              }),
+            ),
+          );
+        }),
       ),
     );
   }

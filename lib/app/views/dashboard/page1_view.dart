@@ -16,11 +16,12 @@ class Page1View extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFFC4DBD4), // Light grey background
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Make app bar transparent
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, // Make app bar transparent
         title: const Row(
           children: [
             Icon(Icons.account_circle_sharp),
@@ -162,7 +163,7 @@ class Page1View extends GetView<DashboardController> {
                 children: [
                   // --- SERVICE CARDS USING THE SAME WIDGET ---
                   ServiceCard(
-                    title: "Doorstep Wash",
+                    title: "Doorstep Car Wash",
                     subtitle: "Convenience at your home",
                     buttonText: "Book Now",
                     imagePath: "assets/carwash/door_step.png",
@@ -172,7 +173,7 @@ class Page1View extends GetView<DashboardController> {
                   ),
 
                   ServiceCard(
-                    title: "In-Store Wash",
+                    title: "In-Store Car Wash",
                     subtitle: "Visit us for a premium clean",
                     buttonText: "Book Now",
                     imagePath: "assets/carwash/in_store.png",

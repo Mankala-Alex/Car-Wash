@@ -11,4 +11,8 @@ abstract class Routes {
   static const featureslist = '/features_list';
   static const confirmationpageview = '/confirmation_page_view';
   static const instorewash = '/instore_wash';
+  static const carlist = '/car_list';
+  static const addcar = '/add_car';
+  static const locationslist = '/location_list';
+  static const addlocation = '/addlocation';
 }
