@@ -17,9 +17,11 @@ class SplashScreenView extends GetView<SplashScreenController> {
 
     return Scaffold(
       backgroundColor: customTheme.bgColor,
-      body: Image.asset(
-        "assets/carwash/splash_image.jpg",
-        fit: BoxFit.fitHeight,
+      body: SizedBox.expand(
+        child: Image.asset(
+          "assets/carwash/lang_car.png",
+          fit: BoxFit.cover, // Fills entire screen
+        ),
       ),
     );
   }

@@ -11,7 +11,6 @@ class BookSlotController extends GetxController {
   final selectedService = Rx<String?>('Exterior Polish'); // Added for example
   final selectedAddress = Rx<String?>('Home'); // Added for example
 
-
   // Update methods
   void updateSelectedDate(DateTime newDate) {
     selectedDate.value = newDate;
@@ -48,8 +47,6 @@ class BookSlotController extends GetxController {
     print("Address: ${selectedAddress.value}");
     // Implement your actual booking submission logic here
     Get.snackbar("Booking Confirmed", "Your car wash has been scheduled!");
-    Get.back(); // Go back after booking
+// Go back after booking
   }
-
-
 }

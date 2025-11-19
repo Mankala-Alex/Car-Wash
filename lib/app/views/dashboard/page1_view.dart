@@ -16,7 +16,7 @@ class Page1View extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Light grey background
+      backgroundColor: const Color(0xFFC4DBD4), // Light grey background
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Make app bar transparent
         elevation: 0,
@@ -62,6 +62,8 @@ class Page1View extends GetView<DashboardController> {
                   ),
                 ),
               ),
+
+              // ----- FIXED ITEMS LIST -----
               items: bannerImages.map((imagePath) {
                 return Builder(
                   builder: (context) {
@@ -74,21 +76,84 @@ class Page1View extends GetView<DashboardController> {
                           fit: BoxFit.cover,
                         ),
                       ),
+                      child: Stack(
+                        children: [
+                          // Gradient overlay
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black.withOpacity(0.6),
+                                    Colors.transparent,
+                                    Colors.black.withOpacity(0.6),
+                                  ],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Bottom-left heading
+                          const Positioned(
+                            left: 16,
+                            bottom: 16,
+                            child: Text(
+                              "Premium",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+
+                          // Bottom-right button
+                          Positioned(
+                            right: 16,
+                            bottom: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(
+                                    0.18), // transparent glass effect
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: Colors.white
+                                      .withOpacity(0.35), // frosty border
+                                  width: 1.2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.white.withOpacity(0.25),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Text(
+                                "Book Now",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     );
                   },
                 );
               }).toList(),
             ),
+
             const SizedBox(height: 25),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: AppColors.warningLight),
-                  child: Center(child: Text("50% OFF"))),
-            ),
+
             // --- Doorstep & In-Store Wash Buttons ---
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15),
@@ -113,151 +178,166 @@ class Page1View extends GetView<DashboardController> {
                     imagePath: "assets/carwash/in_store.png",
                     discountText: "50% OFF",
                     onTap: () {
-                      Get.toNamed(Routes.bookslot);
+                      Get.toNamed(Routes.instorewash);
                     },
                   ),
-                  //BOOK NOW BUTTON//
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       horizontal: 20, vertical: 16),
-                  //   margin: const EdgeInsets.only(top: 16),
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(16),
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.grey.shade300,
-                  //         blurRadius: 15,
-                  //         offset: const Offset(0, 4),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   child: Column(
-                  //     children: [
-                  //       Row(
-                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //         children: [
-                  //           // Left Car Icon Box
-                  //           Container(
-                  //             padding: const EdgeInsets.all(12),
-                  //             decoration: BoxDecoration(
-                  //               color: Colors.blue.shade50,
-                  //               borderRadius: BorderRadius.circular(12),
-                  //             ),
-                  //             child: const Icon(
-                  //               Icons.directions_car,
-                  //               size: 28,
-                  //               color: Colors.blue,
-                  //             ),
-                  //           ),
-                  //           const SizedBox(
-                  //             width: 5,
-                  //           ),
-                  //           const Expanded(
-                  //             child: Text(
-                  //               "MERCEDES BENZ",
-                  //               style: TextStyle(
-                  //                   fontSize: 14,
-                  //                   fontWeight: FontWeight.w600,
-                  //                   color: AppColors.textDefaultLight),
-                  //             ),
-                  //           ),
-                  //         ],
-                  //       ),
-                  //       SizedBox(
-                  //         height: 15,
-                  //       ),
-                  //       GestureDetector(
-                  //         onTap: () {
-                  //           Get.toNamed(Routes.featureslist);
-                  //         },
-                  //         child: Container(
-                  //           padding: const EdgeInsets.all(10),
-                  //           decoration: BoxDecoration(
-                  //             color: AppColors.primaryLight,
-                  //             borderRadius: BorderRadius.circular(12),
-                  //           ),
-                  //           child: const Row(
-                  //             children: [
-                  //               Text(
-                  //                 "Book Now",
-                  //                 style: TextStyle(
-                  //                     fontSize: 18,
-                  //                     fontWeight: FontWeight.w600,
-                  //                     color: AppColors.bgLight),
-                  //               ),
-                  //               // Icon(Icons.arrow_forward_ios,
-                  //               //     size: 16, color: AppColors.bgLight),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+                  const SizedBox(height: 20),
 
-                  const SizedBox(height: 30),
+// ---------------- WALLET CARD (BELOW SERVICE CARDS) ----------------
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Left Side - Title + Button
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "My Wallet",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
 
-                  // --- Featured Services Title ---
-                  // Text(
-                  //   "Featured Services",
-                  //   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  //         fontWeight: FontWeight.bold,
-                  //         color: const Color(0xFF1E293B), // Dark text color
-                  //       ),
-                  // ),
-                  // const SizedBox(height: 20),
+                              // Manage Button
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffEAF2FF),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  "Manage Payment & Coupons",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-                  // --- Featured Services Grid ---
-                  // GridView.builder(
-                  //   shrinkWrap:
-                  //       true, // Important for GridView inside SingleChildScrollView
-                  //   physics:
-                  //       const NeverScrollableScrollPhysics(), // Disable GridView's own scrolling
-                  //   itemCount: 4, // Number of featured service items
-                  //   gridDelegate:
-                  //       const SliverGridDelegateWithFixedCrossAxisCount(
-                  //     crossAxisCount: 2, // 2 items per row
-                  //     crossAxisSpacing: 16, // Horizontal spacing
-                  //     mainAxisSpacing: 16, // Vertical spacing
-                  //     childAspectRatio: 0.95, // Adjust item height vs. width
-                  //   ),
-                  //   itemBuilder: (context, index) {
-                  //     switch (index) {
-                  //       case 0:
-                  //         return _buildFeaturedServiceCard(context,
-                  //             imagePath:
-                  //                 'assets/carwash/basic_wash.png', // Replace with your image
-                  //             title: "Basic Wash", onTap: () {
-                  //           Get.toNamed(Routes
-                  //               .bookslot); // Navigate to booking with pre-selected service
-                  //         });
-                  //       case 1:
-                  //         return _buildFeaturedServiceCard(context,
-                  //             imagePath:
-                  //                 'assets/carwash/polish_car.png', // Replace with your image
-                  //             title: "Premium Detail", onTap: () {
-                  //           Get.toNamed(Routes.bookslot);
-                  //         });
-                  //       case 2:
-                  //         return _buildFeaturedServiceCard(context,
-                  //             imagePath:
-                  //                 'assets/carwash/interior2.png', // Replace with your image
-                  //             title: "Interior Cleaning", onTap: () {
-                  //           Get.toNamed(Routes.bookslot);
-                  //         });
-                  //       case 3:
-                  //         return _buildFeaturedServiceCard(context,
-                  //             imagePath:
-                  //                 'assets/carwash/interior_car.png', // Replace with your image
-                  //             title: "Interior Cleaning", onTap: () {
-                  //           Get.toNamed(Routes.bookslot);
-                  //         });
-                  //       default:
-                  //         return Container(); // Fallback
-                  //     }
-                  //   },
-                  // ),
+                        // Right Side - Wallet Icon
+                        Container(
+                          //padding: const EdgeInsets.all(30),
+                          // decoration: BoxDecoration(
+                          //   color: const Color(0xffF5F7FA),
+                          //   borderRadius: BorderRadius.circular(12),
+                          // ),
+                          child: Image.asset(
+                            "assets/carwash/wallet.png",
+                            height: 60,
+                            width: 60, // <-- your wallet icon
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+// ---------------- PROMO BANNER AFTER WALLET ----------------
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      image: const DecorationImage(
+                        image: AssetImage(
+                            "assets/carwash/50_off.png"), // your banner image
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Bottom-left text
+                        const Positioned(
+                          left: 16,
+                          bottom: 35,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "50% OFF",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "On Your First In-Store\nWash",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Bottom-right glassy button
+                        Positioned(
+                          right: 16,
+                          bottom: 28,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.white
+                                  .withOpacity(0.18), // transparent glass look
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.35),
+                                width: 1.2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.25),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Text(
+                              "Book Now",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),
@@ -464,11 +544,11 @@ class ServiceCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.grey,
               blurRadius: 15,
-              offset: const Offset(5, 5),
+              offset: Offset(5, 5),
             ),
           ],
         ),
@@ -541,13 +621,13 @@ class ServiceCard extends StatelessWidget {
                         Text(
                           buttonText,
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(width: 5),
-                        const Icon(Icons.arrow_forward,
-                            color: Colors.white, size: 18),
+                        // const Icon(Icons.arrow_forward,
+                        //     color: Colors.black, size: 18),
                       ],
                     ),
                   ),

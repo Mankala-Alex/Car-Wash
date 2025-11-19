@@ -1,0 +1,337 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:my_new_app/app/controllers/booking_flow/instore_wash_controller.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
+
+class InstoreWashListView extends GetView<InstoreWashController> {
+  const InstoreWashListView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.secondaryLight,
+      appBar: AppBar(
+        backgroundColor: AppColors.secondaryLight,
+        elevation: 0,
+        title: const Text(
+          "In-Store Locations",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.map_outlined, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+
+              // ---------------- SEARCH BAR ----------------
+              Container(
+                height: 48,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 6,
+                    )
+                  ],
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.search, color: Colors.grey),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Search by name or area",
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // ---------------- LOCATION CARDS ----------------
+              locationCard(
+                image: "assets/carwash/instore1.png",
+                title: "Aqua Shine Auto Spa",
+                rating: "4.5",
+                reviews: "128",
+                address: "123 Clean St, Anytown, USA",
+                statusText: "Open today until 8:00 PM",
+                statusColor: Colors.green,
+              ),
+
+              locationCard(
+                image: "assets/carwash/full_wash_car.png",
+                title: "The Car Wash Co.",
+                rating: "4.0",
+                reviews: "97",
+                address: "456 Suds Ave, Anytown, USA",
+                statusText: "Open today until 9:00 PM",
+                statusColor: Colors.green,
+              ),
+
+              locationCard(
+                image: "assets/carwash/blue.png",
+                title: "Sparkle & Shine",
+                rating: "0.0",
+                reviews: "No reviews yet",
+                address: "789 Bubbly Rd, Anytown, USA",
+                statusText: "Closed",
+                statusColor: Colors.red,
+              ),
+
+              const SizedBox(height: 25),
+
+              // ---------------- NO LOCATION FOUND (EXAMPLE) ----------------
+              noLocationFoundCard(),
+
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // LOCATION CARD WIDGET
+  // ============================================================
+
+  Widget locationCard({
+    required String image,
+    required String title,
+    required String rating,
+    required String reviews,
+    required String address,
+    required String statusText,
+    required Color statusColor,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 22),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: Image.asset(
+              image,
+              height: 150,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+
+                // Rating Row
+                Row(
+                  children: [
+                    const Icon(Icons.star, size: 16, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(
+                      rating,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "($reviews reviews)",
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                // Address
+                Text(
+                  address,
+                  style: const TextStyle(color: Colors.black87),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Status
+                Row(
+                  children: [
+                    Icon(
+                      statusColor == Colors.red
+                          ? Icons.cancel
+                          : Icons.circle_rounded,
+                      size: 12,
+                      color: statusColor,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      statusText,
+                      style: TextStyle(
+                        color: statusColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // ---- View Reviews ----
+                const Row(
+                  children: [
+                    Text(
+                      "View Reviews",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward, size: 14, color: Colors.blue),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // ------------ LOCATION + CALL BUTTONS ------------
+                Row(
+                  children: [
+                    // Location Button
+                    Expanded(
+                      child: Container(
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "📍 Location",
+                            style: TextStyle(
+                              color: AppColors.textDefaultLight,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    // Call Button
+                    Expanded(
+                      child: Container(
+                        height: 42,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.secondaryLight),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "📞 Call",
+                            style: TextStyle(
+                              color: AppColors.textDefaultLight,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // NO LOCATION FOUND CARD
+  // ============================================================
+
+  Widget noLocationFoundCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.black.withOpacity(0.05),
+        ),
+      ),
+      child: const Column(
+        children: [
+          Icon(Icons.visibility_off_outlined, size: 40, color: Colors.grey),
+          SizedBox(height: 10),
+          Text(
+            "No Locations Found",
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "We couldn't find any partner locations in your area.\nTry expanding your search radius.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -116,7 +116,7 @@ class BookSlotView extends GetView<BookSlotController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_circle_outline,
+            const Icon(Icons.add_circle_outline,
                 size: 30, color: AppColors.primaryLight),
             const SizedBox(height: 8),
             Text(
@@ -143,8 +143,8 @@ class BookSlotView extends GetView<BookSlotController> {
         daysCount: 30, // Shows 30 days starting today
         width: 50,
         height: 88,
-        selectionColor: AppColors.primaryLight,
-        selectedTextColor: Colors.white,
+        selectionColor: AppColors.textWhiteLight,
+        selectedTextColor: AppColors.textDefaultLight,
         monthTextStyle: const TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w800,
@@ -160,7 +160,7 @@ class BookSlotView extends GetView<BookSlotController> {
           fontWeight: FontWeight.w900,
           color: Colors.black,
         ),
-        deactivatedColor: const Color(0xFFFFF5F1),
+        deactivatedColor: AppColors.textDefaultLight,
         onDateChange: onDateChange,
       ),
     );
@@ -378,9 +378,9 @@ class BookSlotView extends GetView<BookSlotController> {
               onPressed: () {
                 // Call the booking submission method in your controller
                 //print("Confirm Booking tapped!");
-                Get.toNamed(Routes.confirmationpage);
-                controller
-                    .confirmBooking(); // Calling the method now defined in controller
+                //controller.confirmBooking();
+                Get.toNamed(Routes.confirmationpageview);
+                // Calling the method now defined in controller
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryLight,
@@ -395,7 +395,7 @@ class BookSlotView extends GetView<BookSlotController> {
               child: Text(
                 "Confirm Booking",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
+                      color: AppColors.textDefaultLight,
                       fontWeight: FontWeight.w600,
                     ),
               ),
@@ -411,7 +411,7 @@ class BookSlotView extends GetView<BookSlotController> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA), // Light grey background
+      backgroundColor: AppColors.secondaryLight, // Light grey background
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -513,19 +513,19 @@ class BookSlotView extends GetView<BookSlotController> {
               decoration: BoxDecoration(
                 color: Colors.white, // White background for the card
                 borderRadius: BorderRadius.circular(15), // Rounded corners
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.grey,
                     spreadRadius: 1,
                     blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    offset: Offset(0, 5),
                   ),
                 ],
               ),
-              child: Column(
+              child: const Column(
                 children: [
                   // 1. Premium Wash Row
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -545,10 +545,10 @@ class BookSlotView extends GetView<BookSlotController> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 15),
 
                   // 2. Taxes & Fees Row
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -566,10 +566,10 @@ class BookSlotView extends GetView<BookSlotController> {
                     ],
                   ),
 
-                  const SizedBox(height: 15),
+                  SizedBox(height: 15),
 
                   // 3. Total Amount Row (Bold and Blue)
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(

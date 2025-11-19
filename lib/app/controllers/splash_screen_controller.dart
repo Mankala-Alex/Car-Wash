@@ -25,6 +25,6 @@ class SplashScreenController extends GetxController {
     */
 
     // Navigate to language selection for template
-    Get.offNamed(Routes.login);
+    Get.offNamed(Routes.langeSelection);
   }
 }

@@ -9,5 +9,6 @@ abstract class Routes {
   static const dashboard = '/dashboard_view';
   static const bookslot = '/book_slot';
   static const featureslist = '/features_list';
-  static const confirmationpage = '/confirmation_page';
+  static const confirmationpageview = '/confirmation_page_view';
+  static const instorewash = '/instore_wash';
 }

@@ -31,6 +31,7 @@ dependencies:
   slide_to_act: ^2.0.2
   syncfusion_flutter_pdfviewer: ^29.1.38
   carousel_slider: ^5.1.1
+  lottie: ^3.3.2
 
   # API/network-related packages (commented out until APIs are needed)
   dio: ^5.8.0+1
@@ -63,8 +64,7 @@ flutter:
     - assets/carwash/
     - assets/carwash/features/
     - assets/carwash/logo/
-    - assets/advertise/
-    - assets/category/
+
 
   fonts:
     - family: Montserrat

@@ -17,11 +17,12 @@ class CustomTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      //animationDuration: Duration(milliseconds: 1000),
       length: tabs.length,
       child: Scaffold(
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: AppColors.secondaryLight,
         appBar: AppBar(
-          backgroundColor: AppColors.bgLight,
+          backgroundColor: AppColors.secondaryLight,
           title: Center(
               child:
                   Text(title, style: const TextStyle(color: Colors.black87))),
@@ -37,18 +38,18 @@ class CustomTabBar extends StatelessWidget {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TabBar(
                   indicator: BoxDecoration(
-                    color: AppColors.bgLight,
+                    color: AppColors.secondaryLight,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
                         blurRadius: 10,
-                        offset: const Offset(0, 5),
+                        offset: Offset(0, 5),
                       ),
                     ],
                   ),

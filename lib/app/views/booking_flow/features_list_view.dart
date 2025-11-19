@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
@@ -13,7 +12,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: AppColors.secondaryLight,
       appBar: AppBar(
         leadingWidth: 40,
         title: Text(
@@ -22,7 +21,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
               fontSize: textTheme.titleLarge?.fontSize,
               fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: AppColors.secondaryLight,
         foregroundColor: Colors.black,
         //elevation: 0,
       ),
@@ -85,7 +84,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                 Text(
                   service['price'] ?? '',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.primaryLight,
+                        color: AppColors.bgBlackLight,
                         fontWeight: FontWeight.bold,
                       ),
                 ),
@@ -133,7 +132,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                   backgroundColor: AppColors.primaryLight,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),

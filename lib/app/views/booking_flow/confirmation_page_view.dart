@@ -43,7 +43,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                     color: Colors.black,
                   ),
                 ),
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 24,
                   child: Icon(Icons.more_horiz, color: Colors.black),
@@ -92,22 +92,22 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                     const SizedBox(height: 20),
                     Row(
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           radius: 28,
                           backgroundImage: AssetImage(
                               'assets/carwash/avatar.png'), // your staff image
                         ),
                         const SizedBox(width: 12),
-                        Expanded(
+                        const Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Alex R.',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 17),
                               ),
-                              const Text(
+                              Text(
                                 'Premium Exterior Wash',
                                 style:
                                     TextStyle(fontSize: 14, color: Colors.grey),
@@ -122,8 +122,8 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                             color: Colors.blue[50],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Row(
-                            children: const [
+                          child: const Row(
+                            children: [
                               Icon(Icons.star,
                                   color: Color(0xFF1566A6), size: 18),
                               SizedBox(width: 4),
@@ -189,7 +189,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryLight,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.textDefaultLight,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
