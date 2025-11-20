@@ -112,13 +112,13 @@ class SharedPrefsHelper {
   }) async {
     await _ensureInitialized();
     String? jsonString = _prefs!.getString(key);
-    return jsonString != null ? jsonDecode(jsonString) : defaultValue;
+    return jsonDecode(jsonString!);
   }
 
   static Future<dynamic> getDynamic(String key, {dynamic defaultValue}) async {
     await _ensureInitialized();
     String? jsonString = _prefs!.getString(key);
-    return jsonString != null ? jsonDecode(jsonString) : defaultValue;
+    return jsonDecode(jsonString!);
   }
 
   // Remove Data

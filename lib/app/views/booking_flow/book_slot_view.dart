@@ -24,22 +24,22 @@ class BookSlotView extends GetView<BookSlotController> {
         onTap: () => controller.updateSelectedVehicle(vehicleName),
         child: Container(
           width: Get.width * 0.55, // ← 55% of screen → shows 1 full + half next
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(15),
           //margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: controller.selectedVehicle.value == vehicleName
-                  ? const Color(0xFF0A63F6)
-                  : const Color(0xFFE6E6E6),
+                  ? AppColors.primaryLight
+                  : AppColors.borderGray,
               width: controller.selectedVehicle.value == vehicleName ? 2 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.grey.shade100,
                 blurRadius: 10,
-                offset: const Offset(0, 3),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -92,7 +92,7 @@ class BookSlotView extends GetView<BookSlotController> {
       // Wrap with GestureDetector
       onTap: () {
         // Handle navigation to Add Vehicle screen
-        print("Add New Vehicle tapped!");
+        Get.toNamed(Routes.addcar);
       },
       child: Container(
         width: 150, // Fixed width for add vehicle card
@@ -117,13 +117,13 @@ class BookSlotView extends GetView<BookSlotController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.add_circle_outline,
-                size: 30, color: AppColors.primaryLight),
+                size: 30, color: AppColors.textDefaultLight),
             const SizedBox(height: 8),
             Text(
               "Add New",
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primaryLight,
+                    color: AppColors.textDefaultLight,
                   ),
               textAlign: TextAlign.center,
             ),
@@ -143,7 +143,7 @@ class BookSlotView extends GetView<BookSlotController> {
         daysCount: 30, // Shows 30 days starting today
         width: 50,
         height: 88,
-        selectionColor: AppColors.textWhiteLight,
+        selectionColor: AppColors.primaryLight,
         selectedTextColor: AppColors.textDefaultLight,
         monthTextStyle: const TextStyle(
           fontSize: 10,
@@ -195,6 +195,7 @@ class BookSlotView extends GetView<BookSlotController> {
   Widget _buildTimeSlotButton(BuildContext context, String time,
       {bool isSelected = false, bool isDisabled = false}) {
     return ChoiceChip(
+      showCheckmark: false,
       label: Text(time),
       selected: isSelected,
       onSelected: isDisabled
@@ -203,13 +204,13 @@ class BookSlotView extends GetView<BookSlotController> {
               controller.updateSelectedTimeSlot(
                   time); // Calls the method in the controller
             },
-      selectedColor: const Color(0xFF2196F3),
+      selectedColor: AppColors.primaryLight,
       disabledColor: Colors.grey[300],
       backgroundColor: Colors.white,
       labelStyle: TextStyle(
         color: isDisabled
-            ? Colors.grey[600]
-            : (isSelected ? Colors.white : const Color(0xFF1E293B)),
+            ? Colors.grey[800]
+            : (isSelected ? Colors.black : AppColors.textDefaultLight),
         fontWeight: FontWeight.w600,
       ),
       shape: RoundedRectangleBorder(
@@ -217,7 +218,7 @@ class BookSlotView extends GetView<BookSlotController> {
         side: BorderSide(
           color: isDisabled
               ? Colors.transparent
-              : (isSelected ? Colors.transparent : Colors.grey[300]!),
+              : (isSelected ? Colors.transparent : Colors.grey[500]!),
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -288,11 +289,11 @@ class BookSlotView extends GetView<BookSlotController> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color:
-                      const Color(0xFFF0F4F8), // Light grey background for icon
+                  color: AppColors
+                      .secondaryLight, // Light grey background for icon
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 24, color: AppColors.primaryLight),
+                child: Icon(icon, size: 24, color: AppColors.bgLight),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -308,24 +309,24 @@ class BookSlotView extends GetView<BookSlotController> {
                     ),
                     Text(
                       address,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textLightGrayLight),
                     ),
                   ],
                 ),
               ),
               Radio<bool>(
-                value: true,
-                groupValue: controller.selectedAddress.value ==
-                    title, // Use controller state
-                onChanged: (bool? value) {
-                  // This is redundant as the GestureDetector onTap handles it,
-                  // but kept for explicit radio button behavior if desired.
-                  if (value == true) controller.updateSelectedAddress(title);
-                },
-                activeColor: const Color(0xFF2196F3),
-              ),
+                  value: true,
+                  groupValue: controller.selectedAddress.value ==
+                      title, // Use controller state
+                  onChanged: (bool? value) {
+                    // This is redundant as the GestureDetector onTap handles it,
+                    // but kept for explicit radio button behavior if desired.
+                    if (value == true) controller.updateSelectedAddress(title);
+                  },
+                  activeColor: AppColors.secondaryLight),
             ],
           ),
         ),
@@ -383,7 +384,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 // Calling the method now defined in controller
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
+                backgroundColor: AppColors.secondaryLight,
                 foregroundColor: Colors.white,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -395,7 +396,7 @@ class BookSlotView extends GetView<BookSlotController> {
               child: Text(
                 "Confirm Booking",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textDefaultLight,
+                      color: AppColors.textWhiteLight,
                       fontWeight: FontWeight.w600,
                     ),
               ),
@@ -411,7 +412,7 @@ class BookSlotView extends GetView<BookSlotController> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.secondaryLight, // Light grey background
+      backgroundColor: AppColors.bgLight, // Light grey background
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -516,7 +517,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.grey,
-                    spreadRadius: 1,
+                    spreadRadius: 0,
                     blurRadius: 10,
                     offset: Offset(0, 5),
                   ),
@@ -584,10 +585,10 @@ class BookSlotView extends GetView<BookSlotController> {
                       Text(
                         '\$81.56',
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue, // Highlight color
-                        ),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDefaultLight // Highlight color
+                            ),
                       ),
                     ],
                   ),
@@ -608,12 +609,12 @@ class BookSlotView extends GetView<BookSlotController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          )
+            color: Colors.grey,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
         ],
       ),
       child: Column(
@@ -639,7 +640,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 const Text(
                   'SERVICE DETAILS',
                   style: TextStyle(
-                    color: Color(0xFF2196F3),
+                    color: AppColors.textLightGrayLight,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                     fontSize: 13,

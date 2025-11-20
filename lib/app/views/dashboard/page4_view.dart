@@ -10,11 +10,11 @@ class Page4View extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.secondaryLight,
+      backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        backgroundColor: AppColors.secondaryLight,
+        backgroundColor: AppColors.bgLight,
         title: const Text(
           "My Profile",
           style: TextStyle(
@@ -124,13 +124,13 @@ class Page4View extends GetView<DashboardController> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: AppColors.bgLight,
                   borderRadius: BorderRadius.circular(22),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.grey,
                       blurRadius: 10,
-                      offset: const Offset(0, 6),
+                      offset: Offset(0, 6),
                     )
                   ],
                 ),
@@ -202,7 +202,7 @@ class Page4View extends GetView<DashboardController> {
               height: 48,
               width: 48,
               decoration: BoxDecoration(
-                color: AppColors.secondaryLight,
+                color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, color: AppColors.bgBlackLight, size: 26),

@@ -21,7 +21,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
           ),
           // Top navigation bar
           Positioned(
-            top: 48,
+            top: 55,
             left: 18,
             right: 18,
             child: Row(
@@ -105,12 +105,15 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                               Text(
                                 'Alex R.',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 17),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                    color: AppColors.textDefaultLight),
                               ),
                               Text(
                                 'Premium Exterior Wash',
-                                style:
-                                    TextStyle(fontSize: 14, color: Colors.grey),
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.textLightGrayLight),
                               ),
                             ],
                           ),
@@ -119,19 +122,18 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.blue[50],
+                            //color: AppColors.borderLightGrayLight,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
                             children: [
-                              Icon(Icons.star,
-                                  color: Color(0xFF1566A6), size: 18),
+                              Icon(Icons.star, color: Colors.green, size: 20),
                               SizedBox(width: 4),
                               Text(
                                 '4.9',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1566A6),
+                                    color: AppColors.textDefaultLight,
                                     fontSize: 15),
                               ),
                             ],
@@ -145,14 +147,14 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildStepIcon(
-                              Icons.check_circle, "Confirmed", Colors.blue),
+                          _buildStepIcon(Icons.check_circle, "Confirmed",
+                              AppColors.successLight),
                           _buildStepLine(),
                           _buildStepIcon(Icons.person_outline, "Staff Assigned",
-                              Colors.blue),
+                              AppColors.successLight),
                           _buildStepLine(),
-                          _buildStepIcon(
-                              Icons.directions_car, "On the Way", Colors.blue,
+                          _buildStepIcon(Icons.directions_car, "On the Way",
+                              AppColors.successLight,
                               filled: true),
                           _buildStepLine(),
                           _buildStepIcon(
@@ -169,27 +171,30 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                         Expanded(
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue[50],
-                              foregroundColor: const Color(0xFF1566A6),
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppColors.secondaryLight,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  side: const BorderSide(
+                                      color: AppColors.secondaryLight)),
                               elevation: 0,
                             ),
                             onPressed: () {},
                             icon: const Icon(Icons.chat_outlined),
                             label: const Text('Chat',
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                                    fontSize: 16,
+                                    color: AppColors.secondaryLight,
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ),
                         const SizedBox(width: 18),
                         Expanded(
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryLight,
-                              foregroundColor: AppColors.textDefaultLight,
+                              backgroundColor: AppColors.secondaryLight,
+                              foregroundColor: AppColors.textWhiteLight,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
@@ -228,9 +233,9 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
         const SizedBox(height: 7),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w500,
-            color: color,
+            color: AppColors.textDefaultLight,
             fontSize: 13,
           ),
         ),
@@ -242,7 +247,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
     return Container(
       width: 24,
       height: 2.5,
-      color: Colors.grey[300],
+      color: Colors.grey[400],
       margin: const EdgeInsets.symmetric(horizontal: 2),
     );
   }

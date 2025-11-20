@@ -28,7 +28,7 @@ class CarListView extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF8C52FF),
+        backgroundColor: AppColors.secondaryLight,
         child: const Icon(Icons.add, size: 32, color: Colors.white),
         onPressed: () => Get.toNamed(Routes.addcar),
       ),

@@ -17,9 +17,9 @@ class Page1View extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     return Scaffold(
       //extendBodyBehindAppBar: true,
-      backgroundColor: const Color(0xFFC4DBD4), // Light grey background
+      backgroundColor: AppColors.bgLight, // Light grey background
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false, // Make app bar transparent
         title: const Row(
@@ -115,32 +115,37 @@ class Page1View extends GetView<DashboardController> {
                           Positioned(
                             right: 16,
                             bottom: 12,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 18, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(
-                                    0.18), // transparent glass effect
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: Colors.white
-                                      .withOpacity(0.35), // frosty border
-                                  width: 1.2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.white.withOpacity(0.25),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
+                            child: GestureDetector(
+                              onTap: () {
+                                Get.toNamed(Routes.bookslot);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 18, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(
+                                      0.18), // transparent glass effect
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Colors.white
+                                        .withOpacity(0.35), // frosty border
+                                    width: 1.2,
                                   ),
-                                ],
-                              ),
-                              child: const Text(
-                                "Book Now",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.25),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const Text(
+                                  "Book Now",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -185,78 +190,78 @@ class Page1View extends GetView<DashboardController> {
                   const SizedBox(height: 20),
 
 // ---------------- WALLET CARD (BELOW SERVICE CARDS) ----------------
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Left Side - Title + Button
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "My Wallet",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
+                  // Container(
+                  //   width: double.infinity,
+                  //   padding: const EdgeInsets.all(16),
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white,
+                  //     borderRadius: BorderRadius.circular(16),
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: Colors.black.withOpacity(0.05),
+                  //         blurRadius: 8,
+                  //         offset: const Offset(0, 4),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: Row(
+                  //     crossAxisAlignment: CrossAxisAlignment.center,
+                  //     children: [
+                  //       // Left Side - Title + Button
+                  //       Expanded(
+                  //         child: Column(
+                  //           crossAxisAlignment: CrossAxisAlignment.start,
+                  //           children: [
+                  //             const Text(
+                  //               "My Wallet",
+                  //               style: TextStyle(
+                  //                 fontSize: 18,
+                  //                 fontWeight: FontWeight.w700,
+                  //               ),
+                  //             ),
+                  //             const SizedBox(height: 10),
 
-                              // Manage Button
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffEAF2FF),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Text(
-                                  "Manage Payment & Coupons",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                  //             // Manage Button
+                  //             Container(
+                  //               padding: const EdgeInsets.symmetric(
+                  //                 horizontal: 14,
+                  //                 vertical: 8,
+                  //               ),
+                  //               decoration: BoxDecoration(
+                  //                 color: const Color(0xffEAF2FF),
+                  //                 borderRadius: BorderRadius.circular(10),
+                  //               ),
+                  //               child: const Text(
+                  //                 "Manage Payment & Coupons",
+                  //                 style: TextStyle(
+                  //                   fontSize: 12,
+                  //                   color: Colors.blue,
+                  //                   fontWeight: FontWeight.w600,
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
 
-                        // Right Side - Wallet Icon
-                        Container(
-                          //padding: const EdgeInsets.all(30),
-                          // decoration: BoxDecoration(
-                          //   color: const Color(0xffF5F7FA),
-                          //   borderRadius: BorderRadius.circular(12),
-                          // ),
-                          child: Image.asset(
-                            "assets/carwash/wallet.png",
-                            height: 60,
-                            width: 60, // <-- your wallet icon
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  //       // Right Side - Wallet Icon
+                  //       Container(
+                  //         //padding: const EdgeInsets.all(30),
+                  //         // decoration: BoxDecoration(
+                  //         //   color: const Color(0xffF5F7FA),
+                  //         //   borderRadius: BorderRadius.circular(12),
+                  //         // ),
+                  //         child: Image.asset(
+                  //           "assets/carwash/wallet.png",
+                  //           height: 60,
+                  //           width: 60, // <-- your wallet icon
+                  //           fit: BoxFit.contain,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  //const SizedBox(height: 20),
 
 // ---------------- PROMO BANNER AFTER WALLET ----------------
                   Container(
@@ -566,7 +571,7 @@ class ServiceCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.orange,
+                        color: AppColors.secondaryLight,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -607,7 +612,7 @@ class ServiceCard extends StatelessWidget {
                     decoration: BoxDecoration(
                         // color: Colors.blue.shade50,
                         borderRadius: BorderRadius.circular(30),
-                        color: AppColors.primaryLight
+                        color: AppColors.secondaryLight
                         //   colors: [
                         //     Color(0xFF6B42F2),
                         //     Color(0xFF825AD9),
@@ -622,7 +627,7 @@ class ServiceCard extends StatelessWidget {
                         Text(
                           buttonText,
                           style: const TextStyle(
-                            color: Colors.black,
+                            color: AppColors.textWhiteLight,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

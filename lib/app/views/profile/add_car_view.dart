@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/profile/add_car_controller.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 class AddCarView extends GetView<AddCarController> {
   const AddCarView({super.key});
@@ -27,85 +28,70 @@ class AddCarView extends GetView<AddCarController> {
         ),
         actions: const [SizedBox(width: 40)],
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // ------------------------------------------
-            // SCROLLABLE CONTENT
-            // ------------------------------------------
-            SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(15, 10, 15, 100),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _searchBar(),
-                  const SizedBox(height: 16),
-                  _filterBar(),
-                  const SizedBox(height: 16),
 
-                  // GRID INSIDE SCROLL
-                  Obx(() {
-                    final cars = controller.filteredCars;
-
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: cars.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: .90,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 20,
-                      ),
-                      itemBuilder: (context, index) {
-                        final car = cars[index];
-                        return Obx(
-                            () => _carTile(car["img"]!, car["name"]!, index));
-                      },
-                    );
-                  }),
-                ],
-              ),
+      // ------------------ FIXED BOTTOM BUTTON ------------------
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(color: Colors.white),
+        child: GestureDetector(
+          onTap: () {
+            // Your continue logic
+          },
+          child: Container(
+            height: 55,
+            decoration: BoxDecoration(
+              color: AppColors.secondaryLight,
+              borderRadius: BorderRadius.circular(30),
             ),
-
-            // ------------------------------------------
-            // FIXED BOTTOM BUTTON
-            // ------------------------------------------
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
+            alignment: Alignment.center,
+            child: const Text(
+              "Continue",
+              style: TextStyle(
                 color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
-                child: Container(
-                  height: 55,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF8C52FF),
-                        Color(0xFF9C6BFF),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "Continue",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
+          ),
+        ),
+      ),
+
+      // ------------------ SCROLLABLE BODY ------------------
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _searchBar(),
+              const SizedBox(height: 16),
+              _filterBar(),
+              const SizedBox(height: 16),
+
+              Obx(() {
+                final cars = controller.filteredCars;
+
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: cars.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: .90,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 20,
+                  ),
+                  itemBuilder: (context, index) {
+                    final car = cars[index];
+                    return Obx(
+                        () => _carTile(car["img"]!, car["name"]!, index));
+                  },
+                );
+              }),
+
+              const SizedBox(height: 100), // space above bottom button
+            ],
+          ),
         ),
       ),
     );
@@ -170,10 +156,12 @@ class AddCarView extends GetView<AddCarController> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF3EBFF) : const Color(0xFFF3F3F7),
+          color: isSelected
+              ? AppColors.primaryLight
+              : AppColors.bgLightSecondaryLight,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: isSelected ? const Color(0xFF8C52FF) : Colors.transparent,
+            color: isSelected ? AppColors.primaryLight : Colors.transparent,
             width: 1.6,
           ),
         ),
@@ -183,14 +171,14 @@ class AddCarView extends GetView<AddCarController> {
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF8C52FF) : Colors.black87,
+                color: isSelected ? AppColors.textDefaultLight : Colors.black87,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
             if (isSelected)
               const Padding(
                 padding: EdgeInsets.only(left: 6),
-                child: Icon(Icons.close, size: 16, color: Color(0xFF8C52FF)),
+                child: Icon(Icons.close, size: 16, color: AppColors.errorLight),
               ),
           ],
         ),
@@ -212,7 +200,7 @@ class AddCarView extends GetView<AddCarController> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: isSelected ? const Color(0xFF8C52FF) : Colors.transparent,
+            color: isSelected ? AppColors.primaryLight : Colors.transparent,
             width: 2.2,
           ),
           boxShadow: [

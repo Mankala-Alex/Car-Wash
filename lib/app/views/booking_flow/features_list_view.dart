@@ -12,7 +12,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.secondaryLight,
+      backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppBar(
         leadingWidth: 40,
         title: Text(
@@ -21,7 +21,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
               fontSize: textTheme.titleLarge?.fontSize,
               fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.secondaryLight,
+        backgroundColor: AppColors.bgLight,
         foregroundColor: Colors.black,
         //elevation: 0,
       ),
@@ -112,7 +112,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                   child: Row(
                     children: [
                       const Icon(Icons.check_circle,
-                          color: AppColors.primaryLight, size: 18),
+                          color: AppColors.textGreenLight, size: 18),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -132,8 +132,8 @@ class FeaturesListView extends GetView<FeaturesListController> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.black,
-                  backgroundColor: AppColors.primaryLight,
+                  foregroundColor: AppColors.textWhiteLight,
+                  backgroundColor: AppColors.secondaryLight,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8)),
                   padding: const EdgeInsets.symmetric(vertical: 12),

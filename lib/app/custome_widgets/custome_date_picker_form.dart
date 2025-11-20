@@ -92,13 +92,11 @@ class CustomeDatePickerForm extends StatelessWidget {
         );
       },
     );
-    if (pickedDate != null) {
-      controller.text = DateFormat('dd/MM/yyyy').format(
-        pickedDate,
-      ); //"${pickedDate.toLocal()}".split(' ')[0]; // Format the date as you like
-      if (onDateChanged != null) {
-        onDateChanged!(pickedDate); // Call the callback
-      }
+    controller.text = DateFormat('dd/MM/yyyy').format(
+      pickedDate!,
+    ); //"${pickedDate.toLocal()}".split(' ')[0]; // Format the date as you like
+    if (onDateChanged != null) {
+      onDateChanged!(pickedDate); // Call the callback
     }
   }
 

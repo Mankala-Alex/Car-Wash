@@ -77,7 +77,8 @@ class CustomDatePicker extends StatelessWidget {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: customTheme.primaryColor, // Background color of the selected date
+              primary: customTheme
+                  .primaryColor, // Background color of the selected date
               onPrimary: Colors.white, // Text color of the selected date
               surface: Colors.white, // Background color of the dialog
               onSurface: Colors.black, // Text color of the dates
@@ -91,13 +92,11 @@ class CustomDatePicker extends StatelessWidget {
         );
       },
     );
-    if (pickedDate != null) {
-      controller.text = DateFormat('dd/MM/yyyy').format(
-        pickedDate,
-      ); //"${pickedDate.toLocal()}".split(' ')[0]; // Format the date as you like
-      if (onDateChanged != null) {
-        onDateChanged!(pickedDate); // Call the callback
-      }
+    controller.text = DateFormat('dd/MM/yyyy').format(
+      pickedDate!,
+    ); //"${pickedDate.toLocal()}".split(' ')[0]; // Format the date as you like
+    if (onDateChanged != null) {
+      onDateChanged!(pickedDate); // Call the callback
     }
   }
 

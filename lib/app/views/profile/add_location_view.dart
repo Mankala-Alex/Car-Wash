@@ -203,7 +203,7 @@ class AddLocationView extends GetView<AddLocationController> {
                       child: Text(
                         "Confirm & proceed",
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.w600,
                         ),

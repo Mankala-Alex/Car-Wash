@@ -30,7 +30,7 @@ class DashboardView extends GetView<DashboardController> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bgLight,
       body: Container(
         decoration: BoxDecoration(color: CustomTheme.of(context).bgColor),
         child: Obx(() => _pages[controller.selectedIndex.value]),
@@ -44,7 +44,7 @@ class DashboardView extends GetView<DashboardController> {
           return Container(
             padding: const EdgeInsets.all(5),
             decoration: const BoxDecoration(
-              color: AppColors.primaryLight,
+              color: AppColors.bgLight,
               // border: Border(
               //   top: BorderSide(
               //     width: 1,
@@ -63,26 +63,26 @@ class DashboardView extends GetView<DashboardController> {
             child: BottomNavigationBar(
               elevation: 20,
               type: BottomNavigationBarType.fixed,
-              backgroundColor: AppColors.primaryLight,
+              backgroundColor: AppColors.bgLight,
               currentIndex: controller.selectedIndex.value,
               onTap: controller.updateIndex,
-              selectedItemColor: AppColors.bgBlackLight,
+              selectedItemColor: AppColors.secondaryLight,
               unselectedItemColor: customTheme.textLightGray,
               showUnselectedLabels: true,
               selectedLabelStyle: const TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
               unselectedLabelStyle: const TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
               ),
               items: List.generate(4, (index) {
                 List<String> labels = [
-                  "home".tr,
-                  "page 2".tr,
-                  "page 3".tr,
-                  "page 4".tr,
+                  "Home".tr,
+                  "My Bookings".tr,
+                  "Wallet".tr,
+                  "Profile".tr,
                 ];
                 List<String> icons = [
                   'assets/images/home.svg',

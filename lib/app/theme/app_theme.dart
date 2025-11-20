@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Light Mode Colors
-  static const Color primaryLight = Color(0xFFE7E1CF); // Color(0xFFA32C2C);
-  static const Color secondaryLight = Color(0xFFC4DBD4);
+  static const Color primaryLight = Color(0xffFFD2A2); // Color(0xFFA32C2C);
+  static const Color secondaryLight = Color(0xffFF9A2A);
   static const Color blue = Color(0xFF0C8CE9);
 
   static const Color bgLight = Color(0xFFFFFFFF);

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/instance_manager.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 
 import '../theme/app_theme.dart';
 
 class CustomTabBar extends StatelessWidget {
-  final String title;
+  // final String title;
   final List<String> tabs;
   final List<Widget> tabViews;
 
   const CustomTabBar({
     super.key,
-    required this.title,
+    //required this.title,
     required this.tabs,
     required this.tabViews,
   });
@@ -20,13 +23,15 @@ class CustomTabBar extends StatelessWidget {
       //animationDuration: Duration(milliseconds: 1000),
       length: tabs.length,
       child: Scaffold(
-        backgroundColor: AppColors.secondaryLight,
+        backgroundColor: AppColors.bgLight,
         appBar: AppBar(
-          backgroundColor: AppColors.secondaryLight,
-          title: Center(
-              child:
-                  Text(title, style: const TextStyle(color: Colors.black87))),
-          elevation: 0,
+          backgroundColor: AppColors.bgLight,
+          title: IconButton(
+            onPressed: () {
+              Get.toNamed(Routes.langeSelection);
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
         ),
         body: Column(
           children: [
@@ -47,14 +52,14 @@ class CustomTabBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: const [
                       BoxShadow(
-                        color: Colors.black26,
+                        color: Colors.grey,
                         blurRadius: 10,
                         offset: Offset(0, 5),
                       ),
                     ],
                   ),
-                  labelColor: Colors.black,
-                  unselectedLabelColor: AppColors.textLightGrayLight,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: AppColors.textDefaultLight,
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
