@@ -15,4 +15,5 @@ abstract class Routes {
   static const addcar = '/add_car';
   static const locationslist = '/location_list';
   static const addlocation = '/addlocation';
+  static const notification = '/notification_view';
 }

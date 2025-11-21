@@ -4,6 +4,7 @@ import 'package:my_new_app/app/bindings/booking_flow/confirmation_page_bindings.
 import 'package:my_new_app/app/bindings/booking_flow/features_list_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/instore_wash_binding.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_bindings.dart';
+import 'package:my_new_app/app/bindings/dashboard/notification_binding.dart';
 import 'package:my_new_app/app/bindings/profile/add_car_binding.dart';
 import 'package:my_new_app/app/bindings/profile/add_location_binding.dart';
 import 'package:my_new_app/app/bindings/profile/car_list_binding.dart';
@@ -12,6 +13,7 @@ import 'package:my_new_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:my_new_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:my_new_app/app/views/booking_flow/instore_wash_list_view.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
+import 'package:my_new_app/app/views/dashboard/notifications_view.dart';
 import 'package:my_new_app/app/views/profile/add_car_view.dart';
 import 'package:my_new_app/app/views/profile/add_location_view.dart';
 import 'package:my_new_app/app/views/profile/car_list_view.dart';
@@ -98,6 +100,11 @@ class AppPages {
       name: Routes.addlocation,
       page: () => const AddLocationView(),
       binding: AddLocationBinding(),
+    ),
+    GetPage(
+      name: Routes.notification,
+      page: () => const NotificationsView(),
+      binding: NotificationBinding(),
     ),
   ];
 }

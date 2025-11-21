@@ -22,9 +22,17 @@ class Page1View extends GetView<DashboardController> {
         backgroundColor: AppColors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false, // Make app bar transparent
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.account_circle_sharp),
+            // IconButton(
+            //     onPressed: () {
+            //       Get.toNamed("page4");
+            //     },
+            //     icon: Icon(
+            //       Icons.notifications,
+            //       color: AppColors.warningLight,
+            //       size: 30,
+            //     )),
             SizedBox(width: 10),
             Text(
               "CAR WASH",
@@ -35,7 +43,15 @@ class Page1View extends GetView<DashboardController> {
               ),
             ),
             Spacer(),
-            Icon(Icons.notifications),
+            IconButton(
+                onPressed: () {
+                  Get.toNamed(Routes.notification);
+                },
+                icon: Icon(
+                  Icons.notifications,
+                  color: AppColors.warningLight,
+                  size: 30,
+                ))
           ],
         ),
       ),

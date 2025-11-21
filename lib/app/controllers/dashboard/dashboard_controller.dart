@@ -45,4 +45,14 @@ class DashboardController extends GetxController {
     selectedChipIndex.value = -1;
     selectedAmount.value = double.tryParse(v) ?? 0;
   }
+
+  //my bookings page
+
+  // For star rating (index → rating)
+  var ratingMap = <int, int>{}.obs;
+
+  void setRating(int bookingIndex, int rating) {
+    ratingMap[bookingIndex] = rating;
+    update();
+  }
 }
