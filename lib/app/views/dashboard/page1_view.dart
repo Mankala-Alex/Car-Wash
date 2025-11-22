@@ -13,6 +13,12 @@ class Page1View extends GetView<DashboardController> {
     'assets/carwash/splash_image.jpg',
     'assets/carwash/yellowcar.png', // Add more if you have them
   ];
+  final List<String> bannerTitles = const [
+    "Exterior Polish",
+    "Interior Deep Clean",
+    "Full Service",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +39,8 @@ class Page1View extends GetView<DashboardController> {
             //       color: AppColors.warningLight,
             //       size: 30,
             //     )),
-            SizedBox(width: 10),
-            Text(
+            const SizedBox(width: 10),
+            const Text(
               "CAR WASH",
               style: TextStyle(
                 fontSize: 20,
@@ -42,12 +48,12 @@ class Page1View extends GetView<DashboardController> {
                 color: Color(0xFF1E293B), // Dark text color
               ),
             ),
-            Spacer(),
+            const Spacer(),
             IconButton(
                 onPressed: () {
                   Get.toNamed(Routes.notification);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.notifications,
                   color: AppColors.warningLight,
                   size: 30,
@@ -81,7 +87,9 @@ class Page1View extends GetView<DashboardController> {
               ),
 
               // ----- FIXED ITEMS LIST -----
-              items: bannerImages.map((imagePath) {
+              items: List.generate(bannerImages.length, (index) {
+                final imagePath = bannerImages[index];
+                final title = bannerTitles[index];
                 return Builder(
                   builder: (context) {
                     return Container(
@@ -114,15 +122,15 @@ class Page1View extends GetView<DashboardController> {
                           ),
 
                           // Bottom-left heading
-                          const Positioned(
+                          Positioned(
                             left: 16,
                             bottom: 16,
                             child: Text(
-                              "Premium",
-                              style: TextStyle(
+                              title,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w400,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -291,10 +299,10 @@ class Page1View extends GetView<DashboardController> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    child: Stack(
+                    child: const Stack(
                       children: [
                         // Bottom-left text
-                        const Positioned(
+                        Positioned(
                           left: 16,
                           bottom: 35,
                           child: Column(
@@ -321,39 +329,39 @@ class Page1View extends GetView<DashboardController> {
                           ),
                         ),
 
-                        // Bottom-right glassy button
-                        Positioned(
-                          right: 16,
-                          bottom: 28,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.white
-                                  .withOpacity(0.18), // transparent glass look
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.35),
-                                width: 1.2,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.25),
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Text(
-                              "Book Now",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // // Bottom-right glassy button
+                        // Positioned(
+                        //   right: 16,
+                        //   bottom: 28,
+                        //   child: Container(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 18, vertical: 10),
+                        //     decoration: BoxDecoration(
+                        //       color: Colors.white
+                        //           .withOpacity(0.18), // transparent glass look
+                        //       borderRadius: BorderRadius.circular(14),
+                        //       border: Border.all(
+                        //         color: Colors.white.withOpacity(0.35),
+                        //         width: 1.2,
+                        //       ),
+                        //       boxShadow: [
+                        //         BoxShadow(
+                        //           color: Colors.white.withOpacity(0.25),
+                        //           blurRadius: 6,
+                        //           offset: const Offset(0, 2),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //     child: const Text(
+                        //       "Book Now",
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontSize: 14,
+                        //         fontWeight: FontWeight.w900,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

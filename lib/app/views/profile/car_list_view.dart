@@ -38,18 +38,18 @@ class CarListView extends StatelessWidget {
           children: [
             const SizedBox(height: 16),
             _vehicleCard(
-              imagePath: "assets/carwash/features/primuim.png",
-              title: "Tesla Model 3",
+              imagePath: "assets/carwash/Nissan_Patrol.png",
+              title: "Nissan Patrol",
               subtitle: "MAIPRO1",
             ),
             _vehicleCard(
-              imagePath: "assets/carwash/polish_car.png",
-              title: "Ford F-150",
+              imagePath: "assets/carwash/toyota_land_cruiser.png",
+              title: "Toyota Land Cruiser",
               subtitle: "WASHME",
             ),
             _vehicleCard(
-              imagePath: "assets/carwash/blue.png",
-              title: "Toyota RAV4",
+              imagePath: "assets/carwash/toyota_camry.png",
+              title: "Toyota Camry",
               subtitle: "CLEAN",
             ),
             const SizedBox(height: 40),

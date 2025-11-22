@@ -9,9 +9,9 @@ class InstoreWashListView extends GetView<InstoreWashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.secondaryLight,
+      backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        backgroundColor: AppColors.secondaryLight,
+        backgroundColor: AppColors.bgLight,
         elevation: 0,
         title: const Text(
           "In-Store Locations",
@@ -44,15 +44,9 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                 height: 48,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 6,
-                    )
-                  ],
-                ),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.borderGray)),
                 child: const Row(
                   children: [
                     Icon(Icons.search, color: Colors.grey),
@@ -134,11 +128,11 @@ class InstoreWashListView extends GetView<InstoreWashController> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.grey,
+            blurRadius: 10,
+            offset: Offset(0, 5),
           ),
         ],
       ),

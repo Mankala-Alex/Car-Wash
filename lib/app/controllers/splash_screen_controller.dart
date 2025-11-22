@@ -5,7 +5,7 @@ import '../routes/app_routes.dart';
 
 class SplashScreenController extends GetxController {
   Future<void> startTimer(BuildContext context) async {
-    await Future.delayed(const Duration(seconds: 6)); // Reduced for demo
+    await Future.delayed(const Duration(seconds: 2)); // Reduced for demo
 
     // API-related checks (commented out until needed)
     /*

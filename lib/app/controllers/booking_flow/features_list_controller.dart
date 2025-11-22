@@ -5,7 +5,7 @@ class FeaturesListController extends GetxController {
     {
       'title': 'Exterior Polish',
       'price': '\$49.99',
-      'imageUrl': 'assets/carwash/features/clean.png',
+      'imageUrl': 'assets/carwash/yellowcar.png',
       'description': 'Bring back the shine and protect your paint.',
       'features': [
         'Hand Wash & Dry',

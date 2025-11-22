@@ -1,41 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/controllers/profile/lang_change_controller.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
-import '../../controllers/auth/lang_selection_controller.dart';
 
-class LangSelectionView extends GetView<LangSelectionController> {
-  const LangSelectionView({super.key});
+class LangChangeView extends GetView<LangChangeController> {
+  const LangChangeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(LangSelectionController());
-
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         backgroundColor: AppColors.bgLight,
         elevation: 0,
         centerTitle: true,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        //   onPressed: () => Get.back(),
-        // ),
         title: const Text(
-          "Choose Your Language",
+          "Change Language",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
         ),
-        actions: const [SizedBox(width: 40)],
       ),
       body: Column(
-        //mainAxisAlignment: MainAxisAlignment.center,
+        //mainAxisAlignment: MainAxisAlignment.s,
         children: [
           const SizedBox(height: 35),
 
-          // ================== ENGLISH CARD ==================
+          // ---------------- ENGLISH CARD ----------------
           Obx(() {
             return _languageCard(
               label: "English",
@@ -47,7 +40,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
 
           const SizedBox(height: 18),
 
-          // ================== ARABIC CARD ==================
+          // ---------------- ARABIC CARD ----------------
           Obx(() {
             return _languageCard(
               label: "العربية",
@@ -59,14 +52,14 @@ class LangSelectionView extends GetView<LangSelectionController> {
 
           const SizedBox(height: 40),
 
-          // ================== CONTINUE BUTTON ==================
+          // ---------------- CONTINUE BUTTON ----------------
           Obx(() {
             bool enabled = controller.selectedValue.value.isNotEmpty;
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GestureDetector(
-                onTap: enabled ? controller.changeLanguage : null,
+                onTap: enabled ? controller.applyLanguageChange : null,
                 child: Container(
                   height: 55,
                   decoration: BoxDecoration(
@@ -77,7 +70,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "Continue",
+                    "Save",
                     style: TextStyle(
                       color: enabled ? Colors.white : Colors.black45,
                       fontSize: 18,
@@ -95,9 +88,9 @@ class LangSelectionView extends GetView<LangSelectionController> {
     );
   }
 
-  // ===================================================================
-  // PROFESSIONAL VERTICAL CARD DESIGN
-  // ===================================================================
+  // ======================================================
+  // SAME CARD UI AS YOUR SELECT LANGUAGE SCREEN
+  // ======================================================
   Widget _languageCard({
     required String label,
     required String value,
@@ -126,7 +119,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
         ),
         child: Row(
           children: [
-            // -------- Custom Radio --------
+            // CUSTOM RADIO
             Container(
               width: 22,
               height: 22,
@@ -142,7 +135,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
 
             const SizedBox(width: 16),
 
-            // -------- Label --------
+            // LABEL
             Text(
               label,
               style: const TextStyle(

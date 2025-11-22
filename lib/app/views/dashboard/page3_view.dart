@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:my_new_app/app/theme/app_theme.dart';
 
 class Page3View extends GetView<DashboardController> {
   const Page3View({super.key});
@@ -354,7 +355,7 @@ class Page3View extends GetView<DashboardController> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 1, vertical: 1),
                           decoration: BoxDecoration(
-                              color: const Color(0xffC84C4C),
+                              color: AppColors.secondaryLight,
                               borderRadius: BorderRadius.circular(10)),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

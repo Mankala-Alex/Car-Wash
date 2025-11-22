@@ -28,14 +28,17 @@ class AddCarController extends GetxController {
 
   // -------- FULL CAR LIST --------
   final carList = <Map<String, String>>[
-    {"name": "Tesla Model S", "img": "assets/carwash/instore1.png"},
-    {"name": "BMW X5", "img": "assets/carwash/splash_2.jpg"},
-    {"name": "Audi A4", "img": "assets/carwash/instore1.png"},
+    {"name": "Toyota Camry.png", "img": "assets/carwash/toyota_camry.png"},
+    {"name": "Honda Civic", "img": "assets/carwash/Honda_Civic.png"},
+    {
+      "name": "Mitsubishi Pajero",
+      "img": "assets/carwash/Mitsubishi_Pajero.png"
+    },
     {"name": "Mercedes C-Class", "img": "assets/carwash/full_wash_car.png"},
     {"name": "Ford Mustang", "img": "assets/carwash/instore1.png"},
     {"name": "Honda Civic", "img": "assets/carwash/features/langcar3.png"},
     {"name": "Porsche 911", "img": "assets/carwash/whitecar.png"},
-    {"name": "Toyota Camry", "img": "assets/carwash/yellowcar.png"},
+    {"name": "Toyota Camry", "img": "assets/carwash/toyota_camry.png"},
   ].obs;
 
   // -------- FILTERED + SEARCHED RESULT --------

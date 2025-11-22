@@ -13,6 +13,365 @@ class BookSlotView extends GetView<BookSlotController> {
   const BookSlotView({super.key});
 
   // --- Helper Widget for Vehicle Cards ---
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: AppColors.bgLight, // Light grey background
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,
+              color: Color(0xFF1E293B)), // Dark icon
+          onPressed: () {
+            Get.back(); // Use GetX for navigation back
+          },
+        ),
+        title: const Text(
+          "Confirm Your Wash",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 30, 41, 59),
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.grey,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    child: Image.asset(
+                      'assets/carwash/yellowcar.png', // Replace with actual image
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'SERVICE DETAILS',
+                          style: TextStyle(
+                            color: AppColors.textLightGrayLight,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Premium Interior & Exterior Wash',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ),
+                            Text(
+                              '\$49.99',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 3),
+                        const Text(
+                          'Our most popular package for a complete clean.',
+                          style: TextStyle(fontSize: 14, color: Colors.black),
+                        ),
+                        const SizedBox(height: 3),
+                        const Text(
+                          'Est. Duration: 90 mins',
+                          style: TextStyle(fontSize: 13, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ),
+            Text(
+              "Select Your Vehicle",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDefaultLight),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 210, // Fixed height for vehicle cards
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildVehicleCard(context,
+                      vehicleName: "Toyota Land Cruiser",
+                      plateNumber: "MAJ-923",
+                      imagePath: "assets/carwash/toyota_land_cruiser.png"),
+                  const SizedBox(width: 12),
+                  _buildVehicleCard(context,
+                      vehicleName: "Toyota Camry",
+                      plateNumber: "XYZ-789",
+                      imagePath: "assets/carwash/toyota_camry.png"),
+                  const SizedBox(width: 12),
+                  _buildAddVehicleCard(context),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Select Date and Time",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDefaultLight),
+            ),
+            const SizedBox(height: 15),
+            buildDatePicker(context, controller.selectedDate.value, (date) {
+              controller.selectedDate.value = date;
+              // Fetch available slots, etc., if needed
+            }),
+
+            const SizedBox(height: 15),
+            _buildTimeSlots(context), // This uses Obx and controller
+
+            const SizedBox(height: 30),
+
+            // --- Location Section ---
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              height: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+                image: const DecorationImage(
+                  image: AssetImage(
+                      'assets/carwash/map.png'), // Replace with your map image asset
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildAddressCard(context,
+                icon: Icons.home_outlined,
+                title: "Home",
+                address: "123 Market St, San Francisco"),
+            const SizedBox(height: 12),
+            _buildAddressCard(context,
+                icon: Icons.work_outline,
+                title: "Work",
+                address: "456 Tech Ave, Silicon Valley"),
+            const SizedBox(height: 15),
+            // --- ADD NEW ADDRESS CARD ---
+            GestureDetector(
+              onTap: () {
+                Get.toNamed(Routes.addlocation);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.bgLight,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.grey[300]!,
+                    width: 1.2,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.grey,
+                      //spreadRadius: 0,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryLight.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.add_location_alt_outlined,
+                        size: 24,
+                        color: AppColors.secondaryLight,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        "Add New Address",
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF1E293B),
+                                ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // The main widget structure for the Price Details section
+            const SizedBox(
+              height: 20,
+            ),
+            // --- Section Header: Price Details ---
+            Text(
+              "Price Details",
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDefaultLight),
+            ),
+            const SizedBox(height: 10),
+
+            // --- The Content Card ---
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white, // White background for the card
+                borderRadius: BorderRadius.circular(15), // Rounded corners
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.grey,
+                    spreadRadius: 0,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: const Column(
+                children: [
+                  // 1. Premium Wash Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Premium Wash',
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        '\$49.99',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500, // Semi-bold for price
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+
+                  // 2. Taxes & Fees Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'VAT',
+                        style: TextStyle(fontSize: 14, color: Colors.black87),
+                      ),
+                      Text(
+                        '\$5.00',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 15),
+
+                  // 3. Total Amount Row (Bold and Blue)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Amount',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors
+                              .black, // Slightly darker than the above text
+                        ),
+                      ),
+                      Text(
+                        '\$54.99',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDefaultLight // Highlight color
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomConfirmBookingBar(context, screenWidth,
+          "\$54.99"), // Total amount can be dynamic from controller
+    );
+  }
+
   Widget _buildVehicleCard(
     BuildContext context, {
     required String vehicleName,
@@ -31,7 +390,7 @@ class BookSlotView extends GetView<BookSlotController> {
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: controller.selectedVehicle.value == vehicleName
-                  ? AppColors.primaryLight
+                  ? AppColors.secondaryLight
                   : AppColors.borderGray,
               width: controller.selectedVehicle.value == vehicleName ? 2 : 1,
             ),
@@ -226,29 +585,6 @@ class BookSlotView extends GetView<BookSlotController> {
   }
 
   // --- Helper Widget for Map Snippet ---
-  Widget _buildMapSnippet(BuildContext context) {
-    // This is a static image placeholder. A real map would use google_maps_flutter.
-    return Container(
-      width: double.infinity,
-      height: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-        image: const DecorationImage(
-          image: AssetImage(
-              'assets/carwash/map.png'), // Replace with your map image asset
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
 
   // --- Helper Widget for Address Cards ---
   Widget _buildAddressCard(
@@ -407,284 +743,6 @@ class BookSlotView extends GetView<BookSlotController> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      backgroundColor: AppColors.bgLight, // Light grey background
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color(0xFF1E293B)), // Dark icon
-          onPressed: () {
-            Get.back(); // Use GetX for navigation back
-          },
-        ),
-        title: const Text(
-          "Confirm Your Wash",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 30, 41, 59),
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildServiceSummaryCard(context),
-            Text(
-              "Select Your Vehicle",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDefaultLight),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 210, // Fixed height for vehicle cards
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _buildVehicleCard(context,
-                      vehicleName: "Tesla Model",
-                      plateNumber: "MAJ-923",
-                      imagePath: "assets/carwash/whitecar.png"),
-                  const SizedBox(width: 12),
-                  _buildVehicleCard(context,
-                      vehicleName: "Ford F-150",
-                      plateNumber: "XYZ-789",
-                      imagePath: "assets/carwash/blue.png"),
-                  const SizedBox(width: 12),
-                  _buildAddVehicleCard(context),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "Select Date and Time",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDefaultLight),
-            ),
-            const SizedBox(height: 15),
-            buildDatePicker(context, controller.selectedDate.value, (date) {
-              controller.selectedDate.value = date;
-              // Fetch available slots, etc., if needed
-            }),
-
-            const SizedBox(height: 15),
-            _buildTimeSlots(context), // This uses Obx and controller
-
-            const SizedBox(height: 30),
-
-            // --- Location Section ---
-            const SizedBox(height: 16),
-            _buildMapSnippet(context),
-            const SizedBox(height: 16),
-            _buildAddressCard(context,
-                icon: Icons.home_outlined,
-                title: "Home",
-                address: "123 Market St, San Francisco"),
-            const SizedBox(height: 12),
-            _buildAddressCard(context,
-                icon: Icons.work_outline,
-                title: "Work",
-                address: "456 Tech Ave, Silicon Valley"),
-            const SizedBox(height: 30),
-            // The main widget structure for the Price Details section
-
-            // --- Section Header: Price Details ---
-            Text(
-              "Price Details",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDefaultLight),
-            ),
-            const SizedBox(height: 10),
-
-            // --- The Content Card ---
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white, // White background for the card
-                borderRadius: BorderRadius.circular(15), // Rounded corners
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.grey,
-                    spreadRadius: 0,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: const Column(
-                children: [
-                  // 1. Premium Wash Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Premium Wash',
-                        style: TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Text(
-                        '\$75.00',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500, // Semi-bold for price
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-
-                  // 2. Taxes & Fees Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Taxes & Fees',
-                        style: TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                      Text(
-                        '\$6.56',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 15),
-
-                  // 3. Total Amount Row (Bold and Blue)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Total Amount',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors
-                              .black, // Slightly darker than the above text
-                        ),
-                      ),
-                      Text(
-                        '\$81.56',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textDefaultLight // Highlight color
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomConfirmBookingBar(context, screenWidth,
-          "\$55.25"), // Total amount can be dynamic from controller
-    );
-  }
-
-  Widget buildServiceSummaryCard(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-            child: Image.asset(
-              'assets/carwash/yellowcar.png', // Replace with actual image
-              height: 140,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'SERVICE DETAILS',
-                  style: TextStyle(
-                    color: AppColors.textLightGrayLight,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Premium Interior & Exterior Wash',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                      ),
-                    ),
-                    Text(
-                      '\$75.00',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                const Text(
-                  'Our most popular package for a complete clean.',
-                  style: TextStyle(fontSize: 14, color: Colors.black),
-                ),
-                const SizedBox(height: 3),
-                const Text(
-                  'Est. Duration: 90 mins',
-                  style: TextStyle(fontSize: 13, color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-        ],
-      ),
-    );
-  }
-
   Widget buildVehicleSelector(
     BuildContext context, {
     required RxString selectedVehicle,
@@ -693,11 +751,15 @@ class BookSlotView extends GetView<BookSlotController> {
     // Example vehicles; replace with your actual data or use from your controller
     final List<Map<String, String>> vehicles = [
       {
-        'image': 'assets/tesla_model3.jpg',
-        'name': 'Tesla Model 3',
+        'image': 'assets/carwash/toyota_land_cruiser.png',
+        'name': 'Toyota Land Cruiser',
         'plate': 'ABC-123'
       },
-      {'image': 'assets/bmw_m2.jpg', 'name': 'BMW M2', 'plate': 'XYZ-789'},
+      {
+        'image': 'assets/carwash/toyota_camry.png',
+        'name': 'Toyota Camry',
+        'plate': 'XYZ-789'
+      },
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

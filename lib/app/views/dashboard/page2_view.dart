@@ -50,11 +50,11 @@ class Page2View extends GetView<DashboardController> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.grey,
                     blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    offset: Offset(0, 5),
                   ),
                 ],
               ),
@@ -125,15 +125,25 @@ class Page2View extends GetView<DashboardController> {
 
                   // BUTTON ROW (ONLY TRACK + CANCEL)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _actionButton(Icons.location_on, "Track", Colors.black,
-                          AppColors.borderGray),
-                      _actionButton(
-                        Icons.close,
-                        "Cancel",
-                        Colors.white,
-                        Colors.red,
+                      Expanded(
+                        child: _actionButton(
+                          Icons.location_on,
+                          "Track",
+                          Colors.black,
+                          AppColors.borderGray,
+                        ),
+                      ),
+
+                      const SizedBox(width: 10), // <-- GAP OF 10PX
+
+                      Expanded(
+                        child: _actionButton(
+                          Icons.close,
+                          "Cancel",
+                          Colors.white,
+                          Colors.red,
+                        ),
                       ),
                     ],
                   ),
@@ -191,6 +201,7 @@ class Page2View extends GetView<DashboardController> {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 18, color: iconAndTextColor),
           const SizedBox(width: 8),
