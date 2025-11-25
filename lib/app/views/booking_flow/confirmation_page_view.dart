@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/bindings/booking_flow/scratch_card_binding.dart';
 import 'package:my_new_app/app/controllers/booking_flow/confirmation_page_controller.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:my_new_app/app/views/booking_flow/scratch_card_view.dart';
 
 class ConfirmationPageView extends GetView<ConfirmationPageController> {
   const ConfirmationPageView({super.key});
@@ -201,7 +203,15 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.to(
+                                () => const ScratchCardView(),
+                                binding: ScratchCardBinding(),
+                                opaque: false,
+                                fullscreenDialog: true,
+                                transition: Transition.fade,
+                              );
+                            },
                             icon: const Icon(Icons.call),
                             label: const Text('Call',
                                 style: TextStyle(

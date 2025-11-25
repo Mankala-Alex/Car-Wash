@@ -3,6 +3,7 @@ import 'package:my_new_app/app/bindings/booking_flow/book_slot_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/confirmation_page_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/features_list_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/instore_wash_binding.dart';
+import 'package:my_new_app/app/bindings/booking_flow/scratch_card_binding.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_bindings.dart';
 import 'package:my_new_app/app/bindings/dashboard/notification_binding.dart';
 import 'package:my_new_app/app/bindings/profile/add_car_binding.dart';
@@ -11,9 +12,11 @@ import 'package:my_new_app/app/bindings/profile/car_list_binding.dart';
 import 'package:my_new_app/app/bindings/profile/help_n_support_binding.dart';
 import 'package:my_new_app/app/bindings/profile/lang_change_binding.dart';
 import 'package:my_new_app/app/bindings/profile/location_list_binding.dart';
+import 'package:my_new_app/app/bindings/profile/my_coupons_binding.dart';
 import 'package:my_new_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:my_new_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:my_new_app/app/views/booking_flow/instore_wash_list_view.dart';
+import 'package:my_new_app/app/views/booking_flow/scratch_card_view.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
 import 'package:my_new_app/app/views/dashboard/notifications_view.dart';
 import 'package:my_new_app/app/views/profile/add_car_view.dart';
@@ -22,6 +25,7 @@ import 'package:my_new_app/app/views/profile/car_list_view.dart';
 import 'package:my_new_app/app/views/profile/help_n_support_view.dart';
 import 'package:my_new_app/app/views/profile/lang_change_view.dart';
 import 'package:my_new_app/app/views/profile/locations_list_view.dart';
+import 'package:my_new_app/app/views/profile/my_coupons_view.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
 import '../bindings/auth/login_binding.dart';
@@ -119,6 +123,16 @@ class AppPages {
       name: Routes.langchange,
       page: () => const LangChangeView(),
       binding: LangChangeBinding(),
+    ),
+    GetPage(
+      name: Routes.mycoupons,
+      page: () => const MyCouponsView(),
+      binding: MyCouponsBinding(),
+    ),
+    GetPage(
+      name: Routes.scratchcard,
+      page: () => const ScratchCardView(),
+      binding: ScratchCardBinding(),
     ),
   ];
 }

@@ -136,44 +136,44 @@ class Page1View extends GetView<DashboardController> {
                           ),
 
                           // Bottom-right button
-                          Positioned(
-                            right: 16,
-                            bottom: 12,
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.toNamed(Routes.bookslot);
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 18, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(
-                                      0.18), // transparent glass effect
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: Colors.white
-                                        .withOpacity(0.35), // frosty border
-                                    width: 1.2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.white.withOpacity(0.25),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: const Text(
-                                  "Book Now",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
+                          // Positioned(
+                          //   right: 16,
+                          //   bottom: 12,
+                          //   child: GestureDetector(
+                          //     onTap: () {
+                          //       Get.toNamed(Routes.bookslot);
+                          //     },
+                          //     child: Container(
+                          //       padding: const EdgeInsets.symmetric(
+                          //           horizontal: 18, vertical: 10),
+                          //       decoration: BoxDecoration(
+                          //         color: Colors.white.withOpacity(
+                          //             0.18), // transparent glass effect
+                          //         borderRadius: BorderRadius.circular(14),
+                          //         border: Border.all(
+                          //           color: Colors.white
+                          //               .withOpacity(0.35), // frosty border
+                          //           width: 1.2,
+                          //         ),
+                          //         boxShadow: [
+                          //           BoxShadow(
+                          //             color: Colors.white.withOpacity(0.25),
+                          //             blurRadius: 6,
+                          //             offset: const Offset(0, 2),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //       child: const Text(
+                          //         "Book Now",
+                          //         style: TextStyle(
+                          //           color: Colors.white,
+                          //           fontSize: 14,
+                          //           fontWeight: FontWeight.w600,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // )
                         ],
                       ),
                     );

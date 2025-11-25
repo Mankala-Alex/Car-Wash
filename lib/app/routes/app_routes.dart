@@ -18,4 +18,6 @@ abstract class Routes {
   static const notification = '/notification_view';
   static const help = '/help_n_support';
   static const langchange = '/lang_change';
+  static const mycoupons = '/my_coupons';
+  static const scratchcard = '/scratchcard';
 }
