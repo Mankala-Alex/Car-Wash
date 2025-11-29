@@ -11,6 +11,25 @@ class BookSlotController extends GetxController {
   final selectedService = Rx<String?>('Exterior Polish'); // Added for example
   final selectedAddress = Rx<String?>('Home'); // Added for example
 
+  late String name;
+  late String description;
+  late String price;
+  late List<String> features;
+  late String image;
+
+  @override
+  void onInit() {
+    var data = Get.arguments;
+
+    name = data["name"]?.toString() ?? "";
+    description = data["description"]?.toString() ?? "";
+    price = data["price"]?.toString() ?? ""; // ALWAYS STRING
+    features = List<String>.from(data["features"] ?? []);
+    image = data["image"] ?? "assets/carwash/yellowcar.png";
+
+    super.onInit();
+  }
+
   // Update methods
   void updateSelectedDate(DateTime newDate) {
     selectedDate.value = newDate;

@@ -299,33 +299,36 @@ class Page1View extends GetView<DashboardController> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    child: const Stack(
+                    child: Stack(
                       children: [
                         // Bottom-left text
                         Positioned(
                           left: 16,
                           bottom: 35,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "50% OFF",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.70,
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "50% OFF",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "On Your First In-Store\nWash",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+                                SizedBox(height: 4),
+                                Text(
+                                  "Select Doorstep Car Wash & Get 50% Off Your Next In-Store Visit at Any Partner Location.",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
 

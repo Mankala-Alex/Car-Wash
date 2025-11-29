@@ -1,5 +1,5 @@
 {
     "APP_NAME":"My APP",
     "IS_PRODUCTION":false,
-    "API_BASE_URL": "https://placeholder-api.com"
+    "API_BASE_URL": "http://10.0.2.2:3000/api/"
 }

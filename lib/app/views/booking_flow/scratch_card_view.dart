@@ -33,15 +33,38 @@ class ScratchCardView extends GetView<ScratchCardController> {
                     borderRadius: BorderRadius.circular(35),
                     child: controller.revealed.value
                         ? _couponCard()
-                        : Scratcher(
-                            brushSize: 30,
-                            threshold: 30,
-                            onThreshold: controller.onScratchComplete,
-                            image: Image.asset(
-                              "assets/carwash/scratchcard1.jpg",
-                              fit: BoxFit.cover,
-                            ),
-                            child: _couponCard(),
+                        : Stack(
+                            children: [
+                              Scratcher(
+                                brushSize: 30,
+                                threshold: 20,
+                                onThreshold: controller.onScratchComplete,
+                                image: Image.asset(
+                                  "assets/carwash/scratchcard3.jpg",
+                                  fit: BoxFit.cover,
+                                ),
+                                child: _couponCard(),
+                              ),
+
+                              /// 🎬 Scratch animation at bottom center
+                              Positioned(
+                                bottom: 10,
+                                left: 0,
+                                right: 0,
+                                child: SizedBox(
+                                    width: 120,
+                                    height: 120,
+                                    child: ColorFiltered(
+                                      colorFilter: const ColorFilter.mode(
+                                        Colors.black,
+                                        BlendMode.srcATop,
+                                      ),
+                                      child: Lottie.asset(
+                                          "assets/carwash/scratching.json",
+                                          repeat: true),
+                                    )),
+                              ),
+                            ],
                           ),
                   ),
 

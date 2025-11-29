@@ -31,7 +31,7 @@ class BookSlotView extends GetView<BookSlotController> {
           },
         ),
         title: const Text(
-          "Confirm Your Wash",
+          "Confirm Car Wash",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -67,7 +67,7 @@ class BookSlotView extends GetView<BookSlotController> {
                       topRight: Radius.circular(20),
                     ),
                     child: Image.asset(
-                      'assets/carwash/yellowcar.png', // Replace with actual image
+                      controller.image,
                       height: 140,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -92,7 +92,7 @@ class BookSlotView extends GetView<BookSlotController> {
                           children: [
                             Expanded(
                               child: Text(
-                                'Premium Interior & Exterior Wash',
+                                controller.name,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium
@@ -101,8 +101,16 @@ class BookSlotView extends GetView<BookSlotController> {
                                     ),
                               ),
                             ),
+                            Image.asset(
+                              "assets/carwash/SAR.png",
+                              width: 18,
+                              height: 18,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
                             Text(
-                              '\$49.99',
+                              controller.price,
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -113,14 +121,25 @@ class BookSlotView extends GetView<BookSlotController> {
                           ],
                         ),
                         const SizedBox(height: 3),
-                        const Text(
-                          'Our most popular package for a complete clean.',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                        Text(
+                          controller.description,
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.black),
                         ),
                         const SizedBox(height: 3),
-                        const Text(
-                          'Est. Duration: 90 mins',
-                          style: TextStyle(fontSize: 13, color: Colors.black),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: controller.features
+                              .map((f) => Row(
+                                    children: [
+                                      Icon(Icons.check_circle,
+                                          size: 16,
+                                          color: AppColors.textGreenLight),
+                                      SizedBox(width: 6),
+                                      Text(f, style: TextStyle(fontSize: 14)),
+                                    ],
+                                  ))
+                              .toList(),
                         ),
                       ],
                     ),
@@ -292,21 +311,27 @@ class BookSlotView extends GetView<BookSlotController> {
                   ),
                 ],
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   // 1. Premium Wash Row
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Premium Wash',
                         style: TextStyle(fontSize: 14, color: Colors.black87),
                       ),
-                      SizedBox(
+                      const Spacer(),
+                      Image.asset(
+                        "assets/carwash/SAR.png",
+                        width: 15,
                         height: 15,
                       ),
+                      const SizedBox(
+                        width: 5,
+                      ),
                       Text(
-                        '\$49.99',
+                        controller.price,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500, // Semi-bold for price
@@ -315,18 +340,27 @@ class BookSlotView extends GetView<BookSlotController> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
                   // 2. Taxes & Fees Row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'VAT',
                         style: TextStyle(fontSize: 14, color: Colors.black87),
                       ),
-                      Text(
-                        '\$5.00',
+                      const Spacer(),
+                      Image.asset(
+                        "assets/carwash/SAR.png",
+                        width: 15,
+                        height: 15,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text(
+                        '5.00',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -336,13 +370,13 @@ class BookSlotView extends GetView<BookSlotController> {
                     ],
                   ),
 
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
                   // 3. Total Amount Row (Bold and Blue)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Total Amount',
                         style: TextStyle(
                           fontSize: 16,
@@ -351,8 +385,17 @@ class BookSlotView extends GetView<BookSlotController> {
                               .black, // Slightly darker than the above text
                         ),
                       ),
-                      Text(
-                        '\$54.99',
+                      const Spacer(),
+                      Image.asset(
+                        "assets/carwash/SAR.png",
+                        width: 18,
+                        height: 18,
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Text(
+                        '54.99',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -368,7 +411,7 @@ class BookSlotView extends GetView<BookSlotController> {
         ),
       ),
       bottomNavigationBar: _buildBottomConfirmBookingBar(context, screenWidth,
-          "\$54.99"), // Total amount can be dynamic from controller
+          "54.99"), // Total amount can be dynamic from controller
     );
   }
 
@@ -702,12 +745,24 @@ class BookSlotView extends GetView<BookSlotController> {
                         color: Colors.grey[600],
                       ),
                 ),
-                Text(
-                  totalAmount, // This could also come from the controller
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1E293B),
-                      ),
+                Row(
+                  children: [
+                    Image.asset(
+                      "assets/carwash/SAR.png",
+                      width: 20,
+                      height: 20,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      totalAmount, // This could also come from the controller
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1E293B),
+                          ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -84,11 +84,11 @@ class Page2View extends GetView<DashboardController> {
                       const SizedBox(width: 16),
 
                       // TITLE + PROVIDER + PRICE
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Premium Exterior Wash",
                               style: TextStyle(
                                 fontSize: 17,
@@ -96,22 +96,34 @@ class Page2View extends GetView<DashboardController> {
                                 color: Colors.black,
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
+                            const SizedBox(height: 4),
+                            const Text(
                               "Provider: John D.",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black54,
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              "\$45.00",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Image.asset(
+                                  "assets/carwash/SAR.png",
+                                  width: 18,
+                                  height: 18,
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                const Text(
+                                  "45.00",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -171,7 +183,7 @@ class Page2View extends GetView<DashboardController> {
               index: 0,
               title: "Full Interior Detail",
               provider: "Jane S.",
-              price: "\$90.00",
+              price: "90.00",
             ),
             const SizedBox(height: 18),
 
@@ -179,7 +191,7 @@ class Page2View extends GetView<DashboardController> {
               index: 1,
               title: "Ceramic Coating",
               provider: "Mike T.",
-              price: "\$250.00",
+              price: "250.00",
             ),
             const SizedBox(height: 30),
           ],
@@ -258,6 +270,15 @@ class Page2View extends GetView<DashboardController> {
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                     ),
+                  ),
+                  const Spacer(),
+                  Image.asset(
+                    "assets/carwash/SAR.png",
+                    width: 18,
+                    height: 18,
+                  ),
+                  const SizedBox(
+                    width: 5,
                   ),
                   Text(
                     price,

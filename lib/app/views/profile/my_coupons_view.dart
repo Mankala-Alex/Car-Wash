@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
 class MyCouponsView extends StatelessWidget {
