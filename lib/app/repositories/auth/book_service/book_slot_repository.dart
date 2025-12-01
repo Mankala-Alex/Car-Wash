@@ -9,4 +9,8 @@ class BookSlotRepository {
   Future<Response> fetchAllServices() async {
     return await ApiService.get(EndPoints.apiGetAllServices);
   }
+
+  Future<Response> fetchoffers() async {
+    return await ApiService.get(EndPoints.apiGetfetchoffers);
+  }
 }

@@ -20,4 +20,6 @@ abstract class Routes {
   static const langchange = '/lang_change';
   static const mycoupons = '/my_coupons';
   static const scratchcard = '/scratchcard';
+  static const offers = '/offers';
+  static const offerscreen = '/offer_screen';
 }

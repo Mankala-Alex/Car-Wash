@@ -147,6 +147,8 @@ class Page4View extends GetView<DashboardController> {
                     const Divider(height: 0),
                     _menuTile(Icons.card_giftcard_sharp, "My Coupons",
                         () => Get.toNamed(Routes.mycoupons)),
+                    _menuTile(Icons.casino_rounded, "Offers",
+                        () => Get.toNamed(Routes.offers)),
                     const Divider(height: 0),
                     _menuTile(Icons.headset_mic_outlined, "Help & Support",
                         () => Get.toNamed(Routes.help)),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/controllers/auth/login_controller.dart';
 import 'package:my_new_app/app/custome_widgets/wheel_loader.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -249,15 +250,12 @@ class Login extends StatelessWidget {
   }
 }
 
-class Signup extends StatelessWidget {
+class Signup extends GetView<LoginController> {
   const Signup({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController nameCtrl = TextEditingController();
-    final TextEditingController emailCtrl = TextEditingController();
-    final TextEditingController addressCtrl = TextEditingController();
-    final TextEditingController mobileCtrl = TextEditingController();
+    //final controller = Get.put(SignupController());
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
@@ -268,7 +266,6 @@ class Signup extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
 
-            // Heading
             Text(
               "Create Account",
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -279,158 +276,63 @@ class Signup extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            // FULL NAME LABEL
-            const Text(
-              "Full Name",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+            // FIRST NAME
+            SignupInputField(
+              label: "First Name",
+              hint: "Enter your first name",
+              controller: controller.firstCtrl,
             ),
-            const SizedBox(height: 6),
-
-            // FULL NAME FIELD
-            TextField(
-              controller: nameCtrl,
-              textCapitalization: TextCapitalization.words,
-              decoration: InputDecoration(
-                hintText: "Enter your full name",
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.primaryLight, width: 2),
-                ),
-              ),
-            ),
-
             const SizedBox(height: 20),
 
-            // EMAIL LABEL
-            const Text(
-              "Email",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+            // LAST NAME
+            SignupInputField(
+              label: "Last Name",
+              hint: "Enter your last name",
+              controller: controller.lastCtrl,
             ),
-            const SizedBox(height: 6),
-
-            // EMAIL FIELD
-            TextField(
-              controller: emailCtrl,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                hintText: "Enter your email",
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.primaryLight, width: 2),
-                ),
-              ),
-            ),
-
             const SizedBox(height: 20),
 
-            // ADDRESS LABEL
-            const Text(
-              "Address",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+            // EMAIL
+            SignupInputField(
+              label: "Email",
+              hint: "Enter your email",
+              controller: controller.emailCtrl,
+              keyboard: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 6),
-
-            // ADDRESS FIELD
-            TextField(
-              controller: addressCtrl,
-              maxLines: 2,
-              decoration: InputDecoration(
-                hintText: "Enter your address",
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.primaryLight, width: 2),
-                ),
-              ),
-            ),
-
             const SizedBox(height: 20),
 
-            // MOBILE LABEL
-            const Text(
-              "Mobile Number",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
+            // MOBILE
+            SignupInputField(
+              label: "Mobile Number",
+              hint: "Enter your mobile number",
+              controller: controller.mobileCtrl,
+              keyboard: TextInputType.phone,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 20),
 
-            // MOBILE FIELD
-            TextField(
-              controller: mobileCtrl,
-              keyboardType: TextInputType.phone,
-              maxLength: 10,
-              decoration: InputDecoration(
-                counterText: "",
-                hintText: "Enter your mobile number",
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide:
-                      const BorderSide(color: AppColors.primaryLight, width: 2),
-                ),
-              ),
-            ),
+            // PASSWORD
+            Obx(() => SignupInputField(
+                  label: "Password",
+                  hint: "Enter password",
+                  controller: controller.passCtrl,
+                  obscure: controller.hidePass.value,
+                  onToggle: () {
+                    controller.hidePass.value = !controller.hidePass.value;
+                  },
+                )),
+            const SizedBox(height: 20),
 
+            // CONFIRM PASSWORD
+            Obx(() => SignupInputField(
+                  label: "Confirm Password",
+                  hint: "Re-enter password",
+                  controller: controller.confirmCtrl,
+                  obscure: controller.hideConfirm.value,
+                  onToggle: () {
+                    controller.hideConfirm.value =
+                        !controller.hideConfirm.value;
+                  },
+                )),
             const SizedBox(height: 25),
 
             // CONTINUE BUTTON
@@ -445,29 +347,6 @@ class Signup extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  // VALIDATION
-                  // if (nameCtrl.text.isEmpty) {
-                  //   Get.snackbar("Error", "Full Name is required",
-                  //       snackPosition: SnackPosition.BOTTOM);
-                  //   return;
-                  // }
-                  // if (emailCtrl.text.isEmpty || !emailCtrl.text.contains("@")) {
-                  //   Get.snackbar("Error", "Enter a valid email",
-                  //       snackPosition: SnackPosition.BOTTOM);
-                  //   return;
-                  // }
-                  // if (addressCtrl.text.isEmpty) {
-                  //   Get.snackbar("Error", "Address is required",
-                  //       snackPosition: SnackPosition.BOTTOM);
-                  //   return;
-                  // }
-                  // if (mobileCtrl.text.length != 10) {
-                  //   Get.snackbar("Error", "Enter a valid 10-digit number",
-                  //       snackPosition: SnackPosition.BOTTOM);
-                  //   return;
-                  // }
-
-                  // ALL GOOD → go to OTP
                   Get.toNamed(Routes.otpPage);
                 },
                 child: const Text(
@@ -481,16 +360,13 @@ class Signup extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 35),
 
-            // Already have account? Login
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Already have an account?",
-                  style: TextStyle(color: Colors.black54),
-                ),
+                const Text("Already have an account?",
+                    style: TextStyle(color: Colors.black54)),
                 TextButton(
                   onPressed: () {
                     DefaultTabController.of(context).animateTo(0);
@@ -505,11 +381,84 @@ class Signup extends StatelessWidget {
                 ),
               ],
             ),
-
-            const SizedBox(height: 20),
           ],
         ),
       ),
+    );
+  }
+}
+
+/////////////////////////////////////////////////////////////////
+// REUSABLE INPUT FIELD WIDGET — INSIDE SAME FILE (NOT SEPARATE)
+/////////////////////////////////////////////////////////////////
+
+class SignupInputField extends StatelessWidget {
+  final String label;
+  final String hint;
+  final TextEditingController controller;
+  final TextInputType keyboard;
+  final bool obscure;
+  final VoidCallback? onToggle;
+
+  const SignupInputField({
+    super.key,
+    required this.label,
+    required this.hint,
+    required this.controller,
+    this.keyboard = TextInputType.text,
+    this.obscure = false,
+    this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          obscureText: obscure,
+          keyboardType: keyboard,
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: Colors.white,
+
+            // Eye icon for password
+            suffixIcon: onToggle != null
+                ? IconButton(
+                    icon: Icon(
+                      obscure ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: onToggle,
+                  )
+                : null,
+
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: AppColors.primaryLight, width: 2),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -132,11 +132,12 @@ class BookSlotView extends GetView<BookSlotController> {
                           children: controller.features
                               .map((f) => Row(
                                     children: [
-                                      Icon(Icons.check_circle,
+                                      const Icon(Icons.check_circle,
                                           size: 16,
                                           color: AppColors.textGreenLight),
-                                      SizedBox(width: 6),
-                                      Text(f, style: TextStyle(fontSize: 14)),
+                                      const SizedBox(width: 6),
+                                      Text(f,
+                                          style: const TextStyle(fontSize: 14)),
                                     ],
                                   ))
                               .toList(),
@@ -332,7 +333,7 @@ class BookSlotView extends GetView<BookSlotController> {
                       ),
                       Text(
                         controller.price,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500, // Semi-bold for price
                           color: Colors.black87,

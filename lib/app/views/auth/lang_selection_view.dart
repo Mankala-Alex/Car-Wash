@@ -46,7 +46,6 @@ class LangSelectionView extends GetView<LangSelectionController> {
           }),
 
           const SizedBox(height: 18),
-
           // ================== ARABIC CARD ==================
           Obx(() {
             return _languageCard(
@@ -57,14 +56,14 @@ class LangSelectionView extends GetView<LangSelectionController> {
             );
           }),
 
-          const SizedBox(height: 40),
+          Spacer(),
 
           // ================== CONTINUE BUTTON ==================
           Obx(() {
             bool enabled = controller.selectedValue.value.isNotEmpty;
 
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: GestureDetector(
                 onTap: enabled ? controller.changeLanguage : null,
                 child: Container(

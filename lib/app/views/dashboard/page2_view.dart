@@ -323,7 +323,16 @@ class Page2View extends GetView<DashboardController> {
               // BUTTON
               GestureDetector(
                 onTap: () {
-                  Get.toNamed(Routes.bookslot);
+                  Get.toNamed(
+                    Routes.bookslot,
+                    arguments: {
+                      "name": title,
+                      "price": price,
+                      "image": "assets/carwash/toyota_camry.png",
+                      "description": "Quick exterior wash and cleaning",
+                      "features": ["Vacuum", "Tire Shine", "Body Wash"]
+                    },
+                  );
                 },
                 child: Container(
                   height: 48,

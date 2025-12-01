@@ -13,7 +13,7 @@ class DashboardView extends GetView<DashboardController> {
   DashboardView({super.key});
 
   final List<Widget> _pages = [
-    const Page1View(),
+    Page1View(),
     const Page2View(),
     const Page3View(),
     const Page4View()

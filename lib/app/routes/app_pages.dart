@@ -13,6 +13,8 @@ import 'package:my_new_app/app/bindings/profile/help_n_support_binding.dart';
 import 'package:my_new_app/app/bindings/profile/lang_change_binding.dart';
 import 'package:my_new_app/app/bindings/profile/location_list_binding.dart';
 import 'package:my_new_app/app/bindings/profile/my_coupons_binding.dart';
+import 'package:my_new_app/app/bindings/profile/offer_screen_binding.dart';
+import 'package:my_new_app/app/bindings/profile/offers_list_bindings.dart';
 import 'package:my_new_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:my_new_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:my_new_app/app/views/booking_flow/instore_wash_list_view.dart';
@@ -26,6 +28,8 @@ import 'package:my_new_app/app/views/profile/help_n_support_view.dart';
 import 'package:my_new_app/app/views/profile/lang_change_view.dart';
 import 'package:my_new_app/app/views/profile/locations_list_view.dart';
 import 'package:my_new_app/app/views/profile/my_coupons_view.dart';
+import 'package:my_new_app/app/views/profile/offer_screen_view.dart';
+import 'package:my_new_app/app/views/profile/offers_list_view.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
 import '../bindings/auth/login_binding.dart';
@@ -133,6 +137,16 @@ class AppPages {
       name: Routes.scratchcard,
       page: () => const ScratchCardView(),
       binding: ScratchCardBinding(),
+    ),
+    GetPage(
+      name: Routes.offers,
+      page: () => const OffersListView(),
+      binding: OffersListBindings(),
+    ),
+    GetPage(
+      name: Routes.offerscreen,
+      page: () => const OfferScreenView(),
+      binding: OfferScreenBinding(),
     ),
   ];
 }

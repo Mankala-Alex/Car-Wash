@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'; // Ensure this import is correct
 import 'package:get/get.dart';
+import 'package:my_new_app/app/controllers/profile/offers_controller.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
 import '../../routes/app_routes.dart'; // To navigate to Routes.BOOK_SLOT
 
 class Page1View extends GetView<DashboardController> {
-  const Page1View({super.key});
+  Page1View({super.key});
+
+  final offersController = Get.find<OffersController>();
+
   final List<String> bannerImages = const [
     'assets/carwash/carwheel.png',
     'assets/carwash/splash_image.jpg',
@@ -288,86 +292,130 @@ class Page1View extends GetView<DashboardController> {
                   //const SizedBox(height: 20),
 
 // ---------------- PROMO BANNER AFTER WALLET ----------------
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      image: const DecorationImage(
-                        image: AssetImage(
-                            "assets/carwash/50_off.png"), // your banner image
-                        fit: BoxFit.cover,
+                  Obx(() {
+                    final list = offersController.offers;
+
+                    if (list.isEmpty) {
+                      return Container(
+                        height: 180,
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(top: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppColors.primaryLight,
+                              AppColors.primaryLight
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            "Loading offer...",
+                            style: TextStyle(color: Colors.black, fontSize: 18),
+                          ),
+                        ),
+                      );
+                    }
+
+                    // Pick a specific offer (by code OR first item)
+                    const HOME_OFFER_CODE = "aa";
+                    final offer = list.firstWhere(
+                      (o) => o.offerCode == HOME_OFFER_CODE,
+                      orElse: () => list.first,
+                    );
+
+                    // Discount title
+                    final discountTitle = offer.discountType == "percentage"
+                        ? "${offer.discountValue}% OFF"
+                        : "SAR ${offer.discountValue} OFF";
+
+                    return Container(
+                      height: 180,
+                      width: double.infinity,
+                      //     padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        color: const Color(0xFFFFF4E5), // soft beige background
                       ),
-                    ),
-                    child: Stack(
-                      children: [
-                        // Bottom-left text
-                        Positioned(
-                          left: 16,
-                          bottom: 35,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.70,
-                            child: const Column(
+                      child: Stack(
+                        children: [
+                          // --- Soft Circles Background ---
+                          Positioned(
+                            top: -20,
+                            right: -20,
+                            child: Container(
+                              height: 120,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFE7C5),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: -30,
+                            left: -30,
+                            child: Container(
+                              height: 140,
+                              width: 140,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFE7C5),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+
+                          // ---- OFFER TEXT CONTENT ----
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Discount
                                 Text(
-                                  "50% OFF",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
+                                  discountTitle,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 28,
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+
+                                const SizedBox(height: 6),
+
+                                // Title
                                 Text(
-                                  "Select Doorstep Car Wash & Get 50% Off Your Next In-Store Visit at Any Partner Location.",
-                                  style: TextStyle(
-                                    color: Colors.white,
+                                  offer.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+
+                                const Spacer(),
+
+                                // Expiry
+                                Text(
+                                  "Expires in ${offer.expiryDays} days",
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 13,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                    );
+                  }),
 
-                        // // Bottom-right glassy button
-                        // Positioned(
-                        //   right: 16,
-                        //   bottom: 28,
-                        //   child: Container(
-                        //     padding: const EdgeInsets.symmetric(
-                        //         horizontal: 18, vertical: 10),
-                        //     decoration: BoxDecoration(
-                        //       color: Colors.white
-                        //           .withOpacity(0.18), // transparent glass look
-                        //       borderRadius: BorderRadius.circular(14),
-                        //       border: Border.all(
-                        //         color: Colors.white.withOpacity(0.35),
-                        //         width: 1.2,
-                        //       ),
-                        //       boxShadow: [
-                        //         BoxShadow(
-                        //           color: Colors.white.withOpacity(0.25),
-                        //           blurRadius: 6,
-                        //           offset: const Offset(0, 2),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //     child: const Text(
-                        //       "Book Now",
-                        //       style: TextStyle(
-                        //         color: Colors.white,
-                        //         fontSize: 14,
-                        //         fontWeight: FontWeight.w900,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -684,454 +732,3 @@ class ServiceCard extends StatelessWidget {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'; // This might not be needed for this specific design
-// import 'package:get/get.dart';
-// import 'package:my_new_app/app/routes/app_routes.dart';
-
-// import '../../controllers/dashboard/dashboard_controller.dart';
-
-// class Page1View extends GetView<DashboardController> {
-//   const Page1View({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     double screenHeight = MediaQuery.of(context).size.height;
-//     double screenWidth = MediaQuery.of(context).size.width;
-
-//     return Scaffold(
-//       backgroundColor: const Color(0xFFF7F8FA), // Light grey background
-//       appBar: AppBar(
-//         backgroundColor: Colors.transparent,
-//         elevation: 0,
-//         toolbarHeight: 80, // Adjust as needed
-//         title: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               "Hello, Alex!",
-//               style: TextStyle(
-//                 fontSize: 24,
-//                 fontWeight: FontWeight.bold,
-//                 color: const Color(0xFF1E293B), // Dark text color
-//               ),
-//             ),
-//             SizedBox(height: 4),
-//             Text(
-//               "Ready to make your car shine?",
-//               style: TextStyle(
-//                 fontSize: 14,
-//                 color: Colors.grey[600],
-//               ),
-//             ),
-//           ],
-//         ),
-//         actions: [
-//           IconButton(
-//             icon: Icon(Icons.notifications_none_outlined, size: 28, color: const Color(0xFF1E293B)),
-//             onPressed: () {
-//               // Handle notification tap
-//             },
-//           ),
-//           SizedBox(width: 8),
-//           IconButton(
-//             icon: Icon(Icons.camera_alt_outlined, size: 28, color: const Color(0xFF1E293B)),
-//             onPressed: () {
-//               // Handle camera tap
-//             },
-//           ),
-//           SizedBox(width: 16),
-//         ],
-//       ),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               SizedBox(height: 20),
-
-//               // Doorstep Wash Card
-//               Container(
-//                 width: screenWidth,
-//                 height: screenHeight * 0.45, // Adjust height as needed
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(20),
-//                   color: Colors.blue, // Placeholder for the gradient and image
-//                   boxShadow: [
-//                     BoxShadow(
-//                       color: Colors.black.withOpacity(0.1),
-//                       spreadRadius: 1,
-//                       blurRadius: 10,
-//                       offset: Offset(0, 5),
-//                     ),
-//                   ],
-//                   image: DecorationImage(
-//                     image: AssetImage('assets/carwash/home_car.png'), // Replace with your image asset
-//                     fit: BoxFit.cover,
-//                     alignment: Alignment.center,
-//                   ),
-//                 ),
-//                 child: Container( // Gradient overlay to make text readable
-//                   decoration: BoxDecoration(
-//                     borderRadius: BorderRadius.circular(20),
-//                     gradient: LinearGradient(
-//                       begin: Alignment.topCenter,
-//                       end: Alignment.bottomCenter,
-//                       colors: [
-//                         Colors.black.withOpacity(0.3),
-//                         Colors.black.withOpacity(0.0),
-//                         Colors.black.withOpacity(0.0),
-//                         Colors.black.withOpacity(0.0),
-//                         Colors.black.withOpacity(0.3),
-//                       ],
-//                     ),
-//                   ),
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(20.0),
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text(
-//                           "Doorstep Wash",
-//                           style: TextStyle(
-//                             fontSize: 26,
-//                             fontWeight: FontWeight.bold,
-//                             color: Colors.white,
-//                           ),
-//                         ),
-//                         SizedBox(height: 5),
-//                         Text(
-//                           "Convenience delivered to your home.",
-//                           style: TextStyle(
-//                             fontSize: 16,
-//                             color: Colors.white70,
-//                           ),
-//                         ),
-//                         Spacer(), // Pushes content to the top
-//                         ElevatedButton(
-//                           onPressed: () {
-//                             // Handle Explore button tap
-//                           },
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: Colors.white,
-//                             foregroundColor: const Color(0xFF2196F3), // Button text color
-//                             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-//                             shape: RoundedRectangleBorder(
-//                               borderRadius: BorderRadius.circular(10),
-//                             ),
-//                             elevation: 0,
-//                           ),
-//                           child: Text(
-//                             "Explore",
-//                             style: TextStyle(
-//                               fontSize: 16,
-//                               fontWeight: FontWeight.w600,
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-
-//               SizedBox(height: 20),
-
-//               // In-Store Wash Card
-//               Container(
-//                 width: screenWidth,
-//                 padding: const EdgeInsets.all(20),
-//                 decoration: BoxDecoration(
-//                   color: Colors.white,
-//                   borderRadius: BorderRadius.circular(20),
-//                   boxShadow: [
-//                     BoxShadow(
-//                       color: Colors.black.withOpacity(0.05),
-//                       spreadRadius: 1,
-//                       blurRadius: 5,
-//                       offset: Offset(0, 3),
-//                     ),
-//                   ],
-//                 ),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       children: [
-//                         Text(
-//                           "In-Store Wash",
-//                           style: TextStyle(
-//                             fontSize: 20,
-//                             fontWeight: FontWeight.bold,
-//                             color: const Color(0xFF1E293B),
-//                           ),
-//                         ),
-//                         SizedBox(height: 5),
-//                         Text(
-//                           "Visit our premium wash center for an\nexpress service.",
-//                           style: TextStyle(
-//                             fontSize: 14,
-//                             color: Colors.grey[600],
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                     Container(
-//                       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-//                       decoration: BoxDecoration(
-//                         color: const Color(0xFFFFCC00), // Yellow color for 50% OFF
-//                         borderRadius: BorderRadius.circular(8),
-//                       ),
-//                       child: Text(
-//                         "50% off",
-//                         style: TextStyle(
-//                           fontSize: 12,
-//                           fontWeight: FontWeight.bold,
-//                           color: Colors.black87,
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               SizedBox(height: 20),
-
-//               // Quick Booking
-//               Container(
-//                 width: screenWidth,
-//                 padding: const EdgeInsets.all(15),
-//                 decoration: BoxDecoration(
-//                   color: Colors.white,
-//                   borderRadius: BorderRadius.circular(20),
-//                   boxShadow: [
-//                     BoxShadow(
-//                       color: Colors.black.withOpacity(0.05),
-//                       spreadRadius: 1,
-//                       blurRadius: 5,
-//                       offset: Offset(0, 3),
-//                     ),
-//                   ],
-//                 ),
-//                 child: Row(
-//                   children: [
-//                     Icon(Icons.directions_car_filled_outlined, color: Colors.grey[700], size: 28),
-//                     SizedBox(width: 15),
-//                     Expanded(
-//                       child: Text(
-//                         "Tesla Model 3", // Replace with dynamic car model
-//                         style: TextStyle(
-//                           fontSize: 16,
-//                           fontWeight: FontWeight.w500,
-//                           color: const Color(0xFF1E293B),
-//                         ),
-//                       ),
-//                     ),
-//                     ElevatedButton(
-//                       onPressed: () {
-//                         Get.toNamed(Routes.bookslot);
-//                       },
-//                       style: ElevatedButton.styleFrom(
-//                         backgroundColor: const Color(0xFF2196F3), // Blue button
-//                         foregroundColor: Colors.white,
-//                         padding: EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(10),
-//                         ),
-//                         elevation: 0,
-//                       ),
-//                       child: Text(
-//                         "Book Now",
-//                         style: TextStyle(
-//                           fontSize: 16,
-//                           fontWeight: FontWeight.w600,
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               SizedBox(height: 20),
-
-//               // Featured Services Title
-//               Text(
-//                 "Featured Services",
-//                 style: TextStyle(
-//                   fontSize: 22,
-//                   fontWeight: FontWeight.bold,
-//                   color: const Color(0xFF1E293B),
-//                 ),
-//               ),
-//               SizedBox(height: 15),
-
-//               // Featured Services Scrollable List
-//               SizedBox(
-//                 height: 150, // Height for the horizontal scrollable cards
-//                 child: ListView(
-//                   scrollDirection: Axis.horizontal,
-//                   children: [
-//                     _buildServiceCard(
-//                       icon: Icons.water_drop_outlined,
-//                       serviceName: "Basic Wash",
-//                       price: "\$25",
-//                       duration: "30m",
-//                     ),
-//                     SizedBox(width: 15),
-//                     _buildServiceCard(
-//                       icon: Icons.water_drop_outlined, // Placeholder, replace with actual logo or icon
-//                       serviceName: "Premium Detail",
-//                       price: "\$80",
-//                       duration: "1.5h",
-//                       isPremium: true, // Example to differentiate icon/logo if needed
-//                     ),
-//                     SizedBox(width: 15),
-//                     _buildServiceCard(
-//                       icon: Icons.chair_outlined, // Placeholder for interior clean
-//                       serviceName: "Interior Clean",
-//                       price: "\$40",
-//                       duration: "1h",
-//                     ),
-//                     SizedBox(width: 15),
-//                     // Add more service cards as needed
-//                   ],
-//                 ),
-//               ),
-
-//               SizedBox(height: 20),
-
-//               // Promotional Banner (Bottom)
-//               Container(
-//                 width: screenWidth,
-//                 padding: const EdgeInsets.all(20),
-//                 decoration: BoxDecoration(
-//                   color: const Color(0xFF1E293B), // Dark blue/grey background
-//                   borderRadius: BorderRadius.circular(20),
-//                   boxShadow: [
-//                     BoxShadow(
-//                       color: Colors.black.withOpacity(0.1),
-//                       spreadRadius: 1,
-//                       blurRadius: 10,
-//                       offset: Offset(0, 5),
-//                     ),
-//                   ],
-//                 ),
-//                 child: Row(
-//                   children: [
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(
-//                             "First Doorstep Wash?",
-//                             style: TextStyle(
-//                               fontSize: 18,
-//                               fontWeight: FontWeight.bold,
-//                               color: Colors.white,
-//                             ),
-//                           ),
-//                           SizedBox(height: 5),
-//                           Text(
-//                             "Get 50% OFF on your next In-Store visit!",
-//                             style: TextStyle(
-//                               fontSize: 14,
-//                               color: Colors.white70,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     Icon(
-//                       Icons.discount_outlined, // Or a custom coupon icon
-//                       color: const Color(0xFFFFCC00), // Yellow
-//                       size: 40,
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               SizedBox(height: 30), // Extra space at the bottom
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   // Helper widget for building service cards
-//   Widget _buildServiceCard({
-//     required IconData icon,
-//     required String serviceName,
-//     required String price,
-//     required String duration,
-//     bool isPremium = false, // To handle 'RKLE' logo for premium
-//   }) {
-//     return Container(
-//       width: 150, // Fixed width for each service card
-//       padding: const EdgeInsets.all(15),
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         borderRadius: BorderRadius.circular(20),
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.05),
-//             spreadRadius: 1,
-//             blurRadius: 5,
-//             offset: Offset(0, 3),
-//           ),
-//         ],
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Container(
-//             padding: EdgeInsets.all(10),
-//             decoration: BoxDecoration(
-//               color: const Color(0xFFF0F4F8), // Light grey background for icon
-//               borderRadius: BorderRadius.circular(12),
-//             ),
-//             child: isPremium
-//                 ? Image.asset(
-//                     'assets/images/rkle_logo.png', // Replace with your RKLE logo asset
-//                     height: 24,
-//                     width: 24,
-//                   )
-//                 : Icon(icon, size: 24, color: const Color(0xFF2196F3)),
-//           ),
-//           SizedBox(height: 10),
-//           Text(
-//             serviceName,
-//             style: TextStyle(
-//               fontSize: 16,
-//               fontWeight: FontWeight.bold,
-//               color: const Color(0xFF1E293B),
-//             ),
-//           ),
-//           SizedBox(height: 5),
-//           Row(
-//             children: [
-//               Text(
-//                 price,
-//                 style: TextStyle(
-//                   fontSize: 14,
-//                   fontWeight: FontWeight.w600,
-//                   color: const Color(0xFF2196F3),
-//                 ),
-//               ),
-//               Text(
-//                 " • $duration",
-//                 style: TextStyle(
-//                   fontSize: 13,
-//                   color: Colors.grey[600],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

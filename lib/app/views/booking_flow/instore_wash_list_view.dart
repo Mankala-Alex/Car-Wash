@@ -44,9 +44,10 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                 height: 48,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderGray)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.borderGray),
+                ),
                 child: const Row(
                   children: [
                     Icon(Icons.search, color: Colors.grey),
@@ -66,41 +67,37 @@ class InstoreWashListView extends GetView<InstoreWashController> {
 
               const SizedBox(height: 20),
 
-              // ---------------- LOCATION CARDS ----------------
-              locationCard(
-                image: "assets/carwash/instore1.png",
-                title: "Aqua Shine Auto Spa",
-                rating: "4.5",
-                reviews: "128",
-                address: "123 Clean St, Anytown, USA",
-                statusText: "Open today until 8:00 PM",
-                statusColor: Colors.green,
-              ),
+              // ---------------- DYNAMIC LOCATIONS LIST ----------------
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 50),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
 
-              locationCard(
-                image: "assets/carwash/full_wash_car.png",
-                title: "The Car Wash Co.",
-                rating: "4.0",
-                reviews: "97",
-                address: "456 Suds Ave, Anytown, USA",
-                statusText: "Open today until 9:00 PM",
-                statusColor: Colors.green,
-              ),
+                if (controller.stores.isEmpty) {
+                  return noLocationFoundCard();
+                }
 
-              locationCard(
-                image: "assets/carwash/blue.png",
-                title: "Sparkle & Shine",
-                rating: "0.0",
-                reviews: "No reviews yet",
-                address: "789 Bubbly Rd, Anytown, USA",
-                statusText: "Closed",
-                statusColor: Colors.red,
-              ),
-
-              const SizedBox(height: 25),
-
-              // ---------------- NO LOCATION FOUND (EXAMPLE) ----------------
-              noLocationFoundCard(),
+                return Column(
+                  children: controller.stores.map((store) {
+                    return locationCard(
+                      image:
+                          "assets/carwash/instore1.png", // static placeholder
+                      title: store.companyName,
+                      rating: "0.0",
+                      reviews: "No reviews yet",
+                      address: "${store.streetName}, ${store.city}",
+                      statusText: store.status == "Active" ? "Open" : "Closed",
+                      statusColor:
+                          store.status == "Active" ? Colors.green : Colors.red,
+                    );
+                  }).toList(),
+                );
+              }),
 
               const SizedBox(height: 40),
             ],
@@ -182,7 +179,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "($reviews reviews)",
+                      "($reviews)",
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ],
@@ -320,7 +317,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
           ),
           SizedBox(height: 8),
           Text(
-            "We couldn't find any partner locations in your area.\nTry expanding your search radius.",
+            "We couldn't find any partner locations.\nTry again later.",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey),
           ),
