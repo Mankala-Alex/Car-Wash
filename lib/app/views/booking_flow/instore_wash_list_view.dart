@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/config/constants.dart';
 import 'package:my_new_app/app/controllers/booking_flow/instore_wash_controller.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -85,15 +86,14 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                 return Column(
                   children: controller.stores.map((store) {
                     return locationCard(
-                      image:
-                          "assets/carwash/instore1.png", // static placeholder
+                      image: store.imageUrl, // static placeholder
                       title: store.companyName,
                       rating: "0.0",
                       reviews: "No reviews yet",
                       address: "${store.streetName}, ${store.city}",
-                      statusText: store.status == "Active" ? "Open" : "Closed",
+                      statusText: store.status == "Active" ? "Closed" : "Open",
                       statusColor:
-                          store.status == "Active" ? Colors.green : Colors.red,
+                          store.status == "Active" ? Colors.red : Colors.green,
                     );
                   }).toList(),
                 );
@@ -142,12 +142,27 @@ class InstoreWashListView extends GetView<InstoreWashController> {
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
             ),
-            child: Image.asset(
-              image,
-              height: 150,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: image.isEmpty
+                ? Image.asset(
+                    "assets/carwash/default_service.png",
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Image.network(
+                    Constants.imageBaseUrl + image,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/carwash/default_service.png",
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
           ),
 
           Padding(

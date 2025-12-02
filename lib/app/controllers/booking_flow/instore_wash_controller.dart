@@ -6,7 +6,7 @@ class InstoreWashController extends GetxController {
   final InstoreRepository repository = InstoreRepository();
 
   RxBool isLoading = false.obs;
-  RxList<Instoresmodel> stores = <Instoresmodel>[].obs;
+  RxList<InstoresModel> stores = <InstoresModel>[].obs;
 
   @override
   void onInit() {
@@ -21,7 +21,7 @@ class InstoreWashController extends GetxController {
       final response = await repository.getInStoreWashStores();
       List data = response.data;
 
-      stores.value = data.map((e) => Instoresmodel.fromJson(e)).toList();
+      stores.value = data.map((e) => InstoresModel.fromJson(e)).toList();
     } catch (e) {
       print("Error fetching stores: $e");
     } finally {

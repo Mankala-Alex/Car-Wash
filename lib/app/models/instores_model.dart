@@ -1,5 +1,5 @@
-class Instoresmodel {
-  Instoresmodel({
+class InstoresModel {
+  InstoresModel({
     required this.id,
     required this.partnerCode,
     required this.companyName,
@@ -15,6 +15,7 @@ class Instoresmodel {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    required this.imageUrl,
   });
 
   final String id;
@@ -27,14 +28,15 @@ class Instoresmodel {
   final String city;
   final String country;
   final String zip;
-  final List<Document> documents;
+  final dynamic documents;
   final Location? location;
   final String status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String imageUrl;
 
-  factory Instoresmodel.fromJson(Map<String, dynamic> json) {
-    return Instoresmodel(
+  factory InstoresModel.fromJson(Map<String, dynamic> json) {
+    return InstoresModel(
       id: json["id"] ?? "",
       partnerCode: json["partner_code"] ?? "",
       companyName: json["company_name"] ?? "",
@@ -45,15 +47,13 @@ class Instoresmodel {
       city: json["city"] ?? "",
       country: json["country"] ?? "",
       zip: json["zip"] ?? "",
-      documents: json["documents"] == null
-          ? []
-          : List<Document>.from(
-              json["documents"]!.map((x) => Document.fromJson(x))),
+      documents: json["documents"],
       location:
           json["location"] == null ? null : Location.fromJson(json["location"]),
       status: json["status"] ?? "",
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
+      imageUrl: json["image_url"] ?? "",
     );
   }
 
@@ -68,23 +68,13 @@ class Instoresmodel {
         "city": city,
         "country": country,
         "zip": zip,
-        "documents": documents.map((x) => x?.toJson()).toList(),
+        "documents": documents,
         "location": location?.toJson(),
         "status": status,
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt?.toIso8601String(),
+        "image_url": imageUrl,
       };
-}
-
-class Document {
-  Document({required this.json});
-  final Map<String, dynamic> json;
-
-  factory Document.fromJson(Map<String, dynamic> json) {
-    return Document(json: json);
-  }
-
-  Map<String, dynamic> toJson() => {};
 }
 
 class Location {

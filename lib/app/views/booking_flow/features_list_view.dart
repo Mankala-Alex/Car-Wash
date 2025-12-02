@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/config/constants.dart';
 import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
@@ -58,12 +59,25 @@ class FeaturesListView extends GetView<FeaturesListController> {
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
                     ),
-                    child: Image.asset(
-                      "assets/carwash/yellowcar.png",
-                      height: 155,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    child: service.imageUrl.isEmpty
+                        ? Image.asset(
+                            "assets/carwash/default_service.png",
+                            height: 155,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            Constants.imageBaseUrl + service.imageUrl,
+                            height: 155,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset(
+                              "assets/carwash/default_service.png",
+                              height: 155,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                   ),
 
                   // TITLE + PRICE

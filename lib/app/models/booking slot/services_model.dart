@@ -6,6 +6,7 @@ class Servicesmodel {
     required this.price,
     required this.features,
     required this.isActive,
+    required this.imageUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -13,9 +14,10 @@ class Servicesmodel {
   final String id;
   final String name;
   final String description;
-  final int price;
+  final double price;
   final List<String> features;
   final bool isActive;
+  final String imageUrl;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -24,24 +26,18 @@ class Servicesmodel {
       id: json["id"] ?? "",
       name: json["name"] ?? "",
       description: json["description"] ?? "",
-      price: json["price"] ?? 0,
+      price: (json["price"] is int)
+          ? (json["price"] as int).toDouble()
+          : (json["price"] is double)
+              ? json["price"]
+              : 0.0,
       features: json["features"] == null
           ? []
-          : List<String>.from(json["features"]!.map((x) => x)),
-      isActive: json["isActive"] ?? false,
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+          : List<String>.from(json["features"].map((x) => x)),
+      isActive: json["is_active"] ?? false,       // FIXED
+      imageUrl: json["image_url"] ?? "",          // FIXED
+      createdAt: DateTime.tryParse(json["created_at"] ?? ""), // FIXED
+      updatedAt: DateTime.tryParse(json["updated_at"] ?? ""), // FIXED
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "price": price,
-        "features": features.map((x) => x).toList(),
-        "isActive": isActive,
-        "createdAt": createdAt?.toIso8601String(),
-        "updatedAt": updatedAt?.toIso8601String(),
-      };
 }

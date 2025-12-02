@@ -321,9 +321,9 @@ class Page1View extends GetView<DashboardController> {
                     }
 
                     // Pick a specific offer (by code OR first item)
-                    const HOME_OFFER_CODE = "aa";
+                    const homeOfferCode = "aa";
                     final offer = list.firstWhere(
-                      (o) => o.offerCode == HOME_OFFER_CODE,
+                      (o) => o.offerCode == homeOfferCode,
                       orElse: () => list.first,
                     );
 
@@ -349,8 +349,8 @@ class Page1View extends GetView<DashboardController> {
                             child: Container(
                               height: 120,
                               width: 120,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFE7C5),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFE7C5),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -361,8 +361,8 @@ class Page1View extends GetView<DashboardController> {
                             child: Container(
                               height: 140,
                               width: 140,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFE7C5),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFE7C5),
                                 shape: BoxShape.circle,
                               ),
                             ),

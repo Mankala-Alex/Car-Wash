@@ -56,7 +56,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
             );
           }),
 
-          Spacer(),
+          const Spacer(),
 
           // ================== CONTINUE BUTTON ==================
           Obx(() {
