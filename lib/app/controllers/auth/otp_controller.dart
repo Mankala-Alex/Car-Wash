@@ -1,25 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/models/auth/sign_up_model.dart';
+import '../../repositories/auth/auth_repository.dart';
+import '../../helpers/flutter_toast.dart';
 
 class OtpController extends GetxController {
-  RxList<RxString> otp = List.generate(4, (index) => ''.obs).obs;
-  RxInt currentIndex = 0.obs;
+  final AuthRepository repository = AuthRepository();
 
-  List<TextEditingController> textControllers =
-      List.generate(4, (_) => TextEditingController());
-  List<FocusNode> focusNodes = List.generate(4, (_) => FocusNode());
+  RxString otp = "".obs;
 
-  void onOtpChange(int index, String value) {
-    otp[index].value = value;
+  late String customerId;
+  late String phone;
 
-    if (value.isNotEmpty && index < 3) {
-      currentIndex.value = index + 1;
-      focusNodes[index + 1].requestFocus();
+  @override
+  void onInit() {
+    customerId = Get.arguments["customerId"];
+    phone = Get.arguments["phone"];
+    super.onInit();
+  }
+
+  void setOtp(String value) {
+    otp.value = value;
+  }
+
+  Future<Signupmodel?> verifyOtp() async {
+    if (otp.value.length != 4) {
+      errorToast("Enter valid OTP");
+      return null;
     }
 
-    if (value.isEmpty && index > 0) {
-      currentIndex.value = index - 1;
-      focusNodes[index - 1].requestFocus();
+    loadingPopUp(true);
+
+    try {
+      final resp = await repository.postVerifyOtp({
+        "customerId": customerId,
+        "otp": otp.value,
+      });
+
+      loadingPopUp(false);
+
+      // When backend returns error: { "error": "Invalid OTP" }
+      if (resp.data["error"] != null) {
+        errorToast(resp.data["error"]);
+        return null;
+      }
+
+      final data = Signupmodel.fromJson(resp.data);
+
+      if (!data.success) {
+        errorToast(data.message);
+        return null;
+      }
+
+      return data;
+    } catch (e) {
+      loadingPopUp(false);
+      errorToast("OTP verification failed");
+      return null;
     }
   }
 }

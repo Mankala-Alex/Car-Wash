@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'; // Ensure this import is correct
 import 'package:get/get.dart';
+import 'package:my_new_app/app/config/constants.dart';
+import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:my_new_app/app/controllers/profile/offers_controller.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -11,6 +13,7 @@ class Page1View extends GetView<DashboardController> {
   Page1View({super.key});
 
   final offersController = Get.find<OffersController>();
+  final featuresController = Get.find<FeaturesListController>();
 
   final List<String> bannerImages = const [
     'assets/carwash/carwheel.png',
@@ -70,121 +73,147 @@ class Page1View extends GetView<DashboardController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- Top Carousel Section ---
-            FlutterCarousel(
-              options: FlutterCarouselOptions(
-                height: 180,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                viewportFraction: 0.85,
-                autoPlayInterval: const Duration(seconds: 3),
-                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                enableInfiniteScroll: true,
-                showIndicator: true,
-                slideIndicator: CircularSlideIndicator(
-                  slideIndicatorOptions: const SlideIndicatorOptions(
-                    currentIndicatorColor: Colors.black,
-                    indicatorBackgroundColor: Colors.white,
-                    indicatorRadius: 3,
-                    itemSpacing: 15,
+            Obx(() {
+              if (featuresController.isLoading.value) {
+                return const SizedBox(
+                  height: 180,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (featuresController.services.isEmpty) {
+                return const SizedBox(
+                  height: 180,
+                  child: Center(child: Text("No services available")),
+                );
+              }
+
+              return FlutterCarousel(
+                options: FlutterCarouselOptions(
+                  height: 180,
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  viewportFraction: 0.85,
+                  autoPlayInterval: const Duration(seconds: 3),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  enableInfiniteScroll: true,
+                  showIndicator: true,
+                  slideIndicator: CircularSlideIndicator(
+                    slideIndicatorOptions: const SlideIndicatorOptions(
+                      currentIndicatorColor: Colors.black,
+                      indicatorBackgroundColor: Colors.white,
+                      indicatorRadius: 3,
+                      itemSpacing: 15,
+                    ),
                   ),
                 ),
-              ),
 
-              // ----- FIXED ITEMS LIST -----
-              items: List.generate(bannerImages.length, (index) {
-                final imagePath = bannerImages[index];
-                final title = bannerTitles[index];
-                return Builder(
-                  builder: (context) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18),
-                        image: DecorationImage(
-                          image: AssetImage(imagePath),
-                          fit: BoxFit.cover,
+                // 🔥 LIST FROM API
+                items:
+                    List.generate(featuresController.services.length, (index) {
+                  final service = featuresController.services[index];
+                  final imageUrl = Constants.imageBaseUrl + service.imageUrl;
+                  final title = service.name;
+
+                  return Builder(
+                    builder: (context) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+                          image: DecorationImage(
+                            image: NetworkImage(imageUrl),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      child: Stack(
-                        children: [
-                          // Gradient overlay
-                          Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(18),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.black.withOpacity(0.6),
-                                    Colors.transparent,
-                                    Colors.black.withOpacity(0.6),
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
+                        child: Stack(
+                          children: [
+                            // 🔥 Gradient overlay
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.black.withOpacity(0.6),
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.6),
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
 
-                          // Bottom-left heading
-                          Positioned(
-                            left: 16,
-                            bottom: 16,
-                            child: Text(
-                              title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                            // 🔥 Bottom-left service title
+                            Positioned(
+                              left: 16,
+                              bottom: 16,
+                              child: Text(
+                                title,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          ),
 
-                          // Bottom-right button
-                          // Positioned(
-                          //   right: 16,
-                          //   bottom: 12,
-                          //   child: GestureDetector(
-                          //     onTap: () {
-                          //       Get.toNamed(Routes.bookslot);
-                          //     },
-                          //     child: Container(
-                          //       padding: const EdgeInsets.symmetric(
-                          //           horizontal: 18, vertical: 10),
-                          //       decoration: BoxDecoration(
-                          //         color: Colors.white.withOpacity(
-                          //             0.18), // transparent glass effect
-                          //         borderRadius: BorderRadius.circular(14),
-                          //         border: Border.all(
-                          //           color: Colors.white
-                          //               .withOpacity(0.35), // frosty border
-                          //           width: 1.2,
-                          //         ),
-                          //         boxShadow: [
-                          //           BoxShadow(
-                          //             color: Colors.white.withOpacity(0.25),
-                          //             blurRadius: 6,
-                          //             offset: const Offset(0, 2),
-                          //           ),
-                          //         ],
-                          //       ),
-                          //       child: const Text(
-                          //         "Book Now",
-                          //         style: TextStyle(
-                          //           color: Colors.white,
-                          //           fontSize: 14,
-                          //           fontWeight: FontWeight.w600,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // )
-                        ],
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
+                            // 🔥 Bottom-right Book Now button
+                            Positioned(
+                              right: 16,
+                              bottom: 12,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Get.toNamed(
+                                    Routes.bookslot,
+                                    arguments: {
+                                      "image": imageUrl,
+                                      "name": service.name,
+                                      "description": service.description,
+                                      "price": service.price.toString(),
+                                      "features": service.features,
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 18, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.18),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.35),
+                                      width: 1.2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.25),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    "Book Now",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                }),
+              );
+            }),
 
             const SizedBox(height: 25),
 
@@ -216,80 +245,6 @@ class Page1View extends GetView<DashboardController> {
                     },
                   ),
                   const SizedBox(height: 20),
-
-// ---------------- WALLET CARD (BELOW SERVICE CARDS) ----------------
-                  // Container(
-                  //   width: double.infinity,
-                  //   padding: const EdgeInsets.all(16),
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.white,
-                  //     borderRadius: BorderRadius.circular(16),
-                  //     boxShadow: [
-                  //       BoxShadow(
-                  //         color: Colors.black.withOpacity(0.05),
-                  //         blurRadius: 8,
-                  //         offset: const Offset(0, 4),
-                  //       ),
-                  //     ],
-                  //   ),
-                  //   child: Row(
-                  //     crossAxisAlignment: CrossAxisAlignment.center,
-                  //     children: [
-                  //       // Left Side - Title + Button
-                  //       Expanded(
-                  //         child: Column(
-                  //           crossAxisAlignment: CrossAxisAlignment.start,
-                  //           children: [
-                  //             const Text(
-                  //               "My Wallet",
-                  //               style: TextStyle(
-                  //                 fontSize: 18,
-                  //                 fontWeight: FontWeight.w700,
-                  //               ),
-                  //             ),
-                  //             const SizedBox(height: 10),
-
-                  //             // Manage Button
-                  //             Container(
-                  //               padding: const EdgeInsets.symmetric(
-                  //                 horizontal: 14,
-                  //                 vertical: 8,
-                  //               ),
-                  //               decoration: BoxDecoration(
-                  //                 color: const Color(0xffEAF2FF),
-                  //                 borderRadius: BorderRadius.circular(10),
-                  //               ),
-                  //               child: const Text(
-                  //                 "Manage Payment & Coupons",
-                  //                 style: TextStyle(
-                  //                   fontSize: 12,
-                  //                   color: Colors.blue,
-                  //                   fontWeight: FontWeight.w600,
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-
-                  //       // Right Side - Wallet Icon
-                  //       Container(
-                  //         //padding: const EdgeInsets.all(30),
-                  //         // decoration: BoxDecoration(
-                  //         //   color: const Color(0xffF5F7FA),
-                  //         //   borderRadius: BorderRadius.circular(12),
-                  //         // ),
-                  //         child: Image.asset(
-                  //           "assets/carwash/wallet.png",
-                  //           height: 60,
-                  //           width: 60, // <-- your wallet icon
-                  //           fit: BoxFit.contain,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  //const SizedBox(height: 20),
 
 // ---------------- PROMO BANNER AFTER WALLET ----------------
                   Obx(() {
@@ -424,173 +379,6 @@ class Page1View extends GetView<DashboardController> {
             ),
             //const SizedBox(height: 30), // Padding at the bottom
           ],
-        ),
-      ),
-    );
-  }
-
-  // Helper widget for Carousel items
-  Widget _buildCarouselItem(
-    BuildContext context, {
-    required String imagePath,
-    required String title,
-    required String subtitle,
-    required String description,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: DecorationImage(
-          image: AssetImage(imagePath),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.3), // Darken image for text readability
-            BlendMode.darken,
-          ),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end, // Align text to bottom
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-              ),
-            ),
-            Text(
-              description,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.white70,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Helper widget for Doorstep/In-Store buttons
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String text,
-    required List<Color> gradientColors,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 80, // Fixed height for the buttons
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          gradient: LinearGradient(
-            colors: gradientColors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: gradientColors.first.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Center icon and text
-            children: [
-              Icon(icon, color: Colors.white, size: 28),
-              const SizedBox(width: 10),
-              Flexible(
-                // Allows text to wrap or shrink if needed
-                child: Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.2, // Adjust line height for multiline text
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Helper widget for Featured Service cards
-  Widget _buildFeaturedServiceCard(
-    BuildContext context, {
-    required String imagePath,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white, // Default background
-          image: DecorationImage(
-            image: AssetImage(imagePath),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.35), // Darken image slightly
-              BlendMode.darken,
-            ),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              spreadRadius: 1,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Align(
-          alignment: Alignment.bottomLeft,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
         ),
       ),
     );

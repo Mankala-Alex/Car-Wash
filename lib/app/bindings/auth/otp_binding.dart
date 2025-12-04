@@ -4,6 +4,6 @@ import '../../controllers/auth/otp_controller.dart';
 class OtpBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => OtpController());
+    Get.lazyPut<OtpController>(() => OtpController());
   }
 }

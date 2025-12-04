@@ -13,4 +13,14 @@ class BookSlotRepository {
   Future<Response> fetchoffers() async {
     return await ApiService.get(EndPoints.apiGetfetchoffers);
   }
+
+  Future<Response> postRequestOtp(requestBody) async {
+    return await ApiService.post(EndPoints.apiPostrequstotp, requestBody,
+        requireAuthToken: false);
+  }
+
+  Future<Response> postAddVehicle(requestBody) async {
+    return await ApiService.post(EndPoints.apiPostAddvehicle, requestBody,
+        requireAuthToken: false);
+  }
 }

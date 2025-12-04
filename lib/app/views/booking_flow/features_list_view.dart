@@ -166,7 +166,8 @@ class FeaturesListView extends GetView<FeaturesListController> {
                           Get.toNamed(
                             Routes.bookslot,
                             arguments: {
-                              "image": "assets/carwash/yellowcar.png",
+                              "image":
+                                  Constants.imageBaseUrl + service.imageUrl,
                               "name": service.name,
                               "description": service.description,
                               "price": service.price,

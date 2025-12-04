@@ -19,221 +19,111 @@ class AddCarView extends GetView<AddCarController> {
           onPressed: () => Get.back(),
         ),
         title: const Text(
-          "Select Vehicle",
+          "Add Vehicle",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
         ),
-        actions: const [SizedBox(width: 40)],
       ),
 
-      // ------------------ FIXED BOTTOM BUTTON ------------------
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(color: Colors.white),
-        child: GestureDetector(
-          onTap: () {
-            // Your continue logic
-          },
-          child: Container(
-            height: 55,
-            decoration: BoxDecoration(
-              color: AppColors.secondaryLight,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            alignment: Alignment.center,
-            child: const Text(
-              "Continue",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-      ),
-
-      // ------------------ SCROLLABLE BODY ------------------
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _searchBar(),
-              const SizedBox(height: 16),
-              _filterBar(),
-              const SizedBox(height: 16),
-
-              Obx(() {
-                final cars = controller.filteredCars;
-
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: cars.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: .90,
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 20,
-                  ),
-                  itemBuilder: (context, index) {
-                    final car = cars[index];
-                    return Obx(
-                        () => _carTile(car["img"]!, car["name"]!, index));
+      // ---------------- BOTTOM BUTTON ----------------
+      bottomNavigationBar: Obx(
+        () => Container(
+          padding: const EdgeInsets.all(20),
+          child: ElevatedButton(
+            onPressed: controller.isLoading.value
+                ? null
+                : () {
+                    controller.submitVehicle(); // CALLS API
                   },
-                );
-              }),
-
-              const SizedBox(height: 100), // space above bottom button
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ----------------------------------------------------------
-  // Search Bar
-  // ----------------------------------------------------------
-  Widget _searchBar() {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3F3F7),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.search, color: Colors.grey),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              onChanged: controller.updateSearch,
-              style: const TextStyle(fontSize: 15),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: "Search for a car",
-                hintStyle: TextStyle(color: Colors.grey),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: controller.isLoading.value
+                  ? Colors.grey
+                  : AppColors.secondaryLight,
+              minimumSize: const Size(double.infinity, 55),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
               ),
             ),
+            child: controller.isLoading.value
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text(
+                    "Save Vehicle",
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
           ),
-          const Icon(Icons.filter_list, color: Colors.grey),
-        ],
-      ),
-    );
-  }
-
-  // ----------------------------------------------------------
-  // Filter Chips
-  // ----------------------------------------------------------
-  Widget _filterBar() {
-    return Obx(() {
-      return Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          _chip("All", 0),
-          _chip("<1500cc", 1),
-          _chip("1500–2500cc", 2),
-          _chip(">2500cc", 3),
-        ],
-      );
-    });
-  }
-
-  Widget _chip(String label, int index) {
-    bool isSelected = controller.selectedFilter.value == index;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () => controller.selectFilter(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primaryLight
-              : AppColors.bgLightSecondaryLight,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryLight : Colors.transparent,
-            width: 1.6,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? AppColors.textDefaultLight : Colors.black87,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
-            ),
-            if (isSelected)
-              const Padding(
-                padding: EdgeInsets.only(left: 6),
-                child: Icon(Icons.close, size: 16, color: AppColors.errorLight),
-              ),
-          ],
         ),
       ),
-    );
-  }
 
-  // ----------------------------------------------------------
-  // Car Tile (Selectable)
-  // ----------------------------------------------------------
-  Widget _carTile(String img, String name, int index) {
-    bool isSelected = controller.selectedCarIndex.value == index;
-
-    return InkWell(
-      onTap: () => controller.selectCar(index),
-      borderRadius: BorderRadius.circular(22),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryLight : Colors.transparent,
-            width: 2.2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+      // ---------------- FORM BODY ----------------
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                img,
-                height: 80,
-                width: 120,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              name,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            )
+            _inputField("Customer ID", controller.customerIdController,
+                TextInputType.text),
+            const SizedBox(height: 16),
+            _inputField("Vehicle Number", controller.vehicleNumberController,
+                TextInputType.text),
+            const SizedBox(height: 16),
+            _inputField(
+                "Make (Brand)", controller.makeController, TextInputType.text),
+            const SizedBox(height: 16),
+            _inputField(
+                "Model", controller.modelController, TextInputType.text),
+            const SizedBox(height: 16),
+            _inputField("Type (Sedan, SUV, etc.)", controller.typeController,
+                TextInputType.text),
+            const SizedBox(height: 40),
           ],
         ),
       ),
+    );
+  }
+
+  // ---- INPUT FIELD WIDGET ----
+  Widget _inputField(
+      String label, TextEditingController ctrl, TextInputType type) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            )),
+        const SizedBox(height: 8),
+        TextField(
+          controller: ctrl,
+          keyboardType: type,
+          decoration: InputDecoration(
+            hintText: label,
+            filled: true,
+            fillColor: const Color(0xFFF5F6FA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          ),
+        ),
+      ],
     );
   }
 }

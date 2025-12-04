@@ -4,8 +4,9 @@ class EndPoints {
   static const apiGetfetchoffers = "offers";
   static const apiGetinstoreservices = "partners";
   //auth
-  // static const apiGetMobNationalityIdType = 'MobProcess/GetMobNationalityIdType';
-  // static const apiSetAppMobUser = 'MobProcess/SetAppMobUser';
+  static const apiPostrequstotp = 'auth/request-otp'; //login
+  static const apiPostverifyotp = 'auth/verify-otp'; //sign up
+  static const apiPostAddvehicle = 'customer-vehicles';
   // static const apiMobValidateOTP = 'MobProcess/MobValidateOTP';
   // static const apiResendOTP = 'MobProcess/ResendOTP';
 }

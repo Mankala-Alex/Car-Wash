@@ -58,7 +58,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.login,
-      page: () => const LoginPageView(),
+      page: () => const LoginView(),
       binding: LoginBinding(),
     ),
     GetPage(

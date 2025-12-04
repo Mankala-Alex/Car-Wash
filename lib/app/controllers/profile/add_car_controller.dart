@@ -1,64 +1,117 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
 
 class AddCarController extends GetxController {
-  // -------- FILTER SELECTION --------
-  var selectedFilter = 0.obs;
+  /// -------------------------------
+  /// FORM FIELDS
+  /// -------------------------------
+  final customerIdController = TextEditingController();
+  final vehicleNumberController = TextEditingController();
+  final makeController = TextEditingController();
+  final modelController = TextEditingController();
+  final typeController = TextEditingController();
 
-  void selectFilter(int index) {
-    if (selectedFilter.value == index) {
-      selectedFilter.value = 0; // toggle off
-    } else {
-      selectedFilter.value = index;
+  /// -------------------------------
+  /// LOADING
+  /// -------------------------------
+  final isLoading = false.obs;
+
+  /// -------------------------------
+  /// USE YOUR REPOSITORY
+  /// -------------------------------
+  final BookSlotRepository repository = BookSlotRepository();
+
+  /// -------------------------------
+  /// SUBMIT FORM → CALL API
+  /// -------------------------------
+  Future<void> submitVehicle() async {
+    if (!_validateForm()) return;
+
+    isLoading.value = true;
+
+    final body = {
+      "customer_id": customerIdController.text.trim(),
+      "vehicle_number": vehicleNumberController.text.trim(),
+      "make": makeController.text.trim(),
+      "model": modelController.text.trim(),
+      "type": typeController.text.trim(),
+    };
+
+    try {
+      final response = await repository.postAddVehicle(body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar(
+          "Success",
+          "Vehicle added successfully!",
+          backgroundColor: Colors.green.withOpacity(0.2),
+          colorText: Colors.black,
+        );
+
+        clearForm();
+        Get.back();
+      } else {
+        Get.snackbar(
+          "Failed",
+          "Unable to save vehicle",
+          backgroundColor: Colors.red.withOpacity(0.2),
+          colorText: Colors.black,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong",
+        backgroundColor: Colors.red.withOpacity(0.2),
+        colorText: Colors.black,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // -------- SEARCH --------
-  var searchQuery = "".obs;
-
-  void updateSearch(String value) {
-    searchQuery.value = value;
+  /// -------------------------------
+  /// FORM VALIDATION
+  /// -------------------------------
+  bool _validateForm() {
+    if (customerIdController.text.isEmpty ||
+        vehicleNumberController.text.isEmpty ||
+        makeController.text.isEmpty ||
+        modelController.text.isEmpty ||
+        typeController.text.isEmpty) {
+      Get.snackbar(
+        "Missing Info",
+        "Please fill all fields",
+        backgroundColor: Colors.amber.withOpacity(0.2),
+        colorText: Colors.black,
+      );
+      return false;
+    }
+    return true;
   }
 
-  // -------- CAR SELECTION --------
-  var selectedCarIndex = (-1).obs;
-
-  void selectCar(int index) {
-    selectedCarIndex.value = index;
+  /// -------------------------------
+  /// CLEAR FORM
+  /// -------------------------------
+  void clearForm() {
+    customerIdController.clear();
+    vehicleNumberController.clear();
+    makeController.clear();
+    modelController.clear();
+    typeController.clear();
   }
 
-  // -------- FULL CAR LIST --------
-  final carList = <Map<String, String>>[
-    {"name": "Toyota Camry.png", "img": "assets/carwash/toyota_camry.png"},
-    {"name": "Honda Civic", "img": "assets/carwash/Honda_Civic.png"},
-    {
-      "name": "Mitsubishi Pajero",
-      "img": "assets/carwash/Mitsubishi_Pajero.png"
-    },
-    {"name": "Mercedes C-Class", "img": "assets/carwash/full_wash_car.png"},
-    {"name": "Ford Mustang", "img": "assets/carwash/instore1.png"},
-    {"name": "Honda Civic", "img": "assets/carwash/features/langcar3.png"},
-    {"name": "Porsche 911", "img": "assets/carwash/whitecar.png"},
-    {"name": "Toyota Camry", "img": "assets/carwash/toyota_camry.png"},
-  ].obs;
-
-  // -------- FILTERED + SEARCHED RESULT --------
-  List<Map<String, String>> get filteredCars {
-    return carList.where((car) {
-      final name = car["name"]!.toLowerCase();
-      final query = searchQuery.value.toLowerCase();
-
-      if (!name.contains(query)) return false;
-
-      switch (selectedFilter.value) {
-        case 1: // <1500cc
-          return name.contains("civic") || name.contains("a4");
-        case 2: // 1500–2500cc
-          return name.contains("camry") || name.contains("mustang");
-        case 3: // >2500cc
-          return name.contains("model") || name.contains("x5");
-        default:
-          return true;
-      }
-    }).toList();
+  /// -------------------------------
+  /// DISPOSE
+  /// -------------------------------
+  @override
+  void onClose() {
+    customerIdController.dispose();
+    vehicleNumberController.dispose();
+    makeController.dispose();
+    modelController.dispose();
+    typeController.dispose();
+    super.onClose();
   }
 }
