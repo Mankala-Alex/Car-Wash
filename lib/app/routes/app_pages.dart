@@ -1,4 +1,5 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:my_new_app/app/bindings/auth/sign_up_binding.dart';
 import 'package:my_new_app/app/bindings/booking_flow/book_slot_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/confirmation_page_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/features_list_bindings.dart';
@@ -15,6 +16,7 @@ import 'package:my_new_app/app/bindings/profile/location_list_binding.dart';
 import 'package:my_new_app/app/bindings/profile/my_coupons_binding.dart';
 import 'package:my_new_app/app/bindings/profile/offer_screen_binding.dart';
 import 'package:my_new_app/app/bindings/profile/offers_list_bindings.dart';
+import 'package:my_new_app/app/views/auth/sign_up_view.dart';
 import 'package:my_new_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:my_new_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:my_new_app/app/views/booking_flow/instore_wash_list_view.dart';
@@ -65,6 +67,11 @@ class AppPages {
       name: Routes.otpPage,
       page: () => const OtpScreenView(),
       binding: OtpBinding(),
+    ),
+    GetPage(
+      name: Routes.signUp,
+      page: () => const SignupView(),
+      binding: SignupBinding(),
     ),
 
     //dashboard

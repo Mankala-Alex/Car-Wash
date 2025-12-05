@@ -108,6 +108,10 @@ class OtpScreenView extends GetView<OtpController> {
                         await SharedPrefsHelper.setString(
                             SharedPrefsHelper.accessToken, result.token);
 
+                        // SAVE CUSTOMER ID
+                        await SharedPrefsHelper.setString(
+                            "customerId", result.customer!.id);
+
                         await FlutterSecureStore().storeSingleValue(
                             SharedPrefsHelper.accessToken, result.token);
 

@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/models/auth/sign_up_model.dart';
+import 'package:my_new_app/app/models/auth/otp_model.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../helpers/flutter_toast.dart';
 
@@ -23,7 +22,7 @@ class OtpController extends GetxController {
     otp.value = value;
   }
 
-  Future<Signupmodel?> verifyOtp() async {
+  Future<Otpmodel?> verifyOtp() async {
     if (otp.value.length != 4) {
       errorToast("Enter valid OTP");
       return null;
@@ -39,14 +38,10 @@ class OtpController extends GetxController {
 
       loadingPopUp(false);
 
-      // When backend returns error: { "error": "Invalid OTP" }
-      if (resp.data["error"] != null) {
-        errorToast(resp.data["error"]);
-        return null;
-      }
+      // Convert API response to model
+      final data = Otpmodel.fromJson(resp.data);
 
-      final data = Signupmodel.fromJson(resp.data);
-
+      // Backend sends: { success: false, message: "Invalid OTP" }
       if (!data.success) {
         errorToast(data.message);
         return null;

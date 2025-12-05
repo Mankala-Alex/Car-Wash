@@ -3,7 +3,7 @@ import '../../services/api_service.dart';
 import '../../services/endpoints.dart';
 
 class AuthRepository {
-  //sign up
+  //otp up
   Future<Response> postVerifyOtp(requestBody) async {
     return await ApiService.post(EndPoints.apiPostverifyotp, requestBody,
         requireAuthToken: false);
@@ -12,6 +12,12 @@ class AuthRepository {
   //login
   Future<Response> postRequestOtp(requestBody) async {
     return await ApiService.post(EndPoints.apiPostrequstotp, requestBody,
+        requireAuthToken: false);
+  }
+
+  //signup
+  Future<Response> postSignup(requestBody) async {
+    return await ApiService.post(EndPoints.apiPostsignup, requestBody,
         requireAuthToken: false);
   }
 }

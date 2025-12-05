@@ -23,4 +23,12 @@ class BookSlotRepository {
     return await ApiService.post(EndPoints.apiPostAddvehicle, requestBody,
         requireAuthToken: false);
   }
+
+  Future<Response> apiGetslotdates() async {
+    return await ApiService.get(EndPoints.apiGetslotdates);
+  }
+
+  Future<Response> apiGettimeslots(int dateId) async {
+    return await ApiService.get("${EndPoints.apiGettimeslots}?dateId=$dateId");
+  }
 }

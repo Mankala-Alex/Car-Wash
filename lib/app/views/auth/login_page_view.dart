@@ -13,7 +13,7 @@ class LoginView extends GetView<LoginController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(""),
+        title: const Text(""),
         backgroundColor: AppColors.bgLight,
       ),
       body: SingleChildScrollView(
@@ -85,16 +85,9 @@ class LoginView extends GetView<LoginController> {
                     onPressed: controller.isLoading.value
                         ? null
                         : () async {
-                            final data = await controller.requestOtp();
-                            if (data == null) return;
-
-                            Get.toNamed(
-                              Routes.otpPage,
-                              arguments: {
-                                "customerId": data.customerId,
-                                "phone": controller.phoneController.text.trim(),
-                              },
-                            );
+                            await controller.requestOtp();
+                            // ❌ DO NOT NAVIGATE HERE
+                            // Navigation happens inside controller now
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF9500),

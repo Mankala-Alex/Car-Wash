@@ -170,24 +170,32 @@ class BookSlotView extends GetView<BookSlotController> {
             ),
             const SizedBox(height: 16),
             SizedBox(
-              height: 210, // Fixed height for vehicle cards
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _buildVehicleCard(context,
-                      vehicleName: "Toyota Land Cruiser",
-                      plateNumber: "MAJ-923",
-                      imagePath: "assets/carwash/toyota_land_cruiser.png"),
-                  const SizedBox(width: 12),
-                  _buildVehicleCard(context,
-                      vehicleName: "Toyota Camry",
-                      plateNumber: "XYZ-789",
-                      imagePath: "assets/carwash/toyota_camry.png"),
-                  const SizedBox(width: 12),
-                  _buildAddVehicleCard(context),
-                ],
-              ),
+              height: 210,
+              child: Obx(() {
+                return ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.customerVehicles.length + 1,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    // LAST CARD = ADD VEHICLE
+                    if (index == controller.customerVehicles.length) {
+                      return _buildAddVehicleCard(context);
+                    }
+
+                    final v = controller.customerVehicles[index];
+
+                    return _buildVehicleCard(
+                      context,
+                      vehicleName: v["make"] + " " + v["model"],
+                      plateNumber: v["vehicle_number"],
+                      imagePath:
+                          "assets/carwash/toyota_camry.png", // static for now
+                    );
+                  },
+                );
+              }),
             ),
+
             const SizedBox(height: 16),
             Text(
               "Select Date and Time",
@@ -197,8 +205,8 @@ class BookSlotView extends GetView<BookSlotController> {
             ),
             const SizedBox(height: 15),
             buildDatePicker(context, controller.selectedDate.value, (date) {
-              controller.selectedDate.value = date;
-              // Fetch available slots, etc., if needed
+              controller
+                  .updateSelectedDate(date); // ✔ loads slots automatically
             }),
 
             const SizedBox(height: 15),
@@ -506,9 +514,12 @@ class BookSlotView extends GetView<BookSlotController> {
   Widget _buildAddVehicleCard(BuildContext context) {
     return GestureDetector(
       // Wrap with GestureDetector
-      onTap: () {
-        // Handle navigation to Add Vehicle screen
-        Get.toNamed(Routes.addcar);
+      onTap: () async {
+        final result = await Get.toNamed(Routes.addcar);
+
+        if (result == true) {
+          controller.fetchCustomerVehicles(); // 👈 refresh list
+        }
       },
       child: Container(
         width: 150, // Fixed width for add vehicle card
@@ -577,35 +588,50 @@ class BookSlotView extends GetView<BookSlotController> {
           color: Colors.black,
         ),
         deactivatedColor: AppColors.textDefaultLight,
-        onDateChange: onDateChange,
+        onDateChange: (date) {
+          controller.selectedDate.value = date;
+          controller.updateSelectedDate(date);
+// 🔥 API CALL
+        },
       ),
     );
   }
 
   // --- Helper Widget for Time Slots ---
   Widget _buildTimeSlots(BuildContext context) {
-    // This list would typically be dynamic based on the selected date (fetched by controller)
-    final List<String> availableTimes = [
-      "9:00 AM", "9:30 AM", "10:00 AM", "11:30 AM",
-      "1:00 PM", "2:00 PM", "3:30 PM", "4:00 PM",
-      "4:30 PM" // Example more slots
-    ];
+    return Obx(() {
+      if (controller.isLoadingTimes.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-    return Obx(
-      () => Wrap(
-        spacing: 12, // Horizontal spacing
-        runSpacing: 12, // Vertical spacing
-        children: availableTimes.map((time) {
-          bool isDisabled = time == "3:30 PM"; // Example of a disabled slot
-          return _buildTimeSlotButton(
-            context,
-            time,
-            isSelected: controller.selectedTimeSlot.value == time,
-            isDisabled: isDisabled,
+      if (controller.slotTimes.isEmpty) {
+        return const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "No slots available for this date",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        );
+      }
+
+      return Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children: controller.slotTimes.map((slot) {
+          String label = "${slot.startTime} - ${slot.endTime}";
+
+          return ChoiceChip(
+            label: Text(label),
+            selected: controller.selectedTimeSlot.value == label,
+            onSelected: slot.isActive
+                ? (v) => controller.updateSelectedTimeSlot(label)
+                : null,
+            selectedColor: AppColors.primaryLight,
+            disabledColor: Colors.grey.shade300,
           );
         }).toList(),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildTimeSlotButton(BuildContext context, String time,

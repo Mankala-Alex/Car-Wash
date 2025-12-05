@@ -1,39 +1,31 @@
-class Loginmodel {
-  Loginmodel({
+class Otpmodel {
+  Otpmodel({
     required this.success,
-    required this.exists,
-    required this.otp,
-    required this.customerId,
     required this.message,
     required this.customer,
+    required this.token,
   });
 
   final bool success;
-  final bool exists; // 👈 NEW FIELD
-  final String otp;
-  final String customerId;
   final String message;
   final Customer? customer;
+  final String token;
 
-  factory Loginmodel.fromJson(Map<String, dynamic> json) {
-    return Loginmodel(
+  factory Otpmodel.fromJson(Map<String, dynamic> json) {
+    return Otpmodel(
       success: json["success"] ?? false,
-      exists: json["exists"] ?? false, // 👈 NEW FIELD
-      otp: json["otp"] ?? "",
-      customerId: json["customerId"] ?? "",
       message: json["message"] ?? "",
       customer:
           json["customer"] == null ? null : Customer.fromJson(json["customer"]),
+      token: json["token"] ?? "",
     );
   }
 
   Map<String, dynamic> toJson() => {
         "success": success,
-        "exists": exists, // 👈 NEW FIELD
-        "otp": otp,
-        "customerId": customerId,
         "message": message,
         "customer": customer?.toJson(),
+        "token": token,
       };
 }
 

@@ -10,6 +10,7 @@ class AddCarView extends GetView<AddCarController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -29,33 +30,24 @@ class AddCarView extends GetView<AddCarController> {
       ),
 
       // ---------------- BOTTOM BUTTON ----------------
-      bottomNavigationBar: Obx(
-        () => Container(
+      bottomNavigationBar: Obx(() {
+        return Container(
           padding: const EdgeInsets.all(20),
           child: ElevatedButton(
             onPressed: controller.isLoading.value
                 ? null
                 : () {
-                    controller.submitVehicle(); // CALLS API
+                    controller.submitVehicle(); // API CALL
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: controller.isLoading.value
-                  ? Colors.grey
-                  : AppColors.secondaryLight,
+              backgroundColor: AppColors.secondaryLight,
               minimumSize: const Size(double.infinity, 55),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
             ),
             child: controller.isLoading.value
-                ? const SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
+                ? const CircularProgressIndicator(color: Colors.white)
                 : const Text(
                     "Save Vehicle",
                     style: TextStyle(
@@ -65,18 +57,15 @@ class AddCarView extends GetView<AddCarController> {
                     ),
                   ),
           ),
-        ),
-      ),
+        );
+      }),
 
-      // ---------------- FORM BODY ----------------
+      // -------------------- FORM --------------------
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _inputField("Customer ID", controller.customerIdController,
-                TextInputType.text),
-            const SizedBox(height: 16),
             _inputField("Vehicle Number", controller.vehicleNumberController,
                 TextInputType.text),
             const SizedBox(height: 16),
@@ -88,7 +77,7 @@ class AddCarView extends GetView<AddCarController> {
             const SizedBox(height: 16),
             _inputField("Type (Sedan, SUV, etc.)", controller.typeController,
                 TextInputType.text),
-            const SizedBox(height: 40),
+            const SizedBox(height: 60),
           ],
         ),
       ),
@@ -101,12 +90,14 @@ class AddCarView extends GetView<AddCarController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            )),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: ctrl,

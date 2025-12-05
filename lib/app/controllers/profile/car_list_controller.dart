@@ -1,3 +1,40 @@
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get/get.dart';
+import 'package:my_new_app/app/helpers/shared_preferences.dart';
+import 'package:my_new_app/app/services/api_service.dart';
 
-class CarListController extends GetxController {}
+class CarListController extends GetxController {
+  String customerId = ""; // ← ADD THIS
+  RxList customerVehicles = [].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadCustomerId(); // ← LOAD FIRST
+  }
+
+  // Load customerId from SharedPrefs
+  Future<void> loadCustomerId() async {
+    customerId = await SharedPrefsHelper.getString("customerId") ?? "";
+
+    if (customerId.isEmpty) {
+      print("❌ No customerId found");
+      return;
+    }
+
+    fetchVehicles(); // ← Fetch after ID is ready
+  }
+
+  Future<void> fetchVehicles() async {
+    try {
+      final response = await ApiService.get(
+        "customer-vehicles?customer_id=$customerId",
+      );
+
+      if (response.statusCode == 200) {
+        customerVehicles.value = response.data;
+      }
+    } catch (e) {
+      print("Vehicle fetch failed: $e");
+    }
+  }
+}

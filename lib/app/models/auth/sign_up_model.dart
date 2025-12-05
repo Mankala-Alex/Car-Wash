@@ -2,30 +2,34 @@ class Signupmodel {
   Signupmodel({
     required this.success,
     required this.message,
+    required this.customerId,
+    required this.otp,
     required this.customer,
-    required this.token,
   });
 
   final bool success;
   final String message;
+  final String customerId;
+  final String otp;
   final Customer? customer;
-  final String token;
 
   factory Signupmodel.fromJson(Map<String, dynamic> json) {
     return Signupmodel(
       success: json["success"] ?? false,
       message: json["message"] ?? "",
+      customerId: json["customerId"] ?? "",
+      otp: json["otp"] ?? "",
       customer:
           json["customer"] == null ? null : Customer.fromJson(json["customer"]),
-      token: json["token"] ?? "",
     );
   }
 
   Map<String, dynamic> toJson() => {
         "success": success,
         "message": message,
+        "customerId": customerId,
+        "otp": otp,
         "customer": customer?.toJson(),
-        "token": token,
       };
 }
 
@@ -49,7 +53,7 @@ class Customer {
   final String customerId;
   final String firstName;
   final String lastName;
-  final dynamic email;
+  final String email;
   final String mobile;
   final dynamic joinDate;
   final dynamic lastVisit;
@@ -64,7 +68,7 @@ class Customer {
       customerId: json["customerId"] ?? "",
       firstName: json["firstName"] ?? "",
       lastName: json["lastName"] ?? "",
-      email: json["email"],
+      email: json["email"] ?? "",
       mobile: json["mobile"] ?? "",
       joinDate: json["joinDate"],
       lastVisit: json["lastVisit"],

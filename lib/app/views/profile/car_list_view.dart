@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/controllers/profile/car_list_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
-class CarListView extends StatelessWidget {
+class CarListView extends GetView<CarListController> {
   const CarListView({super.key});
 
   @override
@@ -27,41 +28,47 @@ class CarListView extends StatelessWidget {
           ),
         ),
       ),
+
+      // ADD BUTTON → Same AddCarView
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.secondaryLight,
         child: const Icon(Icons.add, size: 32, color: Colors.white),
-        onPressed: () => Get.toNamed(Routes.addcar),
+        onPressed: () async {
+          final result = await Get.toNamed(Routes.addcar);
+
+          if (result == true) {
+            controller.fetchVehicles(); // refresh list
+          }
+        },
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            _vehicleCard(
-              imagePath: "assets/carwash/Nissan_Patrol.png",
-              title: "Nissan Patrol",
-              subtitle: "MAIPRO1",
+
+      body: Obx(() {
+        if (controller.customerVehicles.isEmpty) {
+          return const Center(
+            child: Text(
+              "No Vehicles Added",
+              style: TextStyle(fontSize: 16),
             ),
-            _vehicleCard(
-              imagePath: "assets/carwash/toyota_land_cruiser.png",
-              title: "Toyota Land Cruiser",
-              subtitle: "WASHME",
-            ),
-            _vehicleCard(
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: controller.customerVehicles.length,
+          itemBuilder: (_, index) {
+            final v = controller.customerVehicles[index];
+
+            return _vehicleCard(
               imagePath: "assets/carwash/toyota_camry.png",
-              title: "Toyota Camry",
-              subtitle: "CLEAN",
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
+              title: "${v["make"]} ${v["model"]}",
+              subtitle: v["vehicle_number"],
+            );
+          },
+        );
+      }),
     );
   }
 
-  // ----------------------------------------------------------
-  // VEHICLE CARD (MATCHES THE EXACT DESIGN)
-  // ----------------------------------------------------------
   Widget _vehicleCard({
     required String imagePath,
     required String title,
@@ -84,7 +91,6 @@ class CarListView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ---- Car Image ----
           ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Image.asset(
@@ -94,89 +100,14 @@ class CarListView extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-
           const SizedBox(height: 14),
-
-          // ---- Car Title ----
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
-
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-
+          Text(subtitle,
+              style: const TextStyle(fontSize: 14, color: Colors.grey)),
           const SizedBox(height: 18),
-
-          // ---- Buttons Row ----
-          Row(
-            children: [
-              // Edit Button
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF5F2FF),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.edit, size: 18, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text(
-                        "Edit",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              // Cancel Button
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffFFF1F1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.delete_outline_sharp,
-                          size: 18, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text(
-                        "Cancel",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.red,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );

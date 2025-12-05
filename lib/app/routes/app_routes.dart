@@ -2,7 +2,7 @@ abstract class Routes {
   static const splash = '/';
   static const langeSelection = '/lange_selection';
   static const login = '/login';
-
+  static const signUp = '/sign_up';
   static const otpPage = '/otp_view_page';
 
   //dashboard
