@@ -1,439 +1,229 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:my_new_app/app/controllers/booking_flow/book_slot_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
-// IMPORTANT: Ensure this import path is correct for your project
-
-// The main view widget is Stateless, extending GetView
-// This automatically provides access to the BookSlotController instance via 'controller'
 class BookSlotView extends GetView<BookSlotController> {
   const BookSlotView({super.key});
 
-  // --- Helper Widget for Vehicle Cards ---
-
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight, // Light grey background
+      backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: Color(0xFF1E293B)), // Dark icon
-          onPressed: () {
-            Get.back(); // Use GetX for navigation back
-          },
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
+          onPressed: () => Get.back(),
         ),
         title: const Text(
-          "Confirm Car Wash",
+          "Confirm Car Wash",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 30, 41, 59),
+            color: Color(0xFF1E293B),
           ),
         ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.grey,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
-                    child: controller.image.startsWith("http")
-                        ? Image.network(
-                            controller.image,
-                            height: 140,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Image.asset(
-                              "assets/carwash/default_service.png",
-                              height: 140,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Image.asset(
-                            controller.image,
-                            height: 140,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'SERVICE DETAILS',
-                          style: TextStyle(
-                            color: AppColors.textLightGrayLight,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                controller.name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                            ),
-                            Image.asset(
-                              "assets/carwash/SAR.png",
-                              width: 18,
-                              height: 18,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              controller.price,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          controller.description,
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.black),
-                        ),
-                        const SizedBox(height: 3),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: controller.features
-                              .map((f) => Row(
-                                    children: [
-                                      const Icon(Icons.check_circle,
-                                          size: 16,
-                                          color: AppColors.textGreenLight),
-                                      const SizedBox(width: 6),
-                                      Text(f,
-                                          style: const TextStyle(fontSize: 14)),
-                                    ],
-                                  ))
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-              ),
-            ),
+            _buildServiceCard(context),
+
+            const SizedBox(height: 16),
             Text(
               "Select Your Vehicle",
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDefaultLight),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDefaultLight,
+                  ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 210,
-              child: Obx(() {
-                return ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: controller.customerVehicles.length + 1,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    // LAST CARD = ADD VEHICLE
-                    if (index == controller.customerVehicles.length) {
-                      return _buildAddVehicleCard(context);
-                    }
-
-                    final v = controller.customerVehicles[index];
-
-                    return _buildVehicleCard(
-                      context,
-                      vehicleName: v["make"] + " " + v["model"],
-                      plateNumber: v["vehicle_number"],
-                      imagePath:
-                          "assets/carwash/toyota_camry.png", // static for now
-                    );
-                  },
-                );
-              }),
-            ),
+            _buildVehicleList(context),
 
             const SizedBox(height: 16),
             Text(
               "Select Date and Time",
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDefaultLight),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDefaultLight,
+                  ),
             ),
             const SizedBox(height: 15),
-            buildDatePicker(context, controller.selectedDate.value, (date) {
-              controller
-                  .updateSelectedDate(date); // ✔ loads slots automatically
-            }),
+
+            /// Date picker
+            _buildDatePicker(context),
 
             const SizedBox(height: 15),
-            _buildTimeSlots(context), // This uses Obx and controller
+
+            /// Time slots depending on selected date
+            _buildTimeSlots(context),
 
             const SizedBox(height: 30),
 
-            // --- Location Section ---
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              height: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-                image: const DecorationImage(
-                  image: AssetImage(
-                      'assets/carwash/map.png'), // Replace with your map image asset
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildAddressCard(context,
-                icon: Icons.home_outlined,
-                title: "Home",
-                address: "123 Market St, San Francisco"),
-            const SizedBox(height: 12),
-            _buildAddressCard(context,
-                icon: Icons.work_outline,
-                title: "Work",
-                address: "456 Tech Ave, Silicon Valley"),
-            const SizedBox(height: 15),
-            // --- ADD NEW ADDRESS CARD ---
-            GestureDetector(
-              onTap: () {
-                Get.toNamed(Routes.addlocation);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.bgLight,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.grey[300]!,
-                    width: 1.2,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.grey,
-                      //spreadRadius: 0,
-                      blurRadius: 5,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondaryLight.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.add_location_alt_outlined,
-                        size: 24,
-                        color: AppColors.secondaryLight,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        "Add New Address",
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF1E293B),
-                                ),
-                      ),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // The main widget structure for the Price Details section
-            const SizedBox(
-              height: 20,
-            ),
-            // --- Section Header: Price Details ---
-            Text(
-              "Price Details",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textDefaultLight),
-            ),
-            const SizedBox(height: 10),
-
-            // --- The Content Card ---
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white, // White background for the card
-                borderRadius: BorderRadius.circular(15), // Rounded corners
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.grey,
-                    spreadRadius: 0,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // 1. Premium Wash Row
-                  Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Premium Wash',
-                        style: TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                        "assets/carwash/SAR.png",
-                        width: 15,
-                        height: 15,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        controller.price,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500, // Semi-bold for price
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-
-                  // 2. Taxes & Fees Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'VAT',
-                        style: TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                        "assets/carwash/SAR.png",
-                        width: 15,
-                        height: 15,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Text(
-                        '5.00',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // 3. Total Amount Row (Bold and Blue)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total Amount',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors
-                              .black, // Slightly darker than the above text
-                        ),
-                      ),
-                      const Spacer(),
-                      Image.asset(
-                        "assets/carwash/SAR.png",
-                        width: 18,
-                        height: 18,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Text(
-                        '54.99',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textDefaultLight // Highlight color
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            _buildLocationSection(context),
+            const SizedBox(height: 20),
+            _buildPriceDetails(context),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomConfirmBookingBar(context, screenWidth,
-          "54.99"), // Total amount can be dynamic from controller
+      bottomNavigationBar:
+          _buildBottomConfirmBookingBar(context, screenWidth, controller.price),
+    );
+  }
+
+  // ---------------- SERVICE CARD ----------------
+
+  Widget _buildServiceCard(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            child: controller.image.startsWith("http")
+                ? Image.network(
+                    controller.image,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Image.asset(
+                      "assets/carwash/default_service.png",
+                      height: 140,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(
+                    controller.image,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'SERVICE DETAILS',
+                  style: TextStyle(
+                    color: AppColors.textLightGrayLight,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        controller.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Image.asset(
+                      "assets/carwash/SAR.png",
+                      width: 18,
+                      height: 18,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      controller.price,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  controller.description,
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
+                ),
+                const SizedBox(height: 6),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: controller.features
+                      .map(
+                        (f) => Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle,
+                              size: 16,
+                              color: AppColors.textGreenLight,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(f, style: const TextStyle(fontSize: 14)),
+                          ],
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------- VEHICLES ----------------
+
+  Widget _buildVehicleList(BuildContext context) {
+    return SizedBox(
+      height: 210,
+      child: Obx(
+        () => ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.customerVehicles.length + 1,
+          separatorBuilder: (_, __) => const SizedBox(width: 12),
+          itemBuilder: (context, index) {
+            if (index == controller.customerVehicles.length) {
+              return _buildAddVehicleCard(context);
+            }
+
+            final v = controller.customerVehicles[index];
+
+            return _buildVehicleCard(
+              context,
+              vehicleName: "${v["make"]} ${v["model"]}",
+              plateNumber: v["vehicle_number"] ?? "",
+              imagePath: "assets/carwash/toyota_camry.png",
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -447,9 +237,8 @@ class BookSlotView extends GetView<BookSlotController> {
       () => GestureDetector(
         onTap: () => controller.updateSelectedVehicle(vehicleName),
         child: Container(
-          width: Get.width * 0.55, // ← 55% of screen → shows 1 full + half next
+          width: Get.width * 0.55,
           padding: const EdgeInsets.all(15),
-          //margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -470,19 +259,16 @@ class BookSlotView extends GetView<BookSlotController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Bigger Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
                 child: Image.asset(
                   imagePath,
-                  height: 120, // ← increased height
+                  height: 120,
                   width: double.infinity,
-                  fit: BoxFit.cover, // looks exactly like your screenshot
+                  fit: BoxFit.cover,
                 ),
               ),
-
               const SizedBox(height: 12),
-
               Text(
                 vehicleName,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -492,9 +278,7 @@ class BookSlotView extends GetView<BookSlotController> {
                     ),
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 4),
-
               Text(
                 plateNumber,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -510,27 +294,21 @@ class BookSlotView extends GetView<BookSlotController> {
     );
   }
 
-  // --- Helper Widget for Add New Vehicle Card ---
   Widget _buildAddVehicleCard(BuildContext context) {
     return GestureDetector(
-      // Wrap with GestureDetector
       onTap: () async {
         final result = await Get.toNamed(Routes.addcar);
-
         if (result == true) {
-          controller.fetchCustomerVehicles(); // 👈 refresh list
+          controller.fetchCustomerVehicles();
         }
       },
       child: Container(
-        width: 150, // Fixed width for add vehicle card
+        width: 150,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.grey[300]!,
-            width: 1,
-          ),
+          border: Border.all(color: Colors.grey[300]!, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -560,48 +338,87 @@ class BookSlotView extends GetView<BookSlotController> {
     );
   }
 
-  Widget buildDatePicker(BuildContext context, DateTime selectedDate,
-      Function(DateTime) onDateChange) {
-    return SizedBox(
-      height: 88,
-      child: DatePicker(
-        DateTime.now(),
-        initialSelectedDate: selectedDate,
-        daysCount: 30, // Shows 30 days starting today
-        width: 50,
-        height: 88,
-        selectionColor: AppColors.primaryLight,
-        selectedTextColor: AppColors.textDefaultLight,
-        monthTextStyle: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w800,
-          color: Colors.black,
-        ),
-        dayTextStyle: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w800,
-          color: Colors.black,
-        ),
-        dateTextStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w900,
-          color: Colors.black,
-        ),
-        deactivatedColor: AppColors.textDefaultLight,
-        onDateChange: (date) {
-          controller.selectedDate.value = date;
-          controller.updateSelectedDate(date);
-// 🔥 API CALL
-        },
-      ),
-    );
+  // ---------------- DATE PICKER ----------------
+
+  Widget _buildDatePicker(BuildContext context) {
+    return Obx(() {
+      return SizedBox(
+        height: 100,
+        child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: controller.slotDates.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 15),
+            itemBuilder: (_, index) {
+              final d = controller.slotDates[index].date;
+
+              return Obx(() {
+                final bool isSelected = controller.selectedDate.value != null &&
+                    controller.isSameDate(controller.selectedDate.value!, d);
+
+                return GestureDetector(
+                  onTap: () => controller.updateSelectedDate(d),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primaryLight : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color:
+                            isSelected ? AppColors.primaryLight : Colors.grey,
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(DateFormat('MMM').format(d).toUpperCase(),
+                            style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.textDefaultLight,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold)),
+                        Text('${d.day}',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.textDefaultLight)),
+                        Text(DateFormat('EEE').format(d).toUpperCase(),
+                            style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.textDefaultLight,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                );
+              });
+            }),
+      );
+    });
   }
 
-  // --- Helper Widget for Time Slots ---
+  // ---------------- TIME SLOTS ----------------
+
   Widget _buildTimeSlots(BuildContext context) {
     return Obx(() {
       if (controller.isLoadingTimes.value) {
         return const Center(child: CircularProgressIndicator());
+      }
+
+      if (controller.selectedDate.value == null) {
+        return const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            "Please select a date",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        );
       }
 
       if (controller.slotTimes.isEmpty) {
@@ -618,71 +435,142 @@ class BookSlotView extends GetView<BookSlotController> {
         spacing: 12,
         runSpacing: 12,
         children: controller.slotTimes.map((slot) {
-          String label = "${slot.startTime} - ${slot.endTime}";
+          final label = slot.time;
+          //final String label = "${slot.startTime} - ${slot.endTime}";
+          final bool isSelected = controller.selectedTimeSlot.value == label;
 
           return ChoiceChip(
+            showCheckmark: false,
             label: Text(label),
-            selected: controller.selectedTimeSlot.value == label,
+            selected: isSelected,
             onSelected: slot.isActive
-                ? (v) => controller.updateSelectedTimeSlot(label)
+                ? (_) => controller.updateSelectedTimeSlot(label)
                 : null,
             selectedColor: AppColors.primaryLight,
             disabledColor: Colors.grey.shade300,
+            backgroundColor: Colors.white,
+            labelStyle: TextStyle(
+              color: !slot.isActive
+                  ? Colors.grey[800]
+                  : (isSelected ? Colors.black : AppColors.textDefaultLight),
+              fontWeight: FontWeight.w600,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: !slot.isActive
+                    ? Colors.transparent
+                    : (isSelected ? Colors.transparent : Colors.grey[500]!),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           );
         }).toList(),
       );
     });
   }
 
-  Widget _buildTimeSlotButton(BuildContext context, String time,
-      {bool isSelected = false, bool isDisabled = false}) {
-    return ChoiceChip(
-      showCheckmark: false,
-      label: Text(time),
-      selected: isSelected,
-      onSelected: isDisabled
-          ? null
-          : (selected) {
-              controller.updateSelectedTimeSlot(
-                  time); // Calls the method in the controller
-            },
-      selectedColor: AppColors.primaryLight,
-      disabledColor: Colors.grey[300],
-      backgroundColor: Colors.white,
-      labelStyle: TextStyle(
-        color: isDisabled
-            ? Colors.grey[800]
-            : (isSelected ? Colors.black : AppColors.textDefaultLight),
-        fontWeight: FontWeight.w600,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: isDisabled
-              ? Colors.transparent
-              : (isSelected ? Colors.transparent : Colors.grey[500]!),
+  // ---------------- LOCATION ----------------
+
+  Widget _buildLocationSection(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          height: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+            image: const DecorationImage(
+              image: AssetImage('assets/carwash/map.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        const SizedBox(height: 16),
+        _buildAddressCard(
+          context,
+          icon: Icons.home_outlined,
+          title: "Home",
+          address: "123 Market St, San Francisco",
+        ),
+        const SizedBox(height: 12),
+        _buildAddressCard(
+          context,
+          icon: Icons.work_outline,
+          title: "Work",
+          address: "456 Tech Ave, Silicon Valley",
+        ),
+        const SizedBox(height: 15),
+        GestureDetector(
+          onTap: () => Get.toNamed(Routes.addlocation),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.bgLight,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey[300]!, width: 1.2),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 5,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryLight.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.add_location_alt_outlined,
+                    size: 24,
+                    color: AppColors.secondaryLight,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    "Add New Address",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1E293B),
+                        ),
+                  ),
+                ),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 16,
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  // --- Helper Widget for Map Snippet ---
-
-  // --- Helper Widget for Address Cards ---
   Widget _buildAddressCard(
     BuildContext context, {
     required IconData icon,
     required String title,
     required String address,
-    // isSelected will now come from the controller via Obx
   }) {
     return Obx(
-      // Wrap with Obx to react to selectedAddress changes
       () => GestureDetector(
-        // Wrap with GestureDetector for tapping
-        onTap: () =>
-            controller.updateSelectedAddress(title), // Call controller method
+        onTap: () => controller.updateSelectedAddress(title),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -708,8 +596,7 @@ class BookSlotView extends GetView<BookSlotController> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors
-                      .secondaryLight, // Light grey background for icon
+                  color: AppColors.secondaryLight,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, size: 24, color: AppColors.bgLight),
@@ -737,15 +624,13 @@ class BookSlotView extends GetView<BookSlotController> {
                 ),
               ),
               Radio<bool>(
-                  value: true,
-                  groupValue: controller.selectedAddress.value ==
-                      title, // Use controller state
-                  onChanged: (bool? value) {
-                    // This is redundant as the GestureDetector onTap handles it,
-                    // but kept for explicit radio button behavior if desired.
-                    if (value == true) controller.updateSelectedAddress(title);
-                  },
-                  activeColor: AppColors.secondaryLight),
+                value: true,
+                groupValue: controller.selectedAddress.value == title,
+                onChanged: (v) {
+                  if (v == true) controller.updateSelectedAddress(title);
+                },
+                activeColor: AppColors.secondaryLight,
+              ),
             ],
           ),
         ),
@@ -753,7 +638,123 @@ class BookSlotView extends GetView<BookSlotController> {
     );
   }
 
-  // --- Helper Widget for Bottom Confirm Booking Bar ---
+  // ---------------- PRICE DETAILS ----------------
+
+  Widget _buildPriceDetails(BuildContext context) {
+    // You can compute VAT / total here if needed
+    const String vat = "5.00";
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Price Details",
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDefaultLight,
+              ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.grey,
+                spreadRadius: 0,
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    'Premium Wash',
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  const Spacer(),
+                  Image.asset(
+                    "assets/carwash/SAR.png",
+                    width: 15,
+                    height: 15,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    controller.price,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  const Text(
+                    'VAT',
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  const Spacer(),
+                  Image.asset(
+                    "assets/carwash/SAR.png",
+                    width: 15,
+                    height: 15,
+                  ),
+                  const SizedBox(width: 5),
+                  const Text(
+                    vat,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  const Text(
+                    'Total Amount',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Spacer(),
+                  Image.asset(
+                    "assets/carwash/SAR.png",
+                    width: 18,
+                    height: 18,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    controller.price, // or calculated total
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textDefaultLight,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ---------------- BOTTOM BAR ----------------
+
   Widget _buildBottomConfirmBookingBar(
       BuildContext context, double screenWidth, String totalAmount) {
     return Container(
@@ -771,12 +772,11 @@ class BookSlotView extends GetView<BookSlotController> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
-        // Ensures content is not obscured by system UI (like navigation gestures)
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
-              mainAxisSize: MainAxisSize.min, // Essential for Column in Row
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -792,11 +792,9 @@ class BookSlotView extends GetView<BookSlotController> {
                       width: 20,
                       height: 20,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
+                    const SizedBox(width: 5),
                     Text(
-                      totalAmount, // This could also come from the controller
+                      totalAmount,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF1E293B),
@@ -808,11 +806,7 @@ class BookSlotView extends GetView<BookSlotController> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Call the booking submission method in your controller
-                //print("Confirm Booking tapped!");
-                //controller.confirmBooking();
-                Get.toNamed(Routes.confirmationpageview);
-                // Calling the method now defined in controller
+                controller.bookSlot();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryLight,
@@ -835,92 +829,6 @@ class BookSlotView extends GetView<BookSlotController> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildVehicleSelector(
-    BuildContext context, {
-    required RxString selectedVehicle,
-    required void Function(String) onSelectVehicle,
-  }) {
-    // Example vehicles; replace with your actual data or use from your controller
-    final List<Map<String, String>> vehicles = [
-      {
-        'image': 'assets/carwash/toyota_land_cruiser.png',
-        'name': 'Toyota Land Cruiser',
-        'plate': 'ABC-123'
-      },
-      {
-        'image': 'assets/carwash/toyota_camry.png',
-        'name': 'Toyota Camry',
-        'plate': 'XYZ-789'
-      },
-    ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text('Select Your Vehicle',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold)),
-        ),
-        SizedBox(
-          height: 110,
-          child: Obx(() => ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: vehicles.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final vehicle = vehicles[index];
-                  final isSelected = selectedVehicle.value == vehicle['name'];
-                  return GestureDetector(
-                    onTap: () => onSelectVehicle(vehicle['name'] ?? ""),
-                    child: Container(
-                      width: 180,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: isSelected ? Colors.blue : Colors.grey[300]!,
-                          width: isSelected ? 2 : 1,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 7,
-                            offset: const Offset(0, 2),
-                          )
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Image.asset(
-                              vehicle['image'] ?? "",
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(vehicle['name'] ?? "",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      isSelected ? Colors.blue : Colors.black)),
-                          Text(vehicle['plate'] ?? "",
-                              style: TextStyle(color: Colors.grey[700])),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              )),
-        ),
-      ],
     );
   }
 }

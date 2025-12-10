@@ -3,12 +3,14 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:my_new_app/app/models/booking slot/booking_history_model.dart';
 
 class Page2View extends GetView<DashboardController> {
   const Page2View({super.key});
 
   @override
   Widget build(BuildContext context) {
+    controller.fetchBookingHistory();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -28,13 +30,17 @@ class Page2View extends GetView<DashboardController> {
           onPressed: () => Get.back(),
         ),
       ),
+
+      // -------------------------------------------------------
+      // BODY
+      // -------------------------------------------------------
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ---------------------------------------------------
-            // CURRENT BOOKING
+            // CURRENT BOOKING (DYNAMIC)
             // ---------------------------------------------------
             const Text(
               "Current Booking",
@@ -46,127 +52,22 @@ class Page2View extends GetView<DashboardController> {
             ),
             const SizedBox(height: 16),
 
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.grey,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // TOP ROW: image + text
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // CIRCLE AVATAR
-                      Container(
-                        height: 55,
-                        width: 55,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xffEAEAEA),
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            "assets/carwash/avatar.png", // Replace with your image
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+            Obx(() {
+              if (controller.currentBookings.isEmpty) {
+                return const Text(
+                  "No current bookings",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                );
+              }
 
-                      const SizedBox(width: 16),
-
-                      // TITLE + PROVIDER + PRICE
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Premium Exterior Wash",
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              "Provider: John D.",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  "assets/carwash/SAR.png",
-                                  width: 18,
-                                  height: 18,
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                const Text(
-                                  "45.00",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-                  const Divider(),
-                  const SizedBox(height: 10),
-
-                  // BUTTON ROW (ONLY TRACK + CANCEL)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _actionButton(
-                          Icons.location_on,
-                          "Track",
-                          Colors.black,
-                          AppColors.borderGray,
-                        ),
-                      ),
-
-                      const SizedBox(width: 10), // <-- GAP OF 10PX
-
-                      Expanded(
-                        child: _actionButton(
-                          Icons.close,
-                          "Cancel",
-                          Colors.white,
-                          Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+              // Only 1 card? Show the first one.
+              return _currentBookingCard(controller.currentBookings.first);
+            }),
 
             const SizedBox(height: 30),
 
             // ---------------------------------------------------
-            // PAST BOOKINGS TITLE
+            // PAST BOOKINGS
             // ---------------------------------------------------
             const Text(
               "Past Bookings",
@@ -178,21 +79,27 @@ class Page2View extends GetView<DashboardController> {
             ),
             const SizedBox(height: 16),
 
-            // ---------------- PAST BOOKINGS LIST ----------------
-            _pastBookingCard(
-              index: 0,
-              title: "Full Interior Detail",
-              provider: "Jane S.",
-              price: "90.00",
-            ),
-            const SizedBox(height: 18),
+            Obx(() {
+              if (controller.pastBookings.isEmpty) {
+                return const Text(
+                  "No past bookings",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                );
+              }
 
-            _pastBookingCard(
-              index: 1,
-              title: "Ceramic Coating",
-              provider: "Mike T.",
-              price: "250.00",
-            ),
+              return Column(
+                children: controller.pastBookings.asMap().entries.map((entry) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 18),
+                    child: _pastBookingCard(
+                      index: entry.key,
+                      booking: entry.value,
+                    ),
+                  );
+                }).toList(),
+              );
+            }),
+
             const SizedBox(height: 30),
           ],
         ),
@@ -200,44 +107,127 @@ class Page2View extends GetView<DashboardController> {
     );
   }
 
-  Widget _actionButton(
-    IconData icon,
-    String label,
-    Color iconAndTextColor,
-    Color bgColor,
-  ) {
+  // ===================================================================
+  // CURRENT BOOKING CARD (Your exact same UI, only dynamic data added)
+  // ===================================================================
+  Widget _currentBookingCard(Datum b) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: bgColor, // ← DIFFERENT BACKGROUND COLOR
-        borderRadius: BorderRadius.circular(14),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.all(16),
+      child: Column(
         children: [
-          Icon(icon, size: 18, color: iconAndTextColor),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: iconAndTextColor,
-              fontWeight: FontWeight.w600,
-            ),
+          // TOP ROW
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // CIRCLE AVATAR
+              Container(
+                height: 55,
+                width: 55,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xffEAEAEA),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    "assets/carwash/avatar.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
+              // TITLE + PROVIDER + PRICE
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      b.serviceName,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Provider: ${b.washerName}",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Image.asset("assets/carwash/SAR.png",
+                            width: 18, height: 18),
+                        const SizedBox(width: 5),
+                        Text(
+                          b.amount,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+          const Divider(),
+          const SizedBox(height: 10),
+
+          // TRACK + CANCEL BUTTONS
+          Row(
+            children: [
+              Expanded(
+                child: _actionButton(
+                  Icons.location_on,
+                  "Track",
+                  Colors.black,
+                  AppColors.borderGray,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _actionButton(
+                  Icons.close,
+                  "Cancel",
+                  Colors.white,
+                  Colors.red,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  // ===============================================================
-  // PAST BOOKING CARD (With star rating)
-  // ===============================================================
+  // ===================================================================
+  // PAST BOOKING CARD (Same UI as your original, only dynamic)
+  // ===================================================================
   Widget _pastBookingCard({
     required int index,
-    required String title,
-    required String provider,
-    required String price,
+    required Datum booking,
   }) {
     return GetBuilder<DashboardController>(
       builder: (ctrl) {
@@ -249,39 +239,26 @@ class Page2View extends GetView<DashboardController> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.borderGray),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.black.withOpacity(0.06),
-            //     blurRadius: 10,
-            //     offset: const Offset(0, 4),
-            //   ),
-            // ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // TITLE + PRICE
+              // TITLE + PRICE ROW
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
+                  Expanded(
+                    child: Text(
+                      booking.serviceName,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                  const Spacer(),
-                  Image.asset(
-                    "assets/carwash/SAR.png",
-                    width: 18,
-                    height: 18,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
+                  Image.asset("assets/carwash/SAR.png", width: 18, height: 18),
+                  const SizedBox(width: 5),
                   Text(
-                    price,
+                    booking.amount,
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
@@ -293,7 +270,7 @@ class Page2View extends GetView<DashboardController> {
               const SizedBox(height: 6),
 
               Text(
-                "Provider: $provider",
+                "Provider: ${booking.washerName}",
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black54,
@@ -302,7 +279,7 @@ class Page2View extends GetView<DashboardController> {
 
               const SizedBox(height: 10),
 
-              // ⭐ INTERACTIVE STAR RATING ⭐
+              // ⭐ RATING
               Row(
                 children: List.generate(5, (starIndex) {
                   bool isFilled = starIndex < rating;
@@ -320,29 +297,24 @@ class Page2View extends GetView<DashboardController> {
 
               const SizedBox(height: 14),
 
-              // BUTTON
+              // BOOK AGAIN BUTTON
               GestureDetector(
                 onTap: () {
-                  Get.toNamed(
-                    Routes.bookslot,
-                    arguments: {
-                      "name": title,
-                      "price": price,
-                      "image": "assets/carwash/toyota_camry.png",
-                      "description": "Quick exterior wash and cleaning",
-                      "features": ["Vacuum", "Tire Shine", "Body Wash"]
-                    },
-                  );
+                  Get.toNamed(Routes.bookslot, arguments: {
+                    "name": booking.serviceName,
+                    "price": booking.amount,
+                    "service_id": booking.serviceId,
+                    "image": "assets/carwash/toyota_camry.png",
+                    "description": "Quick wash",
+                    "features": ["Vacuum", "Tire Shine", "Body Wash"],
+                  });
                 },
                 child: Container(
                   height: 48,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      color: AppColors.secondaryLight
-                      // gradient: const LinearGradient(
-                      //   colors: [Color(0xff007BFF), Color(0xff00AFFF)],
-                      // ),
-                      ),
+                    borderRadius: BorderRadius.circular(14),
+                    color: AppColors.secondaryLight,
+                  ),
                   child: const Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -366,6 +338,39 @@ class Page2View extends GetView<DashboardController> {
           ),
         );
       },
+    );
+  }
+
+  // ===================================================================
+  // COMMON ACTION BUTTON (unchanged)
+  // ===================================================================
+  Widget _actionButton(
+    IconData icon,
+    String label,
+    Color iconColor,
+    Color bgColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: iconColor),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: iconColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

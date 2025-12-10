@@ -1,49 +1,41 @@
-class Slotdatesmodel {
-  Slotdatesmodel({
+class Slotsdatemodel {
+  Slotsdatemodel({
     required this.success,
     required this.data,
   });
 
   final bool success;
-  final List<Datum> data;
+  final List<SlotDate> data;
 
-  factory Slotdatesmodel.fromJson(Map<String, dynamic> json) {
-    return Slotdatesmodel(
+  factory Slotsdatemodel.fromJson(Map<String, dynamic> json) {
+    return Slotsdatemodel(
       success: json["success"] ?? false,
       data: json["data"] == null
           ? []
-          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+          : List<SlotDate>.from(json["data"]!.map((x) => SlotDate.fromJson(x))),
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        "success": success,
-        "data": data.map((x) => x?.toJson()).toList(),
-      };
 }
 
-class Datum {
-  Datum({
+class SlotDate {
+  SlotDate({
     required this.id,
     required this.date,
-    required this.isActive,
   });
 
   final int id;
-  final DateTime? date;
-  final bool isActive;
+  final DateTime date;
 
-  factory Datum.fromJson(Map<String, dynamic> json) {
-    return Datum(
-      id: json["id"] ?? 0,
-      date: DateTime.tryParse(json["date"] ?? ""),
-      isActive: json["is_active"] ?? false,
-    );
+  factory SlotDate.fromJson(Map<String, dynamic> json) {
+    // Parse UTC timestamp
+    DateTime utc = DateTime.parse(json["date"]);
+
+    // Convert to LOCAL India time
+    DateTime local = utc.toLocal();
+
+    // Strip time → Use only year/month/day
+    DateTime pure = DateTime(local.year, local.month, local.day);
+
+    return SlotDate(id: json["id"], date: pure);
   }
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "date": date?.toIso8601String(),
-        "is_active": isActive,
-      };
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 import '../../controllers/auth/login_controller.dart';
-import '../../routes/app_routes.dart';
 import '../../custome_widgets/wheel_loader.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -30,7 +29,7 @@ class LoginView extends GetView<LoginController> {
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
-                    "Login or Sign Up",
+                    "Login or Sign up",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

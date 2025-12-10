@@ -31,4 +31,14 @@ class BookSlotRepository {
   Future<Response> apiGettimeslots(int dateId) async {
     return await ApiService.get("${EndPoints.apiGettimeslots}?dateId=$dateId");
   }
+
+  Future<Response> postBookingsHistory(requestBody) async {
+    return await ApiService.post(EndPoints.apiGetbookinghistory, requestBody,
+        requireAuthToken: false);
+  }
+
+  Future<Response> postBookSlot(requestBody) async {
+    return await ApiService.post(EndPoints.apiPostbookslot, requestBody,
+        requireAuthToken: false);
+  }
 }

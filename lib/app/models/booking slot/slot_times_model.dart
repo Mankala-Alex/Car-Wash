@@ -19,7 +19,7 @@ class Slottimesmodel {
 
   Map<String, dynamic> toJson() => {
         "success": success,
-        "data": data.map((x) => x?.toJson()).toList(),
+        "data": data.map((x) => x.toJson()).toList(),
       };
 }
 
@@ -37,23 +37,27 @@ class TimeslotDatum {
 
   final int id;
   final int dateId;
-  final String time;
+  final String time; // Example: "09:00"
   final int maxBookings;
   final int currentBookings;
   final bool isActive;
   final String startTime;
   final String endTime;
 
+  // 🔥 ADD THESE GETTERS HERE ↓↓↓
+  int get hour => int.parse(time.split(":")[0]);
+  int get minute => int.parse(time.split(":")[1]);
+
   factory TimeslotDatum.fromJson(Map<String, dynamic> json) {
     return TimeslotDatum(
       id: json["id"] ?? 0,
       dateId: json["date_id"] ?? 0,
-      time: json["time"] ?? "",
+      startTime: json["start_time"] ?? "",
+      endTime: json["end_time"] ?? "",
+      time: json["time"] ?? json["start_time"] ?? "",
       maxBookings: json["max_bookings"] ?? 0,
       currentBookings: json["current_bookings"] ?? 0,
       isActive: json["is_active"] ?? false,
-      startTime: json["start_time"] ?? "",
-      endTime: json["end_time"] ?? "",
     );
   }
 

@@ -172,6 +172,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                               "description": service.description,
                               "price": service.price,
                               "features": service.features,
+                              "service_id": service.id,
                             },
                           );
                         },

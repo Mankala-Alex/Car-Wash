@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/bindings/booking_flow/scratch_card_binding.dart';
 import 'package:my_new_app/app/controllers/booking_flow/confirmation_page_controller.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 import 'package:my_new_app/app/views/booking_flow/scratch_card_view.dart';
 
@@ -182,7 +183,9 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                                       color: AppColors.secondaryLight)),
                               elevation: 0,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.toNamed((Routes.dashboard));
+                            },
                             icon: const Icon(Icons.chat_outlined),
                             label: const Text('Chat',
                                 style: TextStyle(
