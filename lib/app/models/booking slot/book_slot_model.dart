@@ -13,11 +13,6 @@ class Bookingslotmodel {
       data: json["data"] == null ? null : Data.fromJson(json["data"]),
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        "success": success,
-        "data": data?.toJson(),
-      };
 }
 
 class Data {
@@ -46,7 +41,7 @@ class Data {
   final String vehicle;
   final int serviceId;
   final String serviceName;
-  final DateTime? scheduledAt;
+  final String? scheduledAt; // <— FIXED
   final String washerId;
   final String washerName;
   final String status;
@@ -64,7 +59,7 @@ class Data {
       vehicle: json["vehicle"] ?? "",
       serviceId: json["service_id"] ?? 0,
       serviceName: json["service_name"] ?? "",
-      scheduledAt: DateTime.tryParse(json["scheduled_at"] ?? ""),
+      scheduledAt: json["scheduled_at"], // <— FIXED
       washerId: json["washer_id"] ?? "",
       washerName: json["washer_name"] ?? "",
       status: json["status"] ?? "",
@@ -74,22 +69,4 @@ class Data {
       slotId: json["slot_id"] ?? 0,
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "booking_code": bookingCode,
-        "customer_id": customerId,
-        "customer_name": customerName,
-        "vehicle": vehicle,
-        "service_id": serviceId,
-        "service_name": serviceName,
-        "scheduled_at": scheduledAt?.toIso8601String(),
-        "washer_id": washerId,
-        "washer_name": washerName,
-        "status": status,
-        "amount": amount,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt,
-        "slot_id": slotId,
-      };
 }

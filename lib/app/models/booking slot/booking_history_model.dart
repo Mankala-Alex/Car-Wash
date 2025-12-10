@@ -48,7 +48,7 @@ class Datum {
   final String vehicle;
   final int serviceId;
   final String serviceName;
-  final DateTime? scheduledAt;
+  final String? scheduledAt; // <-- FIXED (was DateTime)
   final String washerId;
   final String washerName;
   final String status;
@@ -66,7 +66,7 @@ class Datum {
       vehicle: json["vehicle"] ?? "",
       serviceId: json["service_id"] ?? 0,
       serviceName: json["service_name"] ?? "",
-      scheduledAt: DateTime.tryParse(json["scheduled_at"] ?? ""),
+      scheduledAt: json["scheduled_at"], // <-- FIXED
       washerId: json["washer_id"] ?? "",
       washerName: json["washer_name"] ?? "",
       status: json["status"] ?? "",
@@ -85,7 +85,7 @@ class Datum {
         "vehicle": vehicle,
         "service_id": serviceId,
         "service_name": serviceName,
-        "scheduled_at": scheduledAt?.toIso8601String(),
+        "scheduled_at": scheduledAt, // <-- FIXED
         "washer_id": washerId,
         "washer_name": washerName,
         "status": status,

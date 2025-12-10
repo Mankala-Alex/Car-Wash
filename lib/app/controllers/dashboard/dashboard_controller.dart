@@ -54,15 +54,24 @@ class DashboardController extends GetxController {
     final now = DateTime.now();
 
     currentBookings.value = allBookings.where((b) {
-      return b.scheduledAt != null &&
-          b.scheduledAt!.isAfter(now) &&
+      if (b.scheduledAt == null || b.scheduledAt!.isEmpty) return false;
+
+      DateTime? dt = DateTime.tryParse(b.scheduledAt!);
+      if (dt == null) return false;
+
+      return dt.isAfter(now) &&
           (b.status == "Pending" ||
               b.status == "Accepted" ||
               b.status == "In-progress");
     }).toList();
 
     pastBookings.value = allBookings.where((b) {
-      return b.scheduledAt != null && b.scheduledAt!.isBefore(now);
+      if (b.scheduledAt == null || b.scheduledAt!.isEmpty) return false;
+
+      DateTime? dt = DateTime.tryParse(b.scheduledAt!);
+      if (dt == null) return false;
+
+      return dt.isBefore(now);
     }).toList();
 
     print("✓ Current bookings: ${currentBookings.length}");

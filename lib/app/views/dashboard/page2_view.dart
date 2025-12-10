@@ -61,7 +61,14 @@ class Page2View extends GetView<DashboardController> {
               }
 
               // Only 1 card? Show the first one.
-              return _currentBookingCard(controller.currentBookings.first);
+              return Column(
+                children: controller.currentBookings.map((b) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 18),
+                    child: _currentBookingCard(b),
+                  );
+                }).toList(),
+              );
             }),
 
             const SizedBox(height: 30),
@@ -111,6 +118,18 @@ class Page2View extends GetView<DashboardController> {
   // CURRENT BOOKING CARD (Your exact same UI, only dynamic data added)
   // ===================================================================
   Widget _currentBookingCard(Datum b) {
+    // --- Extract DATE and TIME from scheduled_at ---
+    String dateText = "N/A";
+    String timeText = "N/A";
+
+    if (b.scheduledAt != null && b.scheduledAt!.contains("T")) {
+      final parts = b.scheduledAt!.split("T");
+      dateText = parts[0];
+      if (parts.length > 1 && parts[1].length >= 5) {
+        timeText = parts[1].substring(0, 5);
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -153,6 +172,7 @@ class Page2View extends GetView<DashboardController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // SERVICE NAME
                     Text(
                       b.serviceName,
                       style: const TextStyle(
@@ -162,14 +182,42 @@ class Page2View extends GetView<DashboardController> {
                       ),
                     ),
                     const SizedBox(height: 4),
+
+                    // VEHICLE
+                    if (b.vehicle != null && b.vehicle!.isNotEmpty) ...[
+                      Text(
+                        "Vehicle: ${b.vehicle}",
+                        style: const TextStyle(
+                            fontSize: 14, color: Colors.black87),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+
+                    // PROVIDER
                     Text(
                       "Provider: ${b.washerName}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.black54),
                     ),
                     const SizedBox(height: 4),
+
+                    // DATE
+                    Text(
+                      "Date: $dateText",
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 2),
+
+                    // TIME
+                    Text(
+                      "Time: $timeText",
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 6),
+
+                    // PRICE
                     Row(
                       children: [
                         Image.asset("assets/carwash/SAR.png",
@@ -229,6 +277,18 @@ class Page2View extends GetView<DashboardController> {
     required int index,
     required Datum booking,
   }) {
+    // --- Extract DATE and TIME from scheduled_at ---
+    String dateText = "N/A";
+    String timeText = "N/A";
+
+    if (booking.scheduledAt != null && booking.scheduledAt!.contains("T")) {
+      final parts = booking.scheduledAt!.split("T");
+      dateText = parts[0];
+      if (parts.length > 1 && parts[1].length >= 5) {
+        timeText = parts[1].substring(0, 5);
+      }
+    }
+
     return GetBuilder<DashboardController>(
       builder: (ctrl) {
         int rating = ctrl.ratingMap[index] ?? 0;
@@ -269,11 +329,41 @@ class Page2View extends GetView<DashboardController> {
 
               const SizedBox(height: 6),
 
+              // VEHICLE
+              if (booking.vehicle != null && booking.vehicle!.isNotEmpty) ...[
+                Text(
+                  "Vehicle: ${booking.vehicle}",
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                ),
+                const SizedBox(height: 4),
+              ],
+
+              // PROVIDER
               Text(
                 "Provider: ${booking.washerName}",
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 4),
+
+              // DATE
+              Text(
+                "Date: $dateText",
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 2),
+
+              // TIME
+              Text(
+                "Time: $timeText",
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black87,
                 ),
               ),
 

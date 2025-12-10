@@ -27,14 +27,11 @@ class SlotDate {
   final DateTime date;
 
   factory SlotDate.fromJson(Map<String, dynamic> json) {
-    // Parse UTC timestamp
-    DateTime utc = DateTime.parse(json["date"]);
+    // Parse ISO date "2025-12-10"
+    DateTime parsed = DateTime.parse(json["date"]);
 
-    // Convert to LOCAL India time
-    DateTime local = utc.toLocal();
-
-    // Strip time → Use only year/month/day
-    DateTime pure = DateTime(local.year, local.month, local.day);
+    // Strip time (keep only yyyy-mm-dd)
+    DateTime pure = DateTime(parsed.year, parsed.month, parsed.day);
 
     return SlotDate(id: json["id"], date: pure);
   }
