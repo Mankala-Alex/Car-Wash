@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
@@ -11,6 +13,8 @@ class DashboardController extends GetxController {
   final repo = BookSlotRepository();
 
   var isLoading = false.obs;
+
+  Rx<Datum?> trackingBooking = Rx<Datum?>(null);
 
   RxString customerName = ''.obs;
   RxString customerEmail = ''.obs;
@@ -32,6 +36,9 @@ class DashboardController extends GetxController {
       selectedIndex.value = arg;
       print("🔥 Setting selectedIndex from arguments → $arg");
     }
+    Timer.periodic(Duration(seconds: 10), (_) {
+      fetchBookingHistory();
+    });
   }
 
   // -----------------------------------------------------
@@ -80,19 +87,21 @@ class DashboardController extends GetxController {
   // SPLIT INTO CURRENT & PAST BOOKINGS
   // -----------------------------------------------------
   void splitBookings(List<Datum> allBookings) {
-    currentBookings.value = allBookings.where((b) {
-      return b.status == "PENDING" ||
-          b.status == "ASSIGNED" ||
-          b.status == "ARRIVED" ||
-          b.status == "IN_PROGRESS";
-    }).toList();
+    // 1️⃣ Normal current bookings
+    currentBookings.value =
+        allBookings.where((b) => b.status == "PENDING").toList();
 
-    pastBookings.value = allBookings.where((b) {
-      return b.status == "COMPLETED";
-    }).toList();
+    // 2️⃣ Pick one active tracking booking
+    trackingBooking.value = allBookings.firstWhereOrNull((b) =>
+        b.status == "ASSIGNED" ||
+        b.status == "ARRIVED" ||
+        b.status == "IN_PROGRESS");
 
-    print("✓ Current bookings: ${currentBookings.length}");
-    print("✓ Past bookings: ${pastBookings.length}");
+    // 3️⃣ Past bookings
+    pastBookings.value =
+        allBookings.where((b) => b.status == "COMPLETED").toList();
+
+    print("trackingBooking = ${trackingBooking.value?.status}");
   }
 
   // -----------------------------------------------------

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/config/constants.dart';
 import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:my_new_app/app/controllers/profile/offers_controller.dart';
+import 'package:my_new_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
@@ -245,7 +246,16 @@ class Page1View extends GetView<DashboardController> {
                     },
                   ),
                   const SizedBox(height: 20),
+                  Obx(() {
+                    if (controller.trackingBooking.value == null) {
+                      return SizedBox.shrink();
+                    }
 
+                    final b = controller.trackingBooking.value!;
+
+                    return _trackingCard(b);
+                  }),
+                  const SizedBox(height: 20),
 // ---------------- PROMO BANNER AFTER WALLET ----------------
                   Obx(() {
                     final list = offersController.offers;
@@ -383,6 +393,143 @@ class Page1View extends GetView<DashboardController> {
       ),
     );
   }
+}
+
+Widget _trackingCard(Datum b) {
+  return Container(
+    //margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 8,
+          offset: Offset(0, 3),
+        )
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // --- Technician + Service ---
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 26,
+              backgroundImage: AssetImage("assets/carwash/avatar.png"),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    b.washerName.isEmpty ? "Technician Assigned" : b.washerName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    b.serviceName,
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // open full tracking UI
+              },
+              child: Text("Track"),
+            )
+          ],
+        ),
+
+        SizedBox(height: 20),
+
+        // --- TIMELINE (YOUR IMAGE STYLE) ---
+        _trackingTimeline(b.status),
+      ],
+    ),
+  );
+}
+
+Widget _trackingTimeline(String status) {
+  bool assigned =
+      status == "ASSIGNED" || status == "ARRIVED" || status == "IN_PROGRESS";
+  bool arrived = status == "ARRIVED" || status == "IN_PROGRESS";
+  bool inProgress = status == "IN_PROGRESS";
+
+  Color active = Colors.orange;
+  Color inactive = Colors.grey.shade400;
+
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      // ASSIGNED
+      _timelineStep(
+        active: assigned,
+        label: "ASSIGNED",
+        icon: Icons.check_circle,
+      ),
+
+      // ARRIVED
+      _timelineStep(
+        active: arrived,
+        label: "ARRIVED",
+        icon: Icons.radio_button_checked,
+      ),
+
+      // IN_PROGRESS
+      _timelineStep(
+        active: inProgress,
+        label: "IN PROGRESS",
+        icon: Icons.local_car_wash,
+      ),
+
+      // COMPLETED (always inactive here)
+      _timelineStep(
+        active: false,
+        label: "COMPLETED",
+        icon: Icons.flag,
+      ),
+    ],
+  );
+}
+
+Widget _timelineStep(
+    {required bool active, required String label, required IconData icon}) {
+  return Column(
+    children: [
+      Container(
+        padding: EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: active ? Colors.orange : Colors.grey.shade200,
+          border: Border.all(
+            color: active ? Colors.orange : Colors.grey.shade400,
+          ),
+        ),
+        child: Icon(
+          icon,
+          size: 18,
+          color: active ? Colors.white : Colors.grey,
+        ),
+      ),
+      SizedBox(height: 6),
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: active ? Colors.orange : Colors.grey,
+        ),
+      ),
+    ],
+  );
 }
 
 class ServiceCard extends StatelessWidget {
