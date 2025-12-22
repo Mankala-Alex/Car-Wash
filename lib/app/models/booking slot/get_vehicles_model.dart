@@ -1,23 +1,19 @@
-class AddVehicleResponse {
-  final bool success;
-  final VehicleData? data;
+class GetVehiclesModel {
+  final List<VehicleItem> vehicles;
 
-  AddVehicleResponse({
-    required this.success,
-    required this.data,
-  });
+  GetVehiclesModel({required this.vehicles});
 
-  factory AddVehicleResponse.fromJson(Map<String, dynamic> json) {
-    return AddVehicleResponse(
-      success: json['success'] ?? false,
-      data: json['data'] != null ? VehicleData.fromJson(json['data']) : null,
+  factory GetVehiclesModel.fromJson(List<dynamic> jsonList) {
+    return GetVehiclesModel(
+      vehicles: jsonList.map((json) => VehicleItem.fromJson(json)).toList(),
     );
   }
 }
 
-class VehicleData {
+class VehicleItem {
   final int id;
   final String customerId;
+  final String customerName;
   final String vehicleNumber;
   final String make;
   final String model;
@@ -25,9 +21,10 @@ class VehicleData {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  VehicleData({
+  VehicleItem({
     required this.id,
     required this.customerId,
+    required this.customerName,
     required this.vehicleNumber,
     required this.make,
     required this.model,
@@ -36,11 +33,12 @@ class VehicleData {
     required this.updatedAt,
   });
 
-  factory VehicleData.fromJson(Map<String, dynamic> json) {
-    return VehicleData(
+  factory VehicleItem.fromJson(Map<String, dynamic> json) {
+    return VehicleItem(
       id: json['id'] ?? 0,
-      customerId: json['customer_id'] ?? "",
-      vehicleNumber: json['vehicle_number'] ?? "",
+      customerId: json['customerId'] ?? "",
+      customerName: json['customer_name'] ?? "",
+      vehicleNumber: json['vehicle_number'] ?? json['vehicleNumber'] ?? "",
       make: json['make'] ?? "",
       model: json['model'] ?? "",
       type: json['type'] ?? "",

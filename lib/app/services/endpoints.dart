@@ -12,6 +12,7 @@ class EndPoints {
   static const apiGettimeslots = 'admin/time-slots';
   static const apiPostbookslot = 'bookings';
   static const apiGetbookinghistory = 'bookings/history';
+  static const apiGetvehicles = 'customer-vehicles';
   // static const apiMobValidateOTP = 'MobProcess/MobValidateOTP';
   // static const apiResendOTP = 'MobProcess/ResendOTP';
 }

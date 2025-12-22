@@ -24,6 +24,11 @@ class BookSlotRepository {
         requireAuthToken: false);
   }
 
+  Future<Response> apigetvehicles(String customerId) async {
+    return await ApiService.get(
+        "${EndPoints.apiGetvehicles}?customer_id=$customerId");
+  }
+
   Future<Response> apiGetslotdates() async {
     return await ApiService.get(EndPoints.apiGetslotdates);
   }
@@ -40,5 +45,21 @@ class BookSlotRepository {
   Future<Response> postBookSlot(requestBody) async {
     return await ApiService.post(EndPoints.apiPostbookslot, requestBody,
         requireAuthToken: false);
+  }
+
+  Future<Response> cancelBooking(String bookingCode) async {
+    return await ApiService.delete(
+      "/bookings/$bookingCode",
+      requireAuthToken: true,
+    );
+  }
+
+  Future<Response> updateBooking(
+      String bookingCode, Map<String, dynamic> body) async {
+    return await ApiService.put(
+      "/bookings/$bookingCode",
+      body,
+      requireAuthToken: true,
+    );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +22,7 @@ class BookSlotView extends GetView<BookSlotController> {
           onPressed: () => Get.back(),
         ),
         title: const Text(
-          "Confirm Car Wash",
+          "Confirm Car Was",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -32,52 +31,59 @@ class BookSlotView extends GetView<BookSlotController> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildServiceCard(context),
-
-            const SizedBox(height: 16),
-            Text(
-              "Select Your Vehicle",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDefaultLight,
+      body: Column(
+        children: [
+          // ------------------ SCROLL CONTENT ------------------
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildServiceCard(context),
+                  const SizedBox(height: 16),
+                  Text(
+                    "Select Your Vehicle",
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDefaultLight,
+                        ),
                   ),
-            ),
-            const SizedBox(height: 16),
-            _buildVehicleList(context),
+                  const SizedBox(height: 16),
+                  _buildVehicleList(context),
 
-            const SizedBox(height: 16),
-            Text(
-              "Select Date and Time",
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDefaultLight,
+                  const SizedBox(height: 16),
+                  Text(
+                    "Select Date and Time",
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDefaultLight,
+                        ),
                   ),
+                  const SizedBox(height: 15),
+
+                  _buildDatePicker(context),
+                  const SizedBox(height: 15),
+
+                  _buildTimeSlots(context),
+                  const SizedBox(height: 30),
+
+                  _buildLocationSection(context),
+                  const SizedBox(height: 20),
+                  _buildPriceDetails(context),
+
+                  const SizedBox(height: 10),
+                  // IMPORTANT
+                ],
+              ),
             ),
-            const SizedBox(height: 15),
+          ),
 
-            /// Date picker
-            _buildDatePicker(context),
-
-            const SizedBox(height: 15),
-
-            /// Time slots depending on selected date
-            _buildTimeSlots(context),
-
-            const SizedBox(height: 30),
-
-            _buildLocationSection(context),
-            const SizedBox(height: 20),
-            _buildPriceDetails(context),
-          ],
-        ),
+          // ------------------ FIXED BOTTOM BUTTON ------------------
+          _buildBottomConfirmBookingBar(
+              context, MediaQuery.of(context).size.width, controller.price),
+        ],
       ),
-      bottomNavigationBar:
-          _buildBottomConfirmBookingBar(context, screenWidth, controller.price),
     );
   }
 
@@ -444,7 +450,7 @@ class BookSlotView extends GetView<BookSlotController> {
             label: Text(label),
             selected: isSelected,
             onSelected: slot.isActive
-                ? (_) => controller.updateSelectedTimeSlot(label)
+                ? (_) => controller.updateSelectedTimeSlot(label, slot.id)
                 : null,
             selectedColor: AppColors.primaryLight,
             disabledColor: Colors.grey.shade300,
@@ -510,7 +516,9 @@ class BookSlotView extends GetView<BookSlotController> {
         ),
         const SizedBox(height: 15),
         GestureDetector(
-          onTap: () => Get.toNamed(Routes.addlocation),
+          onTap: () {
+            Get.toNamed(Routes.addlocation);
+          },
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -819,7 +827,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 elevation: 0,
               ),
               child: Text(
-                "Confirm Booking",
+                "Confirm Book",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: AppColors.textWhiteLight,
                       fontWeight: FontWeight.w600,

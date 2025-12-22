@@ -71,16 +71,10 @@ class FeaturesListView extends GetView<FeaturesListController> {
                             height: 155,
                             width: double.infinity,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Image.asset(
-                              "assets/carwash/default_service.png",
-                              height: 155,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
                           ),
                   ),
 
-                  // TITLE + PRICE
+                  /// NAME + PRICE
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
                     child: Row(
@@ -112,7 +106,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                     ),
                   ),
 
-                  // DESCRIPTION
+                  /// DESCRIPTION
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                     child: Text(
@@ -123,7 +117,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                     ),
                   ),
 
-                  // FEATURES
+                  /// FEATURES
                   Padding(
                     padding: const EdgeInsets.fromLTRB(6, 4, 6, 0),
                     child: Column(
@@ -149,7 +143,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                     ),
                   ),
 
-                  // BOOK NOW BUTTON
+                  /// BOOK NOW BUTTON
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: SizedBox(
@@ -163,16 +157,23 @@ class FeaturesListView extends GetView<FeaturesListController> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         onPressed: () {
+                          final prevArgs = Get.arguments ?? {};
+
                           Get.toNamed(
                             Routes.bookslot,
                             arguments: {
+                              "is_edit": prevArgs["is_edit"] ?? false,
+                              "booking_code": prevArgs["booking_code"],
+                              "vehicle": prevArgs["vehicle"],
+
+                              // Service the user selected now
                               "image":
                                   Constants.imageBaseUrl + service.imageUrl,
                               "name": service.name,
                               "description": service.description,
-                              "price": service.price,
-                              "features": service.features,
+                              "price": service.price.toString(),
                               "service_id": service.id,
+                              "features": service.features,
                             },
                           );
                         },

@@ -2,33 +2,26 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/models/auth/otp_model.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../helpers/flutter_toast.dart';
-import '../../helpers/shared_preferences.dart'; // ⬅️ IMPORTANT
+import '../../helpers/shared_preferences.dart';
 
 class OtpController extends GetxController {
   final AuthRepository repository = AuthRepository();
 
   RxString otp = "".obs;
 
-  late String customerId; // this is UUID (from login/signup)
+  late String customerId; // UUID from login/signup
   late String phone;
 
   @override
   void onInit() {
-    customerId = Get.arguments["customerId"];
+    customerId = Get.arguments["customerId"] ?? "";
+// UUID
     phone = Get.arguments["phone"];
     super.onInit();
   }
 
   void setOtp(String value) {
     otp.value = value;
-  }
-
-  /// Extract numeric ID from formats like "CUST-933904"
-  int _extractNumericCustomerId(String? customerCode) {
-    if (customerCode == null) return 0;
-    final match = RegExp(r'(\d+)$').firstMatch(customerCode);
-    if (match == null) return 0;
-    return int.tryParse(match.group(1) ?? '') ?? 0;
   }
 
   Future<Otpmodel?> verifyOtp() async {
@@ -40,8 +33,14 @@ class OtpController extends GetxController {
     loadingPopUp(true);
 
     try {
+      print("📤 SENDING BODY TO BACKEND:");
+      print({
+        "id": customerId,
+        "otp": otp.value,
+      });
+
       final resp = await repository.postVerifyOtp({
-        "customerId": customerId,
+        "id": customerId, // <-- REQUIRED BY BACKEND
         "otp": otp.value,
       });
 
@@ -55,41 +54,35 @@ class OtpController extends GetxController {
       }
 
       // --------------------------------------------------------
-      // SAVE CUSTOMER DETAILS AFTER OTP SUCCESS
+      // SAVE CUSTOMER DETAILS — UUID ONLY (NO NUMERIC ID)
       // --------------------------------------------------------
-      // --------------------------------------------------------
-// SAVE CUSTOMER DETAILS AFTER OTP SUCCESS
-// --------------------------------------------------------
       final customer = resp.data["customer"];
       if (customer != null) {
-        final String? uuid = customer["id"];
-        final String? code = customer["customerId"];
-        final int numericId = _extractNumericCustomerId(code);
+        final String uuid = customer["id"];
+        final String fullName =
+            "${customer["firstName"] ?? ""} ${customer["lastName"] ?? ""}"
+                .trim();
+        final String email = customer["email"] ?? "";
 
-        // SAVE UUID & NUMERIC ID
-        await SharedPrefsHelper.setString("customerUuid", uuid ?? "");
-        await SharedPrefsHelper.setInt("customerNumericId", numericId);
+        print("🔵 OTP Verified: Saving user profile...");
+        print("UUID: $uuid");
+        print("Name: $fullName");
 
-        // SAVE CUSTOMER NAME
-        final String? first = customer["firstName"];
-        final String? last = customer["lastName"];
-        final String fullName = "${first ?? ""} ${last ?? ""}".trim();
+        // SAVE UUID ONLY
+        await SharedPrefsHelper.setString("customerUuid", uuid);
+
+        // SAVE NAME
         await SharedPrefsHelper.setString("customerName", fullName);
+
+        // SAVE EMAIL
+        await SharedPrefsHelper.setString("customerEmail", email);
 
         // SAVE PHONE
         await SharedPrefsHelper.setString("customerPhone", phone);
-
-        print("🔵 OTP Verified & Stored:");
-        print("UUID: $uuid");
-        print("Numeric ID: $numericId");
-        print("Name: $fullName");
-        print("Phone: $phone");
-      } else {
-        print("⚠️ OTP response did not contain 'customer' object.");
       }
 
       // --------------------------------------------------------
-      // OTP SUCCESS HANDLING
+      // OTP SUCCESS FEEDBACK
       // --------------------------------------------------------
       successToast("OTP Verified!");
       return data;
@@ -100,62 +93,3 @@ class OtpController extends GetxController {
     }
   }
 }
-
-//for booking history//
-// import 'package:get/get.dart';
-// import 'package:my_new_app/app/models/auth/otp_model.dart';
-// import '../../repositories/auth/auth_repository.dart';
-// import '../../helpers/flutter_toast.dart';
-
-// class OtpController extends GetxController {
-//   final AuthRepository repository = AuthRepository();
-
-//   RxString otp = "".obs;
-
-//   late String customerId;
-//   late String phone;
-
-//   @override
-//   void onInit() {
-//     customerId = Get.arguments["customerId"];
-//     phone = Get.arguments["phone"];
-//     super.onInit();
-//   }
-
-//   void setOtp(String value) {
-//     otp.value = value;
-//   }
-
-//   Future<Otpmodel?> verifyOtp() async {
-//     if (otp.value.length != 4) {
-//       errorToast("Enter valid OTP");
-//       return null;
-//     }
-
-//     loadingPopUp(true);
-
-//     try {
-//       final resp = await repository.postVerifyOtp({
-//         "customerId": customerId,
-//         "otp": otp.value,
-//       });
-
-//       loadingPopUp(false);
-
-//       // Convert API response to model
-//       final data = Otpmodel.fromJson(resp.data);
-
-//       // Backend sends: { success: false, message: "Invalid OTP" }
-//       if (!data.success) {
-//         errorToast(data.message);
-//         return null;
-//       }
-
-//       return data;
-//     } catch (e) {
-//       loadingPopUp(false);
-//       errorToast("OTP verification failed");
-//       return null;
-//     }
-//   }
-// }

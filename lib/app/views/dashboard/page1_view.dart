@@ -48,7 +48,7 @@ class Page1View extends GetView<DashboardController> {
             //     )),
             const SizedBox(width: 10),
             const Text(
-              "CAR WASH",
+              "CAR WAS",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

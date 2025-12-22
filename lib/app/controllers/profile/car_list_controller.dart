@@ -14,7 +14,7 @@ class CarListController extends GetxController {
 
   // Load customerId from SharedPrefs
   Future<void> loadCustomerId() async {
-    customerId = await SharedPrefsHelper.getString("customerId") ?? "";
+    customerId = await SharedPrefsHelper.getString("customerUuid") ?? "";
 
     if (customerId.isEmpty) {
       print("❌ No customerId found");

@@ -12,7 +12,7 @@ class Bookinghistorymodel {
       success: json["success"] ?? false,
       data: json["data"] == null
           ? []
-          : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+          : List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
     );
   }
 
@@ -43,12 +43,12 @@ class Datum {
 
   final String id;
   final String bookingCode;
-  final int customerId;
+  final String customerId; // ← UUID
   final String customerName;
   final String vehicle;
-  final int serviceId;
+  final String serviceId; // ← STRING NOW
   final String serviceName;
-  final String? scheduledAt; // <-- FIXED (was DateTime)
+  final String? scheduledAt;
   final String washerId;
   final String washerName;
   final String status;
@@ -61,16 +61,16 @@ class Datum {
     return Datum(
       id: json["id"] ?? "",
       bookingCode: json["booking_code"] ?? "",
-      customerId: json["customer_id"] ?? 0,
+      customerId: json["customer_id"]?.toString() ?? "",
       customerName: json["customer_name"] ?? "",
       vehicle: json["vehicle"] ?? "",
-      serviceId: json["service_id"] ?? 0,
+      serviceId: json["service_id"]?.toString() ?? "",
       serviceName: json["service_name"] ?? "",
-      scheduledAt: json["scheduled_at"], // <-- FIXED
-      washerId: json["washer_id"] ?? "",
-      washerName: json["washer_name"] ?? "",
+      scheduledAt: json["scheduled_at"],
+      washerId: json["washer_id"]?.toString() ?? "",
+      washerName: json["washer_name"]?.toString() ?? "",
       status: json["status"] ?? "",
-      amount: json["amount"] ?? "",
+      amount: json["amount"]?.toString() ?? "",
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: json["updated_at"],
       slotId: json["slot_id"] ?? 0,
@@ -85,7 +85,7 @@ class Datum {
         "vehicle": vehicle,
         "service_id": serviceId,
         "service_name": serviceName,
-        "scheduled_at": scheduledAt, // <-- FIXED
+        "scheduled_at": scheduledAt,
         "washer_id": washerId,
         "washer_name": washerName,
         "status": status,

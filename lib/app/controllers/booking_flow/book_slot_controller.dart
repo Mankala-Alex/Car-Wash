@@ -1,95 +1,111 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/models/booking slot/slot_dates_model.dart';
 import 'package:my_new_app/app/models/booking slot/slot_times_model.dart';
-import 'package:my_new_app/app/models/booking slot/book_slot_model.dart';
 import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/services/api_service.dart';
 
 class BookSlotController extends GetxController {
-  /// null at start → user must tap a date first
+  final BookSlotRepository repository = BookSlotRepository();
+
+  bool isEditMode = false;
+  String editBookingCode = "";
+
+  //-----------------------
+  // REACTIVE VARIABLES
+  //-----------------------
+  final customerVehicles = <dynamic>[].obs;
+
   final selectedDate = Rx<DateTime?>(null);
-
-  /// label of selected time slot ("09:00")
   final selectedTimeSlot = Rx<String?>(null);
+  final selectedVehicle = Rx<String?>(null);
+  final selectedAddress = Rx<String?>("Home");
 
-  /// vehicles of this customer
-  RxList customerVehicles = [].obs;
+  int? selectedDateId;
+  final selectedSlotId = 0.obs;
 
-  /// all available dates from backend
   final slotDates = <SlotDate>[].obs;
-
-  /// time-slots for currently selected date
   final slotTimes = <TimeslotDatum>[].obs;
 
   final isLoadingDates = false.obs;
   final isLoadingTimes = false.obs;
 
-  int? selectedDateId; // backend date_id
-
+  //-----------------------
+  // CUSTOMER INFO
+  //-----------------------
   String customerUuid = "";
-  int? customerNumericId;
+  String customerName = "";
+  String customerPhone = "";
 
-  // Other selections
-  final selectedVehicle = Rx<String?>('Tesla Model S');
-  final selectedService = Rx<String?>('Exterior Polish');
-  final selectedAddress = Rx<String?>('Home');
-
+  //-----------------------
+  // SERVICE DETAILS
+  //-----------------------
   late String name;
   late String description;
-  late String price; // keep as String for UI
+  late String price;
+  late String serviceId;
   late List<String> features;
   late String image;
 
-  String? customerName; // from SharedPrefs
-  String? customerPhone; // optional
+  bool isSameDate(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   @override
   void onInit() {
     super.onInit();
 
     final data = Get.arguments ?? {};
-    name = data["name"]?.toString() ?? "";
-    description = data["description"]?.toString() ?? "";
-    price = data["price"]?.toString() ?? "";
+    if (data["is_edit"] == true) {
+      isEditMode = true;
+      editBookingCode = data["booking_code"] ?? "";
+
+      // Force user to pick again
+      selectedVehicle.value = "";
+      selectedDate.value = null;
+      selectedTimeSlot.value = null;
+      selectedSlotId.value = 0;
+
+      print("🟦 EDIT MODE ENABLED for $editBookingCode");
+    }
+
+    image = data["image"] ?? "";
+    name = data["name"] ?? "";
+    description = data["description"] ?? "";
+    price = data["price"].toString();
+    serviceId = data["service_id"]?.toString() ?? "";
+    // ✔️ Correct field
     features = List<String>.from(data["features"] ?? []);
-    image = data["image"] ?? "assets/carwash/yellowcar.png";
 
     initData();
   }
 
   Future<void> initData() async {
-    await loadCustomerIds();
+    await loadCustomerInfo();
     await fetchCustomerVehicles();
     await fetchSlotDates();
   }
 
-  Future<void> loadCustomerIds() async {
+  //-----------------------
+  // LOAD SAVED USER DATA
+  //-----------------------
+  Future<void> loadCustomerInfo() async {
     customerUuid = await SharedPrefsHelper.getString("customerUuid") ?? "";
-    customerNumericId = await SharedPrefsHelper.getInt("customerNumericId");
-    customerName =
-        await SharedPrefsHelper.getString("customerName") ?? "No Name";
-
+    customerName = await SharedPrefsHelper.getString("customerName") ?? "";
     customerPhone = await SharedPrefsHelper.getString("customerPhone") ?? "";
 
-    print("✅ Loaded Customer:");
-    print("UUID: $customerUuid");
-    print("Numeric ID: $customerNumericId");
-    print("Name: $customerName");
+    print("UUID Loaded: $customerUuid");
   }
 
-  // ---------------- DATE & TIME ----------------
-
+  //-----------------------
+  // DATE SELECTION
+  //-----------------------
   void updateSelectedDate(DateTime newDate) {
-    selectedDate.value = DateTime(
-      newDate.year,
-      newDate.month,
-      newDate.day,
-    );
-
-    selectedDate.refresh();
+    selectedDate.value = newDate;
     selectedTimeSlot.value = null;
+    selectedSlotId.value = 0;
 
     final match = slotDates.firstWhereOrNull(
       (d) => isSameDate(d.date, newDate),
@@ -98,82 +114,72 @@ class BookSlotController extends GetxController {
     if (match != null) {
       selectedDateId = match.id;
       fetchTimeslots(match.id);
-    } else {
-      selectedDateId = null;
-      slotTimes.clear();
     }
-
-    print("User selected: $newDate → ID = $selectedDateId");
   }
 
-  bool isSameDate(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
-  }
-
-  void updateSelectedTimeSlot(String timeLabel) {
+  //-----------------------
+  // TIME SLOT SELECTION
+  //-----------------------
+  void updateSelectedTimeSlot(String timeLabel, int slotId) {
     selectedTimeSlot.value = timeLabel;
-    print("Time slot updated to: $timeLabel");
+    selectedSlotId.value = slotId;
   }
 
-  // ---------------- OTHER SELECTIONS ----------------
-
+  //-----------------------
+  // VEHICLE
+  //-----------------------
   void updateSelectedVehicle(String vehicleName) {
     selectedVehicle.value = vehicleName;
-    print("Vehicle updated to: $vehicleName");
   }
 
-  void updateSelectedService(String serviceName) {
-    selectedService.value = serviceName;
-    print("Service updated to: $serviceName");
-  }
-
-  void updateSelectedAddress(String addressTitle) {
-    selectedAddress.value = addressTitle;
-    print("Address updated to: $addressTitle");
-  }
-
-  // ---------------- VEHICLES ----------------
-
+  //-----------------------
+  // FETCH VEHICLES
+  //-----------------------
   Future<void> fetchCustomerVehicles() async {
-    // NOTE: your vehicles API still uses uuid, so keep that as is:
-    if (customerUuid.isEmpty) {
-      print("❌ Cannot fetch vehicles, customerUuid is empty.");
-      customerVehicles.clear();
-      return;
-    }
-
     try {
-      final response =
-          await ApiService.get("customer-vehicles?customer_id=$customerUuid");
+      if (customerUuid.isEmpty) {
+        print("❌ No customer UUID found");
+        return;
+      }
 
-      if (response.statusCode == 200) {
-        customerVehicles.value = response.data;
+      print("📌 Fetching vehicles for: $customerUuid");
+
+      final resp = await ApiService.get(
+        "customer-vehicles?customer_id=$customerUuid",
+      );
+
+      if (resp.statusCode == 200) {
+        print("📥 VEHICLES RESPONSE: ${resp.data}");
+
+        // Only assign vehicles that belong to this customer
+        customerVehicles.value = List.from(resp.data);
+
+        if (customerVehicles.isEmpty) {
+          print("🚫 No vehicles found for this customer.");
+        }
       }
     } catch (e) {
-      print("Vehicle fetch failed: $e");
+      print("❌ Vehicle fetch failed: $e");
     }
   }
 
-  // ---------------- SLOTS: DATES & TIMES ----------------
-
+  //-----------------------
+  // FETCH DATES
+  //-----------------------
   Future<void> fetchSlotDates() async {
     try {
       isLoadingDates(true);
 
-      final resp = await BookSlotRepository().apiGetslotdates();
+      final resp = await repository.apiGetslotdates();
       final data = Slotsdatemodel.fromJson(resp.data);
 
       final today = DateTime.now();
 
-      // Keep only today & future dates
       slotDates.value = data.data.where((d) {
-        final slotDate = DateTime(d.date.year, d.date.month, d.date.day);
-        final todayOnly = DateTime(today.year, today.month, today.day);
-        return slotDate.isAtSameMomentAs(todayOnly) ||
-            slotDate.isAfter(todayOnly);
+        final dDate = DateTime(d.date.year, d.date.month, d.date.day);
+        final tOnly = DateTime(today.year, today.month, today.day);
+        return dDate.isAtSameMomentAs(tOnly) || dDate.isAfter(tOnly);
       }).toList();
-
-      print("Filtered dates: ${slotDates.length}");
     } catch (e) {
       print("❌ Failed to load dates: $e");
     } finally {
@@ -181,356 +187,174 @@ class BookSlotController extends GetxController {
     }
   }
 
-  // Future<void> fetchSlotDates() async {
-  //   try {
-  //     isLoadingDates(true);
-
-  //     final resp = await BookSlotRepository().apiGetslotdates();
-  //     final data = Slotsdatemodel.fromJson(resp.data);
-
-  //     slotDates.value = data.data;
-  //     print("Loaded dates: ${slotDates.length}");
-  //   } catch (e) {
-  //     print("❌ Failed to load dates: $e");
-  //   } finally {
-  //     isLoadingDates(false);
-  //   }
-  //   print("BACKEND DATES (after model parse):");
-  //   for (var d in slotDates) {
-  //     print("ID: ${d.id} → DATE: ${d.date}");
-  //   }
-  // }
-
+  //-----------------------
+  // FETCH TIME SLOTS
+  //-----------------------
   Future<void> fetchTimeslots(int dateId) async {
     try {
       isLoadingTimes(true);
 
-      final resp = await BookSlotRepository().apiGettimeslots(dateId);
+      final resp = await repository.apiGettimeslots(dateId);
       final data = Slottimesmodel.fromJson(resp.data);
 
       slotTimes.value = data.data;
-      print("Loaded ${slotTimes.length} slots for dateId $dateId");
     } catch (e) {
       print("❌ Failed to load time slots: $e");
-      slotTimes.clear();
     } finally {
       isLoadingTimes(false);
     }
   }
 
-  // ---------------- BOOK SLOT ----------------
-
+  //-----------------------
+  // BOOK SLOT
+  //-----------------------
   Future<void> bookSlot() async {
-    if (selectedDate.value == null || selectedTimeSlot.value == null) {
-      Get.snackbar("Error", "Please select a date and time");
+    print("🚀 ENTERED BOOKSLOT");
+
+    print("customerUuid = '$customerUuid'");
+    print("selectedVehicle = '${selectedVehicle.value}'");
+    print("selectedTimeSlot = '${selectedTimeSlot.value}'");
+    print("selectedSlotId = ${selectedSlotId.value}");
+
+    if (customerUuid.isEmpty) {
+      print("❌ FAILED: Customer ID missing");
+      errorToast("Customer ID missing");
       return;
     }
 
-    if (customerNumericId == null || customerNumericId == 0) {
-      Get.snackbar("Error", "Customer ID not found, please re-login");
+    if ((selectedVehicle.value ?? "").isEmpty) {
+      print("❌ FAILED: Vehicle not selected");
+      errorToast("Please select a vehicle");
       return;
     }
 
-    try {
-      final selected = slotTimes.firstWhere(
-        (s) => s.time == selectedTimeSlot.value,
-      );
+    if ((selectedTimeSlot.value ?? "").isEmpty) {
+      print("❌ FAILED: Time slot not selected");
+      errorToast("Please select a time slot");
+      return;
+    }
 
-      // ⬅️ Extract correct hour & minute based on selected time
-      final hour = int.parse(selected.time.split(":")[0]);
-      final minute = int.parse(selected.time.split(":")[1]);
+    if (selectedSlotId.value == 0) {
+      print("❌ FAILED: Slot ID = 0 (invalid)");
+      errorToast("Invalid slot selected");
+      return;
+    }
+// -------------------------------------------------------
+// EDIT BOOKING MODE (FULL & CORRECTED)
+// -------------------------------------------------------
+    // -------------------------------------------------------
+// EDIT BOOKING MODE (FULL & CORRECTED)
+// -------------------------------------------------------
+    // -------------------------------------------------------
+// EDIT BOOKING MODE (FINAL)
+// -------------------------------------------------------
+    if (isEditMode) {
+      if (selectedSlotId.value == 0) {
+        errorToast("Please select a slot");
+        return;
+      }
 
-      final scheduledDateTime = DateTime(
-        selectedDate.value!.year,
-        selectedDate.value!.month,
-        selectedDate.value!.day,
-        hour,
-        minute,
-      );
-
-      final requestBody = {
-        "customer_id": customerNumericId,
-        "customer_name": customerName ?? "Unknown",
-        "vehicle": selectedVehicle.value ?? "",
-        "service_id": Get.arguments["service_id"],
+      final updateBody = {
+        "vehicle": selectedVehicle.value,
+        "service_id": serviceId,
         "service_name": name,
-        "slot_id": selected.id,
-        "scheduled_at": scheduledDateTime.toUtc().toIso8601String(),
-        "washer_id": "sarim", // if required
-        "washer_name": "sarim", // if required
-        "amount": double.tryParse(price) ?? 0,
-        "status": "Pending",
+        "amount": double.tryParse(price) ?? 0.0,
+        "slot_id": selectedSlotId.value,
+        "scheduled_at": buildScheduledAt(),
       };
 
-      print("📤 BOOKING REQUEST BODY:");
-      print(requestBody);
+      print("📤 UPDATE BOOKING BODY → $updateBody");
 
-      final resp = await BookSlotRepository().postBookSlot(requestBody);
+      final resp = await repository.updateBooking(editBookingCode, updateBody);
 
-      print("📥 BOOKING RESPONSE:");
-      print(resp.data);
+      if (resp.data["success"] == true) {
+        successToast("Booking Updated Successfully!");
 
-      Get.snackbar("Success", "Booking created!");
+        // GO DIRECTLY TO HISTORY PAGE (Page 2)
+        Get.offAllNamed(
+          Routes.dashboard,
+          arguments: 1, // <-- Page2 index
+        );
+      } else {
+        errorToast("Failed to update booking");
+      }
 
-      Get.toNamed(Routes.confirmationpageview, arguments: resp.data);
+      return; // IMPORTANT
+    }
+
+    print("✅ VALIDATION PASSED — Building body…");
+
+    final double priceNumber = double.tryParse(price) ?? 0.0;
+
+    final body = {
+      "customer_id": customerUuid,
+      "customer_name": customerName,
+      "vehicle": selectedVehicle.value,
+      "service_id": serviceId,
+      "service_name": name,
+      "slot_id": selectedSlotId.value,
+      "scheduled_at": buildScheduledAt(),
+      "amount": priceNumber,
+      "status": "PENDING",
+    };
+
+    print("📤 FINAL BOOKING BODY → $body");
+
+    try {
+      final resp = await repository.postBookSlot(body);
+
+      print("📥 BOOKING RESPONSE: ${resp.data}");
+
+      if (resp.data["success"] == true) {
+        print("🎉 BOOKING SUCCESS — NAVIGATING");
+        successToast("Booking Confirmed!");
+        Get.toNamed(Routes.confirmationpageview);
+      } else {
+        print("❌ BOOKING FAILED FROM API");
+        errorToast(resp.data["error"] ?? "Booking failed");
+      }
     } catch (e) {
-      print("❌ Booking error: $e");
-      Get.snackbar("Booking Failed", "Please try again.");
+      print("🔥 EXCEPTION IN API: $e");
+      errorToast("Booking failed. Try again.");
     }
   }
+
+  //-----------------------
+  // ADDRESS
+  //-----------------------
+  void updateSelectedAddress(String title) {
+    selectedAddress.value = title;
+  }
+
+  String buildScheduledAt() {
+    final date = selectedDate.value;
+    final time = selectedTimeSlot.value;
+
+    if (date == null || time == null || time.isEmpty) return "";
+
+    final parts = time.split(":");
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final minute = int.tryParse(parts[1]) ?? 0;
+
+    // Create LOCAL datetime
+    final local = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      hour,
+      minute,
+    );
+
+    // Convert to UTC but KEEP same time values
+    final utcFixed = DateTime.utc(
+      local.year,
+      local.month,
+      local.day,
+      local.hour,
+      local.minute,
+    );
+
+    // Send with Z
+    return utcFixed.toIso8601String();
+  }
 }
-
-//for booking history//
-// import 'package:get/get.dart';
-// import 'package:my_new_app/app/helpers/shared_preferences.dart';
-// import 'package:my_new_app/app/models/booking slot/slot_dates_model.dart';
-// import 'package:my_new_app/app/models/booking slot/slot_times_model.dart';
-// import 'package:my_new_app/app/models/booking%20slot/book_slot_model.dart';
-// import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
-// import 'package:my_new_app/app/routes/app_routes.dart';
-// import 'package:my_new_app/app/services/api_service.dart';
-
-// class BookSlotController extends GetxController {
-//   /// null at start → user must tap a date first
-//   final selectedDate = Rx<DateTime?>(null);
-
-//   /// label of selected time slot ("09:00 - 10:00")
-//   final selectedTimeSlot = Rx<String?>(null);
-
-//   /// vehicles of this customer
-//   RxList customerVehicles = [].obs;
-
-//   /// all available dates from backend
-//   final slotDates = <SlotDate>[].obs;
-
-//   /// time-slots for currently selected date
-//   final slotTimes = <TimeslotDatum>[].obs;
-
-//   final isLoadingDates = false.obs;
-//   final isLoadingTimes = false.obs;
-
-//   int? selectedDateId; // backend date_id
-
-//   String customerId = "";
-
-//   // Other selections
-//   final selectedVehicle = Rx<String?>('Tesla Model S');
-//   final selectedService = Rx<String?>('Exterior Polish');
-//   final selectedAddress = Rx<String?>('Home');
-
-//   late String name;
-//   late String description;
-//   late String price; // keep as String for UI
-//   late List<String> features;
-//   late String image;
-
-//   @override
-//   void onInit() {
-//     super.onInit();
-
-//     final data = Get.arguments ?? {};
-//     name = data["name"]?.toString() ?? "";
-//     description = data["description"]?.toString() ?? "";
-//     price = data["price"]?.toString() ?? ""; // 👈 avoid double/String error
-//     features = List<String>.from(data["features"] ?? []);
-//     image = data["image"] ?? "assets/carwash/yellowcar.png";
-
-//     initData();
-//   }
-
-//   Future<void> initData() async {
-//     await loadCustomerId();
-//     await fetchCustomerVehicles();
-//     await fetchSlotDates();
-//     // ❌ do NOT set selectedDate or fetch slots here
-//     // user must first select a date
-//   }
-
-//   // ---------------- DATE & TIME ----------------
-
-//   /// Called from UI when user taps a date in the timeline
-//   void updateSelectedDate(DateTime newDate) {
-//     selectedDate.value = DateTime(
-//       newDate.year,
-//       newDate.month,
-//       newDate.day,
-//     );
-
-//     selectedDate.refresh(); // <-- THIS FIXES UI NOT UPDATING
-
-//     selectedTimeSlot.value = null;
-
-//     final match = slotDates.firstWhereOrNull(
-//       (d) => d.date != null && isSameDate(d.date!, newDate),
-//     );
-
-//     if (match != null) {
-//       selectedDateId = match.id;
-//       fetchTimeslots(match.id);
-//     } else {
-//       selectedDateId = null;
-//       slotTimes.clear();
-//     }
-
-//     print("User selected: $newDate → ID = $selectedDateId");
-//   }
-
-//   bool isSameDate(DateTime a, DateTime b) {
-//     return a.year == b.year && a.month == b.month && a.day == b.day;
-//   }
-
-//   void updateSelectedTimeSlot(String timeLabel) {
-//     selectedTimeSlot.value = timeLabel;
-//     print("Time slot updated to: $timeLabel");
-//   }
-
-//   // ---------------- OTHER SELECTIONS ----------------
-
-//   void updateSelectedVehicle(String vehicleName) {
-//     selectedVehicle.value = vehicleName;
-//     print("Vehicle updated to: $vehicleName");
-//   }
-
-//   void updateSelectedService(String serviceName) {
-//     selectedService.value = serviceName;
-//     print("Service updated to: $serviceName");
-//   }
-
-//   void updateSelectedAddress(String addressTitle) {
-//     selectedAddress.value = addressTitle;
-//     print("Address updated to: $addressTitle");
-//   }
-
-//   // ---------------- BOOKING CONFIRM ----------------
-
-//   void confirmBooking() {
-//     print("Booking Confirmed!");
-//     print("Date: ${selectedDate.value}");
-//     print("Time: ${selectedTimeSlot.value}");
-//     print("Vehicle: ${selectedVehicle.value}");
-//     print("Service: ${selectedService.value}");
-//     print("Address: ${selectedAddress.value}");
-
-//     Get.snackbar("Booking Confirmed", "Your car wash has been scheduled!");
-//   }
-
-//   // ---------------- VEHICLES ----------------
-
-//   Future<void> fetchCustomerVehicles() async {
-//     if (customerId.isEmpty) {
-//       print("❌ Cannot fetch vehicles, customerId is empty.");
-//       customerVehicles.clear();
-//       return;
-//     }
-
-//     try {
-//       final response =
-//           await ApiService.get("customer-vehicles?customer_id=$customerId");
-
-//       if (response.statusCode == 200) {
-//         customerVehicles.value = response.data;
-//       }
-//     } catch (e) {
-//       print("Vehicle fetch failed: $e");
-//     }
-//   }
-
-//   Future<void> loadCustomerId() async {
-//     customerId = await SharedPrefsHelper.getString("customerId") ?? "";
-
-//     if (customerId.isEmpty) {
-//       print("❌ Customer ID missing");
-//     } else {
-//       print("✓ Loaded customerId: $customerId");
-//     }
-//   }
-
-//   // ---------------- SLOTS: DATES & TIMES ----------------
-
-//   Future<void> fetchSlotDates() async {
-//     try {
-//       isLoadingDates(true);
-
-//       final resp = await BookSlotRepository().apiGetslotdates();
-//       final data = Slotsdatemodel.fromJson(resp.data);
-
-//       slotDates.value = data.data;
-//       print("Loaded dates: ${slotDates.length}");
-//     } catch (e) {
-//       print("❌ Failed to load dates: $e");
-//     } finally {
-//       isLoadingDates(false);
-//     }
-//     print("BACKEND DATES (after model parse):");
-//     for (var d in slotDates) {
-//       print("ID: ${d.id} → DATE: ${d.date}");
-//     }
-//   }
-
-//   Future<void> fetchTimeslots(int dateId) async {
-//     try {
-//       isLoadingTimes(true);
-
-//       final resp = await BookSlotRepository().apiGettimeslots(dateId);
-//       final data = Slottimesmodel.fromJson(resp.data);
-
-//       slotTimes.value = data.data;
-//       print("Loaded ${slotTimes.length} slots for dateId $dateId");
-//     } catch (e) {
-//       print("❌ Failed to load time slots: $e");
-//       slotTimes.clear();
-//     } finally {
-//       isLoadingTimes(false);
-//     }
-//   }
-
-//   Future<void> bookSlot() async {
-//     if (selectedDate.value == null || selectedTimeSlot.value == null) {
-//       Get.snackbar("Error", "Please select a date and time");
-//       return;
-//     }
-
-//     try {
-//       final selected = slotTimes.firstWhere(
-//         (s) => s.time == selectedTimeSlot.value,
-//       );
-
-//       final DateTime scheduledDateTime = DateTime(
-//         selectedDate.value!.year,
-//         selectedDate.value!.month,
-//         selectedDate.value!.day,
-//         selected.hour,
-//         selected.minute,
-//       );
-
-//       final requestBody = {
-//         "customer_id": customerId,
-//         "customer_name": "khaleel ulla", // TODO: get from local
-//         "vehicle": selectedVehicle.value ?? "",
-//         "service_id": Get.arguments["service_id"], // <-- from previous page
-//         "service_name": name,
-//         "slot_id": selected.id,
-//         "scheduled_at": scheduledDateTime.toUtc().toIso8601String(),
-//         "washer_id": "sarim", // backend demands
-//         "washer_name": "sarim", // backend demands
-//         "amount": double.tryParse(price) ?? 0,
-//         "status": "Pending",
-//       };
-
-//       print("📤 BOOKING REQUEST BODY:");
-//       print(requestBody);
-
-//       final resp = await BookSlotRepository().postBookSlot(requestBody);
-
-//       print("📥 BOOKING RESPONSE:");
-//       print(resp.data);
-
-//       Get.snackbar("Success", "Booking created!");
-
-//       Get.toNamed(Routes.confirmationpageview, arguments: resp.data);
-//     } catch (e) {
-//       print("❌ Booking error: $e");
-//       Get.snackbar("Booking Failed", "Please try again.");
-//     }
-//   }
-// }

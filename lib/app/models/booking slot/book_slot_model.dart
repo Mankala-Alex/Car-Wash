@@ -36,12 +36,12 @@ class Data {
 
   final String id;
   final String bookingCode;
-  final int customerId;
+  final String customerId; // ← UUID
   final String customerName;
   final String vehicle;
-  final int serviceId;
+  final String serviceId; // ← STRING
   final String serviceName;
-  final String? scheduledAt; // <— FIXED
+  final String? scheduledAt;
   final String washerId;
   final String washerName;
   final String status;
@@ -54,16 +54,16 @@ class Data {
     return Data(
       id: json["id"] ?? "",
       bookingCode: json["booking_code"] ?? "",
-      customerId: json["customer_id"] ?? 0,
+      customerId: json["customer_id"]?.toString() ?? "",
       customerName: json["customer_name"] ?? "",
       vehicle: json["vehicle"] ?? "",
-      serviceId: json["service_id"] ?? 0,
+      serviceId: json["service_id"]?.toString() ?? "",
       serviceName: json["service_name"] ?? "",
-      scheduledAt: json["scheduled_at"], // <— FIXED
-      washerId: json["washer_id"] ?? "",
-      washerName: json["washer_name"] ?? "",
+      scheduledAt: json["scheduled_at"] ?? "",
+      washerId: json["washer_id"]?.toString() ?? "",
+      washerName: json["washer_name"]?.toString() ?? "",
       status: json["status"] ?? "",
-      amount: json["amount"] ?? "",
+      amount: json["amount"]?.toString() ?? "",
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: json["updated_at"],
       slotId: json["slot_id"] ?? 0,

@@ -98,23 +98,25 @@ class Page4View extends GetView<DashboardController> {
               const SizedBox(height: 20),
 
               // ---------- Name ----------
-              const Text(
-                "John Doe",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
+              Obx(() => Text(
+                    controller.customerName.value.isEmpty
+                        ? "Guest User"
+                        : controller.customerName.value,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )),
               const SizedBox(height: 4),
-
-              const Text(
-                "john.doe@email.com",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
+              Obx(() => Text(
+                    controller.customerEmail.value.isEmpty
+                        ? "No Email"
+                        : controller.customerEmail.value,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  )),
 
               const SizedBox(height: 30),
 

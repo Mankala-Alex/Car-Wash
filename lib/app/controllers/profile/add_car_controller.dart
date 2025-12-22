@@ -6,19 +6,14 @@ import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/services/api_service.dart';
 
 class AddCarController extends GetxController {
-  // Repository
   final BookSlotRepository repository = BookSlotRepository();
 
-  // Text fields
   final vehicleNumberController = TextEditingController();
   final makeController = TextEditingController();
   final modelController = TextEditingController();
   final typeController = TextEditingController();
 
-  // Hidden (auto-loaded)
   String customerId = "";
-
-  // Loading state
   var isLoading = false.obs;
 
   @override
@@ -27,23 +22,18 @@ class AddCarController extends GetxController {
     loadCustomerId();
   }
 
-  // -------------------------------------------------------------
-  // LOAD CUSTOMER ID FROM SHARED PREFS (AUTO)
-  // -------------------------------------------------------------
   Future<void> loadCustomerId() async {
-    customerId = await SharedPrefsHelper.getString("customerId") ?? "";
+    customerId = await SharedPrefsHelper.getString("customerUuid") ?? "";
+    print("LOADED customerUuid = $customerId");
 
     if (customerId.isEmpty) {
-      Get.snackbar("Error", "Customer ID not found");
+      errorToast("Customer UUID not found");
     }
   }
 
-  // -------------------------------------------------------------
-  // SUBMIT VEHICLE API CALL
-  // -------------------------------------------------------------
   Future<void> submitVehicle() async {
     if (customerId.isEmpty) {
-      errorToast("Customer ID not found");
+      errorToast("Customer UUID not found");
       return;
     }
 
@@ -57,9 +47,11 @@ class AddCarController extends GetxController {
 
     isLoading.value = true;
 
-    // ----- CHECK DUPLICATE VEHICLE NUMBER -----
+    // Duplicate Check
     try {
-      final existing = await ApiService.get("customer-vehicles");
+      final existing = await ApiService.get(
+        "customer-vehicles?customer_id=$customerId",
+      );
 
       final alreadyExists = (existing.data as List).any((v) =>
           v["vehicle_number"].toString().toLowerCase().trim() ==
@@ -70,7 +62,9 @@ class AddCarController extends GetxController {
         isLoading.value = false;
         return;
       }
-    } catch (e) {}
+    } catch (e) {
+      print("❌ Duplicate check error: $e");
+    }
 
     final body = {
       "customer_id": customerId,
@@ -80,16 +74,17 @@ class AddCarController extends GetxController {
       "type": typeController.text.trim()
     };
 
+    print("📤 ADD VEHICLE BODY → $body");
+
     try {
       final response = await repository.postAddVehicle(body);
+      print("📥 RESPONSE → ${response.data}");
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        // Return immediately to refresh previous screen
+      if (response.data["success"] == true) {
         successToast("Vehicle added successfully");
         Get.back(result: true);
-        return;
       } else {
-        errorToast("Unable to add vehicle");
+        errorToast(response.data["error"] ?? "Unable to add vehicle");
       }
     } catch (e) {
       errorToast("Something went wrong: $e");

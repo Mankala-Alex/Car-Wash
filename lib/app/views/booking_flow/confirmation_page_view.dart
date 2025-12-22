@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/bindings/booking_flow/scratch_card_binding.dart';
 import 'package:my_new_app/app/controllers/booking_flow/confirmation_page_controller.dart';
+import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 import 'package:my_new_app/app/views/booking_flow/scratch_card_view.dart';
@@ -39,7 +40,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                   ),
                 ),
                 const Text(
-                  'Track Your Wash',
+                  'Track Your Wh',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
@@ -184,10 +185,12 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                               elevation: 0,
                             ),
                             onPressed: () {
-                              Get.toNamed((Routes.dashboard));
+                              Get.offAllNamed(Routes.dashboard,
+                                  arguments: 1); // Go to History tab
                             },
-                            icon: const Icon(Icons.chat_outlined),
-                            label: const Text('Chat',
+
+                            //icon: const Icon(Icons.chat_outlined),
+                            label: const Text('View History',
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: AppColors.secondaryLight,

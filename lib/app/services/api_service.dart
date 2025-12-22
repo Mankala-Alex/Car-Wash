@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide Response;
@@ -74,7 +73,8 @@ class ApiService {
 
       return await _dio.post(
         endpoint,
-        data: jsonEncode(data), // Send correct JSON
+        data: data,
+        // Send correct JSON
         options: Options(extra: {"auth": requireAuthToken}),
       );
     } else {
@@ -97,6 +97,42 @@ class ApiService {
       return await _dio.get(
         endpoint,
         queryParameters: params,
+        options: Options(extra: {"auth": requireAuthToken}),
+      );
+    } else {
+      _showNoInternetPopup();
+      throw Exception("No Internet");
+    }
+  }
+
+  static Future<Response> put(
+    String endpoint,
+    Map<String, dynamic> data, {
+    bool requireAuthToken = false,
+  }) async {
+    if (await isInternet()) {
+      _addInterceptors();
+
+      return await _dio.put(
+        endpoint,
+        data: data,
+        options: Options(extra: {"auth": requireAuthToken}),
+      );
+    } else {
+      _showNoInternetPopup();
+      throw Exception("No Internet");
+    }
+  }
+
+  static Future<Response> delete(
+    String endpoint, {
+    bool requireAuthToken = false,
+  }) async {
+    if (await isInternet()) {
+      _addInterceptors();
+
+      return await _dio.delete(
+        endpoint,
         options: Options(extra: {"auth": requireAuthToken}),
       );
     } else {
