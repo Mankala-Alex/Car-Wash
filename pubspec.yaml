@@ -33,6 +33,7 @@ dependencies:
   carousel_slider: ^5.1.1
   lottie: ^3.3.2
   scratcher: ^2.5.0
+  qr_flutter: ^4.1.0
 
   # API/network-related packages (commented out until APIs are needed)
   dio: ^5.8.0+1

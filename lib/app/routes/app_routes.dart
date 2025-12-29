@@ -22,4 +22,5 @@ abstract class Routes {
   static const scratchcard = '/scratchcard';
   static const offers = '/offers';
   static const offerscreen = '/offer_screen';
+  static const qrcouponview = '/qr_coupon_view';
 }

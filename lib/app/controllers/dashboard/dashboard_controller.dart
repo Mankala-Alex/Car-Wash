@@ -36,7 +36,7 @@ class DashboardController extends GetxController {
       selectedIndex.value = arg;
       print("🔥 Setting selectedIndex from arguments → $arg");
     }
-    Timer.periodic(Duration(seconds: 10), (_) {
+    Timer.periodic(const Duration(seconds: 10), (_) {
       fetchBookingHistory();
     });
   }

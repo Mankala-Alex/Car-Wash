@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/models/booking slot/slot_dates_model.dart';
@@ -239,15 +238,6 @@ class BookSlotController extends GetxController {
       errorToast("Invalid slot selected");
       return;
     }
-// -------------------------------------------------------
-// EDIT BOOKING MODE (FULL & CORRECTED)
-// -------------------------------------------------------
-    // -------------------------------------------------------
-// EDIT BOOKING MODE (FULL & CORRECTED)
-// -------------------------------------------------------
-    // -------------------------------------------------------
-// EDIT BOOKING MODE (FINAL)
-// -------------------------------------------------------
     if (isEditMode) {
       if (selectedSlotId.value == 0) {
         errorToast("Please select a slot");
@@ -308,7 +298,17 @@ class BookSlotController extends GetxController {
       if (resp.data["success"] == true) {
         print("🎉 BOOKING SUCCESS — NAVIGATING");
         successToast("Booking Confirmed!");
-        Get.toNamed(Routes.confirmationpageview);
+        final bookingCode = resp.data["data"]["booking_code"];
+        Get.offNamed(
+          Routes.confirmationpageview,
+          arguments: {
+            "service_name": name,
+            "scheduled_at": buildScheduledAt(),
+            "amount": price,
+            "image": image,
+            "booking_code": bookingCode, // ✅ REQUIRED
+          },
+        );
       } else {
         print("❌ BOOKING FAILED FROM API");
         errorToast(resp.data["error"] ?? "Booking failed");

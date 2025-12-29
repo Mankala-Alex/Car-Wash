@@ -16,6 +16,7 @@ import 'package:my_new_app/app/bindings/profile/location_list_binding.dart';
 import 'package:my_new_app/app/bindings/profile/my_coupons_binding.dart';
 import 'package:my_new_app/app/bindings/profile/offer_screen_binding.dart';
 import 'package:my_new_app/app/bindings/profile/offers_list_bindings.dart';
+import 'package:my_new_app/app/bindings/profile/qr_coupon_binding.dart';
 import 'package:my_new_app/app/views/auth/sign_up_view.dart';
 import 'package:my_new_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:my_new_app/app/views/booking_flow/confirmation_page_view.dart';
@@ -32,6 +33,7 @@ import 'package:my_new_app/app/views/profile/locations_list_view.dart';
 import 'package:my_new_app/app/views/profile/my_coupons_view.dart';
 import 'package:my_new_app/app/views/profile/offer_screen_view.dart';
 import 'package:my_new_app/app/views/profile/offers_list_view.dart';
+import 'package:my_new_app/app/views/profile/qr_coupon_view.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
 import '../bindings/auth/login_binding.dart';
@@ -154,6 +156,11 @@ class AppPages {
       name: Routes.offerscreen,
       page: () => const OfferScreenView(),
       binding: OfferScreenBinding(),
+    ),
+    GetPage(
+      name: Routes.qrcouponview,
+      page: () => const QRCouponView(),
+      binding: QrCouponBinding(),
     ),
   ];
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_new_app/app/controllers/profile/my_coupons_controller.dart';
+import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
-class MyCouponsView extends StatelessWidget {
+class MyCouponsView extends GetView<MyCouponsController> {
   const MyCouponsView({super.key});
 
   @override
@@ -147,7 +149,7 @@ class MyCouponsView extends StatelessWidget {
             ),
             child: TextButton(
               onPressed: () {
-                showCouponDialog(Get.context!);
+                Get.toNamed(Routes.qrcouponview);
               },
               child: const Text(
                 "View Details",
@@ -163,183 +165,4 @@ class MyCouponsView extends StatelessWidget {
       ),
     );
   }
-}
-
-void showCouponDialog(BuildContext context) {
-  showDialog(
-    context: Get.context!,
-    barrierDismissible: true,
-    builder: (_) {
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Make scrollable section
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start, // 👈 Fix alignment globally
-                    children: [
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: GestureDetector(
-                          onTap: () => Get.back(),
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey.shade200,
-                            ),
-                            child: const Icon(Icons.close,
-                                size: 25, color: Colors.black),
-                          ),
-                        ),
-                      ),
-                      // 🎟 TITLE
-                      const Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              "50% OFF",
-                              style: TextStyle(
-                                  fontSize: 26, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "On any In-Store Service",
-                              style: TextStyle(
-                                  fontSize: 15, color: Colors.black54),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      // 🔥 Coupon Code Box
-                      Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            "SAVE50-XYZ123",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // 🔥 BIG IMAGE SECTION
-                      Container(
-                        width: double.infinity,
-                        height: 350, // Increased height
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: Image.asset(
-                            "assets/carwash/qr.png",
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-                      const Center(
-                          child:
-                              Text("Scan Me", style: TextStyle(fontSize: 15))),
-
-                      const SizedBox(height: 20),
-
-                      // 📌 Coupon Details Section
-                      const Text(
-                        "Coupon Details",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      const Row(
-                        children: [
-                          Icon(Icons.discount, size: 20),
-                          SizedBox(width: 6),
-                          Text("50% off any car wash",
-                              style: TextStyle(fontSize: 15)),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      const Row(
-                        children: [
-                          Icon(Icons.calendar_today, size: 20),
-                          SizedBox(width: 6),
-                          Text("Valid for 60 days",
-                              style: TextStyle(fontSize: 15)),
-                        ],
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      // 📌 Terms & Conditions (left aligned)
-                      const Text(
-                        "Terms & Conditions",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // 👇 Now properly aligned left
-                      const Text("• Valid for in-store services only."),
-                      const Text("• Cannot be combined with any offer."),
-                      const Text("• No cash value."),
-                      const Text("• One-time use only."),
-                      const Text("• Present QR code at service time."),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // 🚀 Action Button
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  Get.back(); // close dialog
-                },
-                child: const Text(
-                  "Redeem Offer",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
-      );
-    },
-  );
 }

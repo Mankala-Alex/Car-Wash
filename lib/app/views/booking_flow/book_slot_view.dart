@@ -22,7 +22,7 @@ class BookSlotView extends GetView<BookSlotController> {
           onPressed: () => Get.back(),
         ),
         title: const Text(
-          "Confirm Car Was",
+          "Confirm Car Wash",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,

@@ -248,7 +248,7 @@ class Page1View extends GetView<DashboardController> {
                   const SizedBox(height: 20),
                   Obx(() {
                     if (controller.trackingBooking.value == null) {
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     }
 
                     final b = controller.trackingBooking.value!;
@@ -398,11 +398,11 @@ class Page1View extends GetView<DashboardController> {
 Widget _trackingCard(Datum b) {
   return Container(
     //margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-    padding: EdgeInsets.all(16),
+    padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
           color: Colors.black12,
           blurRadius: 8,
@@ -416,25 +416,25 @@ Widget _trackingCard(Datum b) {
         // --- Technician + Service ---
         Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 26,
               backgroundImage: AssetImage("assets/carwash/avatar.png"),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     b.washerName.isEmpty ? "Technician Assigned" : b.washerName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     b.serviceName,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -443,12 +443,12 @@ Widget _trackingCard(Datum b) {
               onPressed: () {
                 // open full tracking UI
               },
-              child: Text("Track"),
+              child: const Text("Track"),
             )
           ],
         ),
 
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
 
         // --- TIMELINE (YOUR IMAGE STYLE) ---
         _trackingTimeline(b.status),
@@ -505,7 +505,7 @@ Widget _timelineStep(
   return Column(
     children: [
       Container(
-        padding: EdgeInsets.all(6),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: active ? Colors.orange : Colors.grey.shade200,
@@ -519,7 +519,7 @@ Widget _timelineStep(
           color: active ? Colors.white : Colors.grey,
         ),
       ),
-      SizedBox(height: 6),
+      const SizedBox(height: 6),
       Text(
         label,
         style: TextStyle(

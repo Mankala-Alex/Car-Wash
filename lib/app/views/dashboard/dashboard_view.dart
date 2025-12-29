@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/views/dashboard/page1_view.dart';
 import 'package:my_new_app/app/views/dashboard/page2_view.dart';
-import 'package:my_new_app/app/views/dashboard/page3_view.dart';
 import 'package:my_new_app/app/views/dashboard/page4_view.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
@@ -18,7 +17,7 @@ class DashboardView extends GetView<DashboardController> {
   final List<Widget> _pages = [
     Page1View(),
     const Page2View(),
-    const Page3View(),
+    //const Page3View(),
     const Page4View(),
   ];
 
@@ -72,18 +71,18 @@ class DashboardView extends GetView<DashboardController> {
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
-              items: List.generate(4, (index) {
+              items: List.generate(3, (index) {
                 final labels = [
                   "Home".tr,
                   "My Bookings".tr,
-                  "Wallet".tr,
+                  //"Wallet".tr,
                   "Profile".tr,
                 ];
 
                 final icons = [
                   'assets/carwash/logo/home.png',
                   'assets/carwash/logo/history.png',
-                  'assets/carwash/logo/home.png',
+                  //'assets/carwash/logo/home.png',
                   'assets/carwash/logo/profile.png',
                 ];
 
