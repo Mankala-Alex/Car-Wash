@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:my_new_app/app/models/coupons_model.dart';
 import 'package:my_new_app/app/repositories/auth/book_service/profile_repository.dart';
 
-class QrCouponController extends GetxController {
+class BookingQrCouponController extends GetxController {
   final ProfileRepository repository = ProfileRepository();
 
   final isLoading = true.obs;

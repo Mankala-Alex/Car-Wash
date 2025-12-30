@@ -70,7 +70,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                 child: ElevatedButton(
                   onPressed: () {
                     Get.toNamed(
-                      Routes.qrcouponview,
+                      Routes.bookingqrcouponview,
                       arguments: {
                         "booking_code": controller.bookingCode,
                       },

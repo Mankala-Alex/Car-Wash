@@ -14,6 +14,7 @@ class EndPoints {
   static const apiGetbookinghistory = 'bookings/history';
   static const apiGetvehicles = 'customer-vehicles';
   static const apiGetcoupons = 'coupons/customer';
-  // static const apiMobValidateOTP = 'MobProcess/MobValidateOTP';
+  static const apiGetcouponslist = 'coupons/list';
+  static const apigetcoupondetails = 'coupons/details';
   // static const apiResendOTP = 'MobProcess/ResendOTP';
 }

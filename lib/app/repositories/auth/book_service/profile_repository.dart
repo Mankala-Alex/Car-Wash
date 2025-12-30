@@ -12,4 +12,12 @@ class ProfileRepository {
       "${EndPoints.apiGetcoupons}?booking_code=$bookingCode",
     );
   }
+
+  Future<Response> apiGetcouponslist() async {
+    return await ApiService.get(EndPoints.apiGetcouponslist);
+  }
+
+  Future<Response> apiGetCouponDetails() async {
+    return await ApiService.get(EndPoints.apigetcoupondetails);
+  }
 }

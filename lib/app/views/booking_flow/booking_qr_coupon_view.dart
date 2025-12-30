@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/profile/qr_coupon_controller.dart';
+import 'package:my_new_app/app/controllers/booking_flow/booking_qr_coupon_controller.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
 
-class QRCouponView extends GetView<QrCouponController> {
-  const QRCouponView({super.key});
+class BookingQrCouponView extends GetView<BookingQrCouponController> {
+  const BookingQrCouponView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +177,8 @@ class QRCouponView extends GetView<QrCouponController> {
 // import 'package:my_new_app/app/controllers/profile/qr_coupon_controller.dart';
 // import 'package:my_new_app/app/theme/app_theme.dart';
 
-// class QrCouponView extends GetView<QrCouponController> {
-//   const QrCouponView({super.key});
+// class BookingQrCouponView extends GetView<QrCouponController> {
+//   const BookingQrCouponView({super.key});
 
 //   @override
 //   Widget build(BuildContext context) {
