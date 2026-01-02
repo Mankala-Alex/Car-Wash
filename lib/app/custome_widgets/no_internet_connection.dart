@@ -27,7 +27,7 @@ class NoInternetConnection extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(bottom: 25),
             child: Image.asset(
-              "assets/nodata/no_internet.png",
+              "assets/no_data/no_internet.png",
               width: 150,
             ),
           ),
@@ -59,7 +59,7 @@ class NoInternetConnection extends StatelessWidget {
                 }
               },
               child: Text(
-                "reload".tr,
+                "Reload".tr,
                 style: TextStyle(
                   color: Constants.primaryColor,
                   fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class NoInternetConnection extends StatelessWidget {
                 openAppSettings();
               },
               child: Text(
-                "go_settings".tr,
+                "Go Settings".tr,
                 style: TextStyle(
                   color: Constants.primaryColor,
                   fontWeight: FontWeight.bold,

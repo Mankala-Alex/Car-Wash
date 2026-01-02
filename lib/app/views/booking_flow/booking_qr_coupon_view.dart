@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/booking_flow/booking_qr_coupon_controller.dart';
+import 'package:my_new_app/app/custome_widgets/loader.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
@@ -22,9 +23,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
         child: Obx(() {
           // 🔄 Loading state
           if (controller.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return loader();
           }
 
           // ❌ No coupon
@@ -65,16 +64,21 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
 
               const SizedBox(height: 20),
 
-              // 🔳 QR CODE
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: QrImageView(
-                  data: coupon.couponCode,
-                  size: 240,
+              // 🔳 QR CODE with fade-in animation
+              AnimatedOpacity(
+                opacity: controller.showQrFade.value ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 3500),
+                curve: Curves.easeInOut,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: QrImageView(
+                    data: coupon.couponCode,
+                    size: 240,
+                  ),
                 ),
               ),
 

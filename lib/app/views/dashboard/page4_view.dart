@@ -14,6 +14,9 @@ class Page4View extends GetView<DashboardController> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.white,
         backgroundColor: AppColors.bgLight,
         title: const Text(
           "My Profile",

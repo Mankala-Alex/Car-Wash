@@ -14,6 +14,8 @@ class InstoreWashListView extends GetView<InstoreWashController> {
       appBar: AppBar(
         backgroundColor: AppColors.bgLight,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.white,
         title: const Text(
           "In-Store Locations",
           style: TextStyle(

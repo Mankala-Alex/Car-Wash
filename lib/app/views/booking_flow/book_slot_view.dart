@@ -17,6 +17,8 @@ class BookSlotView extends GetView<BookSlotController> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
           onPressed: () => Get.back(),
@@ -207,8 +209,8 @@ class BookSlotView extends GetView<BookSlotController> {
   // ---------------- VEHICLES ----------------
 
   Widget _buildVehicleList(BuildContext context) {
-    return SizedBox(
-      height: 210,
+    return AspectRatio(
+      aspectRatio: 2.2, // controls height RELATIVE to width
       child: Obx(
         () => ListView.separated(
           scrollDirection: Axis.horizontal,
@@ -225,7 +227,7 @@ class BookSlotView extends GetView<BookSlotController> {
               context,
               vehicleName: "${v["make"]} ${v["model"]}",
               plateNumber: v["vehicle_number"] ?? "",
-              imagePath: "assets/carwash/toyota_camry.png",
+              imagePath: "assets/carwash/splash_2.jpg",
             );
           },
         ),
@@ -267,30 +269,25 @@ class BookSlotView extends GetView<BookSlotController> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: Image.asset(
-                  imagePath,
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
+                child: AspectRatio(
+                  aspectRatio: 2.4, // same visual size as before
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 vehicleName,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 4),
               Text(
                 plateNumber,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -536,7 +533,7 @@ class BookSlotView extends GetView<BookSlotController> {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     color: AppColors.secondaryLight.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -580,7 +577,7 @@ class BookSlotView extends GetView<BookSlotController> {
       () => GestureDetector(
         onTap: () => controller.updateSelectedAddress(title),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),

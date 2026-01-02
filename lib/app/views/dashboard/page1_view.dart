@@ -16,17 +16,6 @@ class Page1View extends GetView<DashboardController> {
   final offersController = Get.find<OffersController>();
   final featuresController = Get.find<FeaturesListController>();
 
-  final List<String> bannerImages = const [
-    'assets/carwash/carwheel.png',
-    'assets/carwash/splash_image.jpg',
-    'assets/carwash/yellowcar.png', // Add more if you have them
-  ];
-  final List<String> bannerTitles = const [
-    "Exterior Polish",
-    "Interior Deep Clean",
-    "Full Service",
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +24,8 @@ class Page1View extends GetView<DashboardController> {
       appBar: AppBar(
         backgroundColor: AppColors.bgLight,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.white,
         automaticallyImplyLeading: false, // Make app bar transparent
         title: Row(
           children: [
@@ -49,7 +40,7 @@ class Page1View extends GetView<DashboardController> {
             //     )),
             const SizedBox(width: 10),
             const Text(
-              "CAR WAS",
+              "CAR WASH",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -62,8 +53,8 @@ class Page1View extends GetView<DashboardController> {
                   Get.toNamed(Routes.notification);
                 },
                 icon: const Icon(
-                  Icons.notifications,
-                  color: AppColors.warningLight,
+                  Icons.notifications_outlined,
+                  color: AppColors.bgBlackLight,
                   size: 30,
                 ))
           ],
@@ -91,7 +82,7 @@ class Page1View extends GetView<DashboardController> {
 
               return FlutterCarousel(
                 options: FlutterCarouselOptions(
-                  height: 180,
+                  height: 150,
                   autoPlay: true,
                   enlargeCenterPage: true,
                   viewportFraction: 0.85,

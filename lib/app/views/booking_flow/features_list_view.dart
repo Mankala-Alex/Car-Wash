@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/config/constants.dart';
 import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
+import 'package:my_new_app/app/custome_widgets/loader.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -16,6 +17,9 @@ class FeaturesListView extends GetView<FeaturesListController> {
       backgroundColor: const Color(0xFFFFFFFF),
       appBar: AppBar(
         leadingWidth: 40,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.white,
         title: Text(
           'Door Step Services',
           style: TextStyle(
@@ -28,7 +32,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return loader();
         }
 
         return ListView.builder(
@@ -153,7 +157,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                           foregroundColor: AppColors.textWhiteLight,
                           backgroundColor: AppColors.secondaryLight,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                              borderRadius: BorderRadius.circular(15)),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         onPressed: () {

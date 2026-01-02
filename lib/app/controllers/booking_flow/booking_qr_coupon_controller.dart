@@ -8,6 +8,7 @@ class BookingQrCouponController extends GetxController {
 
   final isLoading = true.obs;
   final coupon = Rxn<CouponData>();
+  final showQrFade = false.obs;
 
   late String bookingCode;
 
@@ -37,6 +38,10 @@ class BookingQrCouponController extends GetxController {
 
       if (model.success && model.data != null) {
         coupon.value = model.data;
+        // Trigger fade-in animation after a short delay
+        Future.delayed(const Duration(milliseconds: 100), () {
+          showQrFade.value = true;
+        });
       }
     } finally {
       isLoading.value = false;

@@ -82,11 +82,11 @@ class CouponsListView extends GetView<CouponsListController> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: AppColors.borderGray,
                           blurRadius: 5,
-                          offset: const Offset(0, 5),
+                          offset: Offset(0, 5),
                         )
                       ],
                     ),
@@ -98,8 +98,8 @@ class CouponsListView extends GetView<CouponsListController> {
                           children: [
                             Container(
                               padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFF3E0),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFF3E0),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(

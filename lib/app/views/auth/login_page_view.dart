@@ -14,138 +14,157 @@ class LoginView extends GetView<LoginController> {
       appBar: AppBar(
         title: const Text(""),
         backgroundColor: AppColors.bgLight,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //const SizedBox(height: 40),
-
-            // ---------------- DIVIDER WITH TEXT ----------------
-            Row(
+      body: Stack(
+        children: [
+          // ================= MAIN CONTENT =================
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: Divider(color: Colors.grey.shade400)),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    "Login or Sign up",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(child: Divider(color: Colors.grey.shade400)),
-              ],
-            ),
+                const SizedBox(height: 10),
 
-            const SizedBox(height: 35),
-
-            // ---------------- LABEL ----------------
-            const Text(
-              "Mobile Number",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // ---------------- INPUT FIELD ----------------
-            Container(
-              height: 60,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Center(
-                child: TextField(
-                  controller: controller.phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Enter your mobile number",
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            // ---------------- ORANGE CONTINUE BUTTON ----------------
-            Obx(() => SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: controller.isLoading.value
-                        ? null
-                        : () async {
-                            await controller.requestOtp();
-                            // ❌ DO NOT NAVIGATE HERE
-                            // Navigation happens inside controller now
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF9500),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                // ---------------- DIVIDER WITH TEXT ----------------
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade400)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        "Login or Sign up",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    child: controller.isLoading.value
-                        ? wheelloader()
-                        : const Text(
-                            "Continue",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                  ),
-                )),
+                    Expanded(child: Divider(color: Colors.grey.shade400)),
+                  ],
+                ),
 
-            const SizedBox(height: 25),
+                const SizedBox(height: 35),
 
-            // ---------------- OR DIVIDER ----------------
-            Row(
-              children: [
-                Expanded(child: Divider(color: Colors.grey.shade400)),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    "OR",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                // ---------------- LABEL ----------------
+                const Text(
+                  "Mobile Number",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                Expanded(child: Divider(color: Colors.grey.shade400)),
+
+                const SizedBox(height: 10),
+
+                // ---------------- INPUT FIELD ----------------
+                Container(
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Center(
+                    child: TextField(
+                      controller: controller.phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Enter your mobile number",
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // ---------------- CONTINUE BUTTON ----------------
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () async {
+                              await controller.requestOtp();
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF9500),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        "Continue",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                // ---------------- OR DIVIDER ----------------
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade400)),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        "OR",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade400)),
+                  ],
+                ),
+
+                const SizedBox(height: 25),
+
+                // ---------------- GOOGLE BUTTON ----------------
+                _socialButton(
+                  icon: Icons.account_balance,
+                  text: "Continue with Google",
+                ),
+
+                const SizedBox(height: 15),
+
+                // ---------------- APPLE BUTTON ----------------
+                _socialButton(
+                  icon: Icons.apple,
+                  text: "Continue with Apple",
+                ),
               ],
             ),
+          ),
 
-            const SizedBox(height: 25),
+          // ================= FULL SCREEN LOADER =================
+          Obx(() {
+            if (!controller.isLoading.value) return const SizedBox();
 
-            // ---------------- GOOGLE BUTTON ----------------
-            _socialButton(
-              icon: Icons.account_balance,
-              text: "Continue with Google",
-            ),
-
-            const SizedBox(height: 15),
-
-            // ---------------- APPLE BUTTON ----------------
-            _socialButton(
-              icon: Icons.apple,
-              text: "Continue with Apple",
-            ),
-          ],
-        ),
+            return Container(
+              color: Colors.black.withOpacity(0.25),
+              child: Center(
+                child: wheelloader(), // 🔥 CENTERED LOADER
+              ),
+            );
+          }),
+        ],
       ),
     );
   }
 
-  // SOCIAL LOGIN BUTTON
+  // ================= SOCIAL LOGIN BUTTON =================
   Widget _socialButton({required IconData icon, required String text}) {
     return Container(
       height: 55,
@@ -165,7 +184,7 @@ class LoginView extends GetView<LoginController> {
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),
-          )
+          ),
         ],
       ),
     );

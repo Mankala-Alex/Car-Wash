@@ -16,6 +16,8 @@ class Page2View extends GetView<DashboardController> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         centerTitle: true,
         title: const Text(
@@ -25,10 +27,6 @@ class Page2View extends GetView<DashboardController> {
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
         ),
       ),
 
