@@ -54,27 +54,12 @@ flutter:
 
   assets:
     - assets/
-    - assets/images/
-    - assets/images/profile_page_images/
-    - assets/images/patient_record/
-    - assets/nodata/
-    - assets/new_images/
     - assets/app_icon/
     - assets/carwash/
-    - assets/carwash/features/
     - assets/carwash/logo/
+    - assets/carwash/no_data/
+    - assets/carwash/animations/
 
-
-  fonts:
-    - family: Montserrat
-      fonts:
-        - asset: assets/fonts/Montserrat-Regular.ttf
-        - asset: assets/fonts/Montserrat-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Montserrat-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Montserrat-Light.ttf
-          weight: 300
 
 # flutter_launcher_icons:
 #   android: true
