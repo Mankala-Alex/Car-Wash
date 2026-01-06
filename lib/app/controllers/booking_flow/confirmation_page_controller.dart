@@ -6,7 +6,7 @@ class ConfirmationPageController extends GetxController {
   late String scheduledAt;
   late String amount;
   late String image;
-  late String bookingCode; // ✅ ADD THIS
+  late String bookingCode;
 
   String get formattedDate {
     final dt = DateTime.tryParse(scheduledAt);
@@ -24,6 +24,6 @@ class ConfirmationPageController extends GetxController {
     scheduledAt = args["scheduled_at"] ?? "";
     amount = args["amount"] ?? "";
     image = args["image"] ?? "";
-    bookingCode = args["booking_code"] ?? ""; // ✅ STORE HERE
+    bookingCode = args["booking_code"] ?? "";
   }
 }

@@ -68,16 +68,16 @@ class OffersListView extends GetView<OffersController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   /// IMAGE (STATIC)
-                  ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(18)),
-                    child: Image.asset(
-                      "assets/carwash/toyota_camry.png",
-                      width: double.infinity,
-                      height: 180,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  // ClipRRect(
+                  //   borderRadius:
+                  //       const BorderRadius.vertical(top: Radius.circular(18)),
+                  //   child: Image.asset(
+                  //     "assets/carwash/toyota_camry.png",
+                  //     width: double.infinity,
+                  //     height: 180,
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  // ),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(

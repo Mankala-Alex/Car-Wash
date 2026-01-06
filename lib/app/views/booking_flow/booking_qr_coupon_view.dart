@@ -117,29 +117,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
 
               const SizedBox(height: 24),
 
-              // 📌 TERMS
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Terms & Conditions",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-
               const SizedBox(height: 10),
-
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("• Valid for in-store services only."),
-                    Text("• One-time use only."),
-                    Text("• Cannot be combined with offers."),
-                    Text("• QR must be shown at service center."),
-                  ],
-                ),
-              ),
 
               const SizedBox(height: 24),
 

@@ -357,4 +357,17 @@ class BookSlotController extends GetxController {
     // Send with Z
     return utcFixed.toIso8601String();
   }
+
+  //staically adding the $5 forprice as VAT
+  double get servicePrice {
+    return double.tryParse(price) ?? 0.0;
+  }
+
+  double get vatAmount {
+    return 5.0; // static VAT
+  }
+
+  double get totalAmount {
+    return servicePrice + vatAmount;
+  }
 }

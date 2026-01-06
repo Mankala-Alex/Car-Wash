@@ -42,15 +42,6 @@ class OfferScreenView extends GetView<OfferScreenController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// IMAGE
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                "assets/carwash/toyota_camry.png", // static image
-                width: double.infinity,
-                height: 220,
-                fit: BoxFit.cover,
-              ),
-            ),
 
             const SizedBox(height: 20),
 

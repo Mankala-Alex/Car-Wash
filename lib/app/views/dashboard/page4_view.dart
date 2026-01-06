@@ -142,7 +142,7 @@ class Page4View extends GetView<DashboardController> {
                 ),
                 child: Column(
                   children: [
-                    _menuTile(Icons.directions_car, "My Ca",
+                    _menuTile(Icons.directions_car, "My Cars",
                         () => Get.toNamed(Routes.carlist)),
                     const Divider(height: 0),
                     _menuTile(Icons.location_on_outlined, "My Locations",
@@ -157,8 +157,8 @@ class Page4View extends GetView<DashboardController> {
                     _menuTile(Icons.casino_rounded, "Offers",
                         () => Get.toNamed(Routes.offers)),
                     const Divider(height: 0),
-                    _menuTile(Icons.headset_mic_outlined, "Help & Support",
-                        () => Get.toNamed(Routes.help)),
+                    //_menuTile(Icons.headset_mic_outlined, "Help & Support",
+                    //() => Get.toNamed(Routes.help)),
                   ],
                 ),
               ),

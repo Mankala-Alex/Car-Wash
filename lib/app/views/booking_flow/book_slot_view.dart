@@ -646,9 +646,6 @@ class BookSlotView extends GetView<BookSlotController> {
   // ---------------- PRICE DETAILS ----------------
 
   Widget _buildPriceDetails(BuildContext context) {
-    // You can compute VAT / total here if needed
-    const String vat = "5.00";
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -668,7 +665,6 @@ class BookSlotView extends GetView<BookSlotController> {
             boxShadow: const [
               BoxShadow(
                 color: Colors.grey,
-                spreadRadius: 0,
                 blurRadius: 10,
                 offset: Offset(0, 5),
               ),
@@ -676,73 +672,50 @@ class BookSlotView extends GetView<BookSlotController> {
           ),
           child: Column(
             children: [
+              // SERVICE PRICE
               Row(
                 children: [
-                  const Text(
-                    'Premium Wash',
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
+                  const Text('Service Price'),
                   const Spacer(),
-                  Image.asset(
-                    "assets/carwash/SAR.png",
-                    width: 15,
-                    height: 15,
-                  ),
+                  Image.asset("assets/carwash/SAR.png", width: 15),
                   const SizedBox(width: 5),
                   Text(
-                    controller.price,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
+                    controller.servicePrice.toStringAsFixed(2),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
-              const SizedBox(height: 15),
+
+              const SizedBox(height: 12),
+
+              // VAT
               Row(
                 children: [
-                  const Text(
-                    'VAT',
-                    style: TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
+                  const Text('VAT'),
                   const Spacer(),
-                  Image.asset(
-                    "assets/carwash/SAR.png",
-                    width: 15,
-                    height: 15,
-                  ),
+                  Image.asset("assets/carwash/SAR.png", width: 15),
                   const SizedBox(width: 5),
-                  const Text(
-                    vat,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
+                  Text(
+                    controller.vatAmount.toStringAsFixed(2),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
-              const SizedBox(height: 15),
+
+              const Divider(height: 25),
+
+              // TOTAL
               Row(
                 children: [
                   const Text(
                     'Total Amount',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
-                  Image.asset(
-                    "assets/carwash/SAR.png",
-                    width: 18,
-                    height: 18,
-                  ),
+                  Image.asset("assets/carwash/SAR.png", width: 18),
                   const SizedBox(width: 5),
                   Text(
-                    controller.price, // or calculated total
+                    controller.totalAmount.toStringAsFixed(2),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -799,7 +772,7 @@ class BookSlotView extends GetView<BookSlotController> {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      totalAmount,
+                      controller.totalAmount.toStringAsFixed(2),
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF1E293B),

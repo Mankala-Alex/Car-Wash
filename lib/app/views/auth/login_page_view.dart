@@ -57,22 +57,22 @@ class LoginView extends GetView<LoginController> {
                 const SizedBox(height: 10),
 
                 // ---------------- INPUT FIELD ----------------
+                // ---------------- INPUT FIELD ---------------- (Exact from your working app)
                 Container(
-                  height: 60,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade300),
                   ),
-                  child: Center(
-                    child: TextField(
-                      controller: controller.phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "Enter your mobile number",
-                      ),
+                  child: TextField(
+                    controller: controller.phoneController,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      prefixIcon: Icon(Icons.email_outlined,
+                          color: Colors.grey), // Optional
+                      hintText: "Enter your email or mobile number",
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                   ),
                 ),

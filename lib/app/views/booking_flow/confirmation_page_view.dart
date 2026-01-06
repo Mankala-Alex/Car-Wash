@@ -103,7 +103,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            controller.scheduledAt,
+                            controller.formattedDate,
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,

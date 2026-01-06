@@ -572,7 +572,7 @@ class ServiceCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryLight,
+                        color: AppColors.blue,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
