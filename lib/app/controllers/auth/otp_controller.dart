@@ -9,14 +9,13 @@ class OtpController extends GetxController {
 
   RxString otp = "".obs;
 
-  late String customerId; // UUID from login/signup
-  late String phone;
+  late String customerId;
+  late String email; // ✅ EMAIL, not phone
 
   @override
   void onInit() {
     customerId = Get.arguments["customerId"] ?? "";
-// UUID
-    phone = Get.arguments["phone"];
+    email = Get.arguments["email"]; // ✅ FIX
     super.onInit();
   }
 
@@ -33,14 +32,8 @@ class OtpController extends GetxController {
     loadingPopUp(true);
 
     try {
-      print("📤 SENDING BODY TO BACKEND:");
-      print({
-        "id": customerId,
-        "otp": otp.value,
-      });
-
       final resp = await repository.postVerifyOtp({
-        "id": customerId, // <-- REQUIRED BY BACKEND
+        "id": customerId,
         "otp": otp.value,
       });
 
@@ -53,37 +46,16 @@ class OtpController extends GetxController {
         return null;
       }
 
-      // --------------------------------------------------------
-      // SAVE CUSTOMER DETAILS — UUID ONLY (NO NUMERIC ID)
-      // --------------------------------------------------------
       final customer = resp.data["customer"];
       if (customer != null) {
-        final String uuid = customer["id"];
-        final String fullName =
-            "${customer["firstName"] ?? ""} ${customer["lastName"] ?? ""}"
-                .trim();
-        final String email = customer["email"] ?? "";
-
-        print("🔵 OTP Verified: Saving user profile...");
-        print("UUID: $uuid");
-        print("Name: $fullName");
-
-        // SAVE UUID ONLY
-        await SharedPrefsHelper.setString("customerUuid", uuid);
-
-        // SAVE NAME
-        await SharedPrefsHelper.setString("customerName", fullName);
-
-        // SAVE EMAIL
-        await SharedPrefsHelper.setString("customerEmail", email);
-
-        // SAVE PHONE
-        await SharedPrefsHelper.setString("customerPhone", phone);
+        await SharedPrefsHelper.setString("customerUuid", customer["id"]);
+        await SharedPrefsHelper.setString(
+          "customerName",
+          "${customer["firstName"]} ${customer["lastName"]}".trim(),
+        );
+        await SharedPrefsHelper.setString("customerEmail", customer["email"]);
       }
 
-      // --------------------------------------------------------
-      // OTP SUCCESS FEEDBACK
-      // --------------------------------------------------------
       successToast("OTP Verified!");
       return data;
     } catch (e) {

@@ -23,8 +23,17 @@ class SignupView extends GetView<SignupController> {
             const SizedBox(height: 20),
             _input("Last Name", controller.lastNameCtrl),
             const SizedBox(height: 20),
-            _input("Email", controller.emailCtrl,
-                type: TextInputType.emailAddress),
+            _input(
+              "Email",
+              controller.emailCtrl,
+              type: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 20),
+            _input(
+              "Phone Number", // ✅ NEW FIELD
+              controller.phoneCtrl,
+              type: TextInputType.phone,
+            ),
             const SizedBox(height: 40),
             Obx(() => SizedBox(
                   width: double.infinity,
@@ -36,7 +45,8 @@ class SignupView extends GetView<SignupController> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondaryLight,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
                     child: controller.isLoading.value
                         ? const CircularProgressIndicator(color: Colors.white)
@@ -55,13 +65,19 @@ class SignupView extends GetView<SignupController> {
     );
   }
 
-  Widget _input(String label, TextEditingController controller,
-      {TextInputType type = TextInputType.text}) {
+  Widget _input(
+    String label,
+    TextEditingController controller, {
+    TextInputType type = TextInputType.text,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            )),
         const SizedBox(height: 8),
         TextField(
           controller: controller,

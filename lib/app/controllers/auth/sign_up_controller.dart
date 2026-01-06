@@ -12,20 +12,15 @@ class SignupController extends GetxController {
   TextEditingController firstNameCtrl = TextEditingController();
   TextEditingController lastNameCtrl = TextEditingController();
   TextEditingController emailCtrl = TextEditingController();
+  TextEditingController phoneCtrl = TextEditingController(); // ✅ NEW
 
-  late String phone; // comes from LoginView
   RxBool isLoading = false.obs;
-
-  @override
-  void onInit() {
-    phone = Get.arguments["phone"];
-    super.onInit();
-  }
 
   Future<void> submitSignup() async {
     if (firstNameCtrl.text.trim().isEmpty ||
         lastNameCtrl.text.trim().isEmpty ||
-        emailCtrl.text.trim().isEmpty) {
+        emailCtrl.text.trim().isEmpty ||
+        phoneCtrl.text.trim().isEmpty) {
       errorToast("Please fill all fields");
       return;
     }
@@ -36,8 +31,8 @@ class SignupController extends GetxController {
       final resp = await repository.postSignup({
         "firstName": firstNameCtrl.text.trim(),
         "lastName": lastNameCtrl.text.trim(),
-        "email": emailCtrl.text.trim(),
-        "phone": phone,
+        "email": emailCtrl.text.trim(), // OTP email
+        "phone": phoneCtrl.text.trim(), // ✅ REAL PHONE
       });
 
       isLoading(false);
@@ -49,41 +44,32 @@ class SignupController extends GetxController {
         return;
       }
 
-      // --------------------------------------------------------
-      // SAVE CUSTOMER DATA — UUID ONLY (NO NUMERIC ID ANYWHERE)
-      // --------------------------------------------------------
-      if (resp.data["customer"] != null) {
-        final customer = resp.data["customer"];
-
-        final String uuid = customer["id"];
-        final String fullName =
-            "${customer["firstName"] ?? ""} ${customer["lastName"] ?? ""}"
-                .trim();
-        final String email = customer["email"] ?? "";
-        final String phoneNumber = customer["mobile"] ?? "";
-        final String token = resp.data["token"] ?? "";
-
-        print("📌 Saving customer data...");
-        print("UUID = $uuid");
-        print("Name = $fullName");
-
-        // SAVE UUID + NAME + EMAIL + PHONE
-        await SharedPrefsHelper.setString("customerUuid", uuid);
-        await SharedPrefsHelper.setString("customerName", fullName);
-        await SharedPrefsHelper.setString("customerEmail", email);
-        await SharedPrefsHelper.setString("customerPhone", phoneNumber);
-        await SharedPrefsHelper.setString("authToken", token);
+      final customer = resp.data["customer"];
+      if (customer != null) {
+        await SharedPrefsHelper.setString("customerUuid", customer["id"]);
+        await SharedPrefsHelper.setString(
+          "customerName",
+          "${customer["firstName"]} ${customer["lastName"]}",
+        );
+        await SharedPrefsHelper.setString(
+          "customerEmail",
+          customer["email"] ?? "",
+        );
+        await SharedPrefsHelper.setString(
+          "customerPhone",
+          customer["mobile"] ?? "",
+        );
+        await SharedPrefsHelper.setString(
+          "authToken",
+          resp.data["token"] ?? "",
+        );
       }
 
-      // --------------------------------------------------------
-      // GO TO OTP PAGE
-      // --------------------------------------------------------
       Get.toNamed(
         Routes.otpPage,
         arguments: {
-          "customerId": resp.data["customer"]["id"],
-// UUID
-          "phone": phone,
+          "customerId": resp.data["id"],
+          "email": emailCtrl.text.trim(),
         },
       );
     } catch (e) {

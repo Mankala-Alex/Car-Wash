@@ -12,7 +12,6 @@ class LoginView extends GetView<LoginController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(""),
         backgroundColor: AppColors.bgLight,
         elevation: 0,
       ),
@@ -48,7 +47,7 @@ class LoginView extends GetView<LoginController> {
 
                 // ---------------- LABEL ----------------
                 const Text(
-                  "Mobile Number",
+                  "Email or Phone Number",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -110,40 +109,6 @@ class LoginView extends GetView<LoginController> {
                 ),
 
                 const SizedBox(height: 25),
-
-                // ---------------- OR DIVIDER ----------------
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: Colors.grey.shade400)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        "OR",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: Colors.grey.shade400)),
-                  ],
-                ),
-
-                const SizedBox(height: 25),
-
-                // ---------------- GOOGLE BUTTON ----------------
-                _socialButton(
-                  icon: Icons.account_balance,
-                  text: "Continue with Google",
-                ),
-
-                const SizedBox(height: 15),
-
-                // ---------------- APPLE BUTTON ----------------
-                _socialButton(
-                  icon: Icons.apple,
-                  text: "Continue with Apple",
-                ),
               ],
             ),
           ),
@@ -152,39 +117,10 @@ class LoginView extends GetView<LoginController> {
           Obx(() {
             if (!controller.isLoading.value) return const SizedBox();
 
-            return Container(
-              color: Colors.black.withOpacity(0.25),
-              child: Center(
-                child: wheelloader(), // 🔥 CENTERED LOADER
-              ),
+            return Center(
+              child: wheelloader(), // 🔥 CENTERED LOADER
             );
           }),
-        ],
-      ),
-    );
-  }
-
-  // ================= SOCIAL LOGIN BUTTON =================
-  Widget _socialButton({required IconData icon, required String text}) {
-    return Container(
-      height: 55,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.white,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 22),
-          const SizedBox(width: 12),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
         ],
       ),
     );

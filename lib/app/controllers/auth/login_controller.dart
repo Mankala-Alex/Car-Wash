@@ -22,7 +22,7 @@ class LoginController extends GetxController {
 
     try {
       final resp = await repository.postRequestOtp({
-        "phone": phoneController.text.trim(),
+        "email": phoneController.text.trim(),
       });
 
       isLoading(false);
@@ -74,9 +74,9 @@ class LoginController extends GetxController {
       Get.toNamed(
         Routes.otpPage,
         arguments: {
-          "customerId": resp.data["customer"]["id"],
+          "customerId": resp.data["id"],
           // this is UUID
-          "phone": phoneController.text.trim(),
+          "email": phoneController.text.trim(),
         },
       );
 
