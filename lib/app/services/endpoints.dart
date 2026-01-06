@@ -16,5 +16,5 @@ class EndPoints {
   static const apiGetcoupons = 'coupons/customer';
   static const apiGetcouponslist = 'coupons/list';
   static const apigetcoupondetails = 'coupons/details';
-  // static const apiResendOTP = 'MobProcess/ResendOTP';
+  static const apiPostLogOut = 'auth/logout';
 }

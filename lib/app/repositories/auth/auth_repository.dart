@@ -20,4 +20,12 @@ class AuthRepository {
     return await ApiService.post(EndPoints.apiPostsignup, requestBody,
         requireAuthToken: false);
   }
+
+  Future<void> postLogout() async {
+    await ApiService.post(
+      EndPoints.apiPostLogOut, // ex: partners/logout
+      {},
+      requireAuthToken: true,
+    );
+  }
 }

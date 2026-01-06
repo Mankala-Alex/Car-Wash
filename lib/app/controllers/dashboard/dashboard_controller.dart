@@ -5,12 +5,15 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/helpers/flutter_toast.dart';
 import 'package:my_new_app/app/helpers/shared_preferences.dart';
 import 'package:my_new_app/app/models/booking slot/booking_history_model.dart';
+import 'package:my_new_app/app/repositories/auth/auth_repository.dart';
 import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 
 class DashboardController extends GetxController {
   var selectedIndex = 0.obs;
   final repo = BookSlotRepository();
+
+  final AuthRepository _authRepo = AuthRepository();
 
   var isLoading = false.obs;
 
@@ -192,5 +195,24 @@ class DashboardController extends GetxController {
         "slot_id": booking["slot_id"],
       },
     );
+  }
+
+  Future<void> logout() async {
+    try {
+      // 1️⃣ Call logout API
+      await _authRepo.postLogout();
+    } catch (e) {
+      // API failure should NOT block logout
+      print("Logout API error: $e");
+    } finally {
+      // 2️⃣ Clear local data ALWAYS
+      await SharedPrefsHelper.clearAll();
+
+      // 3️⃣ Reset GetX state
+      Get.deleteAll(force: true);
+
+      // 4️⃣ Navigate to login
+      Get.offAllNamed(Routes.login);
+    }
   }
 }

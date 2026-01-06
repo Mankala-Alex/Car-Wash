@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:my_new_app/app/custome_widgets/custome_confirmation_dialog.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -141,7 +142,7 @@ class Page4View extends GetView<DashboardController> {
                 ),
                 child: Column(
                   children: [
-                    _menuTile(Icons.directions_car, "My Car",
+                    _menuTile(Icons.directions_car, "My Ca",
                         () => Get.toNamed(Routes.carlist)),
                     const Divider(height: 0),
                     _menuTile(Icons.location_on_outlined, "My Locations",
@@ -152,6 +153,7 @@ class Page4View extends GetView<DashboardController> {
                     const Divider(height: 0),
                     _menuTile(Icons.card_giftcard_sharp, "My Coupons",
                         () => Get.toNamed(Routes.mycoupons)),
+                    const Divider(height: 0),
                     _menuTile(Icons.casino_rounded, "Offers",
                         () => Get.toNamed(Routes.offers)),
                     const Divider(height: 0),
@@ -164,27 +166,47 @@ class Page4View extends GetView<DashboardController> {
               const SizedBox(height: 35),
 
               // ---------- Logout Button ----------
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: const Color(0xffffe8e8),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text(
-                      "Logout",
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                  ],
+              GestureDetector(
+                onTap: () {
+                  Get.dialog(
+                    CustomConfirmationDialog(
+                      header: "Logout",
+                      body: "Are you sure you want to logout?",
+                      yesText: "Logout",
+                      noText: "Cancel",
+                      onYes: () {
+                        Get.back(); // close dialog
+                        controller.logout(); // actual logout
+                      },
+                      onNo: () {
+                        Get.back(); // just close dialog
+                      },
+                    ),
+                    barrierDismissible: false,
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffffe8e8),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.logout, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text(
+                        "Logout",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
 
