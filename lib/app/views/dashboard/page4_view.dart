@@ -125,40 +125,34 @@ class Page4View extends GetView<DashboardController> {
               const SizedBox(height: 30),
 
               // ---------- Card Container ----------
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 18),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.bgLight,
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.grey,
-                      blurRadius: 10,
-                      offset: Offset(0, 6),
-                    )
-                  ],
-                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    _menuTile(Icons.directions_car, "My Cars",
-                        () => Get.toNamed(Routes.carlist)),
-                    const Divider(height: 0),
-                    _menuTile(Icons.location_on_outlined, "My Locations",
-                        () => Get.toNamed(Routes.locationslist)),
-                    const Divider(height: 0),
-                    _menuTile(Icons.language, "Language Selection",
-                        () => Get.toNamed(Routes.langchange)),
-                    const Divider(height: 0),
-                    _menuTile(Icons.card_giftcard_sharp, "My Coupons",
-                        () => Get.toNamed(Routes.mycoupons)),
-                    const Divider(height: 0),
-                    _menuTile(Icons.casino_rounded, "Offers",
-                        () => Get.toNamed(Routes.offers)),
-                    const Divider(height: 0),
-                    //_menuTile(Icons.headset_mic_outlined, "Help & Support",
-                    //() => Get.toNamed(Routes.help)),
+                    _simpleMenuTile(
+                      title: "My Cars",
+                      onTap: () => Get.toNamed(Routes.carlist),
+                    ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "My Locations",
+                      onTap: () => Get.toNamed(Routes.locationslist),
+                    ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "Language Selection",
+                      onTap: () => Get.toNamed(Routes.langchange),
+                    ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "My Coupons",
+                      onTap: () => Get.toNamed(Routes.mycoupons),
+                    ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "Offers",
+                      onTap: () => Get.toNamed(Routes.offers),
+                    ),
                   ],
                 ),
               ),
@@ -218,35 +212,44 @@ class Page4View extends GetView<DashboardController> {
     );
   }
 
-  // ---------------- Tile Widget ----------------
-  Widget _menuTile(IconData icon, String title, VoidCallback onTap) {
+  Widget _simpleMenuTile({
+    required String title,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
-      onTap: onTap, // <-- Add this
+      onTap: onTap,
       borderRadius: BorderRadius.circular(14),
-      child: SizedBox(
-        height: 62,
+      child: Container(
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xffF1F1F1),
+          borderRadius: BorderRadius.circular(14),
+        ),
         child: Row(
           children: [
-            Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: AppColors.bgBlackLight, size: 26),
-            ),
-            const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+            Container(
+              height: 28,
+              width: 28,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_forward_ios,
+                size: 14,
+                color: Colors.black54,
+              ),
+            ),
           ],
         ),
       ),

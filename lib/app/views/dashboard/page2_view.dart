@@ -538,6 +538,33 @@ class Page2View extends GetView<DashboardController> {
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.bookinghistorydetailsview,
+                    arguments: booking, // 👈 PASS FULL DATUM
+                  );
+                },
+                child: Container(
+                  height: 46,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.secondaryLight),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "View Details",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryLight,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         );

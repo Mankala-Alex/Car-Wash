@@ -24,4 +24,5 @@ abstract class Routes {
   static const offerscreen = '/offer_screen';
   static const bookingqrcouponview = '/qr_coupon_view';
   static const coupondetailsview = '/coupon_details_view';
+  static const bookinghistorydetailsview = '/booking_history_view';
 }

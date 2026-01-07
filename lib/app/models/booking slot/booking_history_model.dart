@@ -12,7 +12,9 @@ class Bookinghistorymodel {
       success: json["success"] ?? false,
       data: json["data"] == null
           ? []
-          : List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+          : List<Datum>.from(
+              json["data"].map((x) => Datum.fromJson(x)),
+            ),
     );
   }
 
@@ -21,6 +23,10 @@ class Bookinghistorymodel {
         "data": data.map((x) => x.toJson()).toList(),
       };
 }
+
+// =======================================================
+// SINGLE BOOKING ITEM
+// =======================================================
 
 class Datum {
   Datum({
@@ -39,14 +45,16 @@ class Datum {
     required this.createdAt,
     required this.updatedAt,
     required this.slotId,
+    required this.beforeImages,
+    required this.afterImages,
   });
 
   final String id;
   final String bookingCode;
-  final String customerId; // ← UUID
+  final String customerId;
   final String customerName;
   final String vehicle;
-  final String serviceId; // ← STRING NOW
+  final String serviceId;
   final String serviceName;
   final String? scheduledAt;
   final String washerId;
@@ -56,6 +64,10 @@ class Datum {
   final DateTime? createdAt;
   final dynamic updatedAt;
   final int slotId;
+
+  /// ✅ IMAGE LISTS
+  final List<String> beforeImages;
+  final List<String> afterImages;
 
   factory Datum.fromJson(Map<String, dynamic> json) {
     return Datum(
@@ -74,6 +86,14 @@ class Datum {
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: json["updated_at"],
       slotId: json["slot_id"] ?? 0,
+
+      /// ✅ SAFE IMAGE PARSING
+      beforeImages: json["before_images"] == null
+          ? []
+          : List<String>.from(json["before_images"]),
+      afterImages: json["after_images"] == null
+          ? []
+          : List<String>.from(json["after_images"]),
     );
   }
 
@@ -93,5 +113,7 @@ class Datum {
         "created_at": createdAt?.toIso8601String(),
         "updated_at": updatedAt,
         "slot_id": slotId,
+        "before_images": beforeImages,
+        "after_images": afterImages,
       };
 }
