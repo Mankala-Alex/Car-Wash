@@ -1,10 +1,10 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:get/utils.dart';
 import 'package:my_new_app/app/bindings/auth/sign_up_binding.dart';
 import 'package:my_new_app/app/bindings/booking_flow/book_slot_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/confirmation_page_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/features_list_bindings.dart';
 import 'package:my_new_app/app/bindings/booking_flow/instore_wash_binding.dart';
+import 'package:my_new_app/app/bindings/booking_flow/tract_technician_binding.dart';
 import 'package:my_new_app/app/bindings/dashboard/booking_history_details_binding.dart';
 import 'package:my_new_app/app/bindings/dashboard/dashboard_bindings.dart';
 import 'package:my_new_app/app/bindings/dashboard/notification_binding.dart';
@@ -23,6 +23,7 @@ import 'package:my_new_app/app/views/auth/sign_up_view.dart';
 import 'package:my_new_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:my_new_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:my_new_app/app/views/booking_flow/instore_wash_list_view.dart';
+import 'package:my_new_app/app/views/booking_flow/tract_technician_view.dart';
 import 'package:my_new_app/app/views/dashboard/booking_history_details_view.dart';
 import 'package:my_new_app/app/views/dashboard/dashboard_view.dart';
 import 'package:my_new_app/app/views/dashboard/notifications_view.dart';
@@ -174,6 +175,11 @@ class AppPages {
       name: Routes.bookinghistorydetailsview,
       page: () => const BookingHistoryDetailsView(),
       binding: BookingHistoryDetailsBinding(),
+    ),
+    GetPage(
+      name: Routes.tracttechnicianview,
+      page: () => const TractTechnicianView(),
+      binding: TractTechnicianBinding(),
     ),
   ];
 }

@@ -32,16 +32,29 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadCustomerInfo();
-    fetchBookingHistory();
+    _initializeController();
     final arg = Get.arguments;
     if (arg != null && arg is int) {
       selectedIndex.value = arg;
       print("🔥 Setting selectedIndex from arguments → $arg");
     }
-    Timer.periodic(const Duration(seconds: 10), (_) {
-      fetchBookingHistory();
-    });
+  }
+
+  // Initialize controller with proper async handling
+  Future<void> _initializeController() async {
+    try {
+      isLoading.value = true;
+
+      await loadCustomerInfo();
+
+      if (customerUuid.isNotEmpty) {
+        await fetchBookingHistory();
+      }
+    } catch (e) {
+      print("❌ Dashboard init error: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // -----------------------------------------------------
@@ -55,12 +68,6 @@ class DashboardController extends GetxController {
         await SharedPrefsHelper.getString("customerEmail") ?? "";
 
     print("UUID = $customerUuid");
-    print("NAME = ${customerName.value}");
-    print("EMAIL = ${customerEmail.value}");
-
-    if (customerUuid.isNotEmpty) {
-      fetchBookingHistory();
-    }
   }
 
   // -----------------------------------------------------
@@ -70,19 +77,17 @@ class DashboardController extends GetxController {
     if (customerUuid.isEmpty) return;
 
     try {
+      isLoading.value = true;
+
       final body = {"customer_id": customerUuid};
-
-      final resp = await BookSlotRepository().postBookingsHistory(body);
-
-      print("📥 HISTORY RESPONSE: ${resp.data}");
+      final resp = await repo.postBookingsHistory(body);
 
       final model = Bookinghistorymodel.fromJson(resp.data);
-
       splitBookings(model.data);
-
-      print("✓ Loaded booking history: ${model.data.length}");
     } catch (e) {
-      print("❌ Failed to load booking history: $e");
+      print("❌ History error: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -90,17 +95,22 @@ class DashboardController extends GetxController {
   // SPLIT INTO CURRENT & PAST BOOKINGS
   // -----------------------------------------------------
   void splitBookings(List<Datum> allBookings) {
-    // 1️⃣ Normal current bookings
-    currentBookings.value =
-        allBookings.where((b) => b.status == "PENDING").toList();
+    // CURRENT BOOKINGS (VISIBLE LIST)
+    currentBookings.value = allBookings
+        .where((b) =>
+            b.status == "PENDING" ||
+            b.status == "ASSIGNED" ||
+            b.status == "IN_PROGRESS")
+        .toList();
 
-    // 2️⃣ Pick one active tracking booking
-    trackingBooking.value = allBookings.firstWhereOrNull((b) =>
-        b.status == "ASSIGNED" ||
-        b.status == "ARRIVED" ||
-        b.status == "IN_PROGRESS");
+    // TRACKING BOOKING (PRIORITY BASED)
+    final trackingList = allBookings
+        .where((b) => b.status == "IN_PROGRESS" || b.status == "ASSIGNED")
+        .toList();
 
-    // 3️⃣ Past bookings
+    trackingBooking.value = trackingList.isNotEmpty ? trackingList.first : null;
+
+    // PAST BOOKINGS
     pastBookings.value =
         allBookings.where((b) => b.status == "COMPLETED").toList();
 

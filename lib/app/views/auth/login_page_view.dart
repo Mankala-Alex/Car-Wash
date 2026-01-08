@@ -65,7 +65,7 @@ class LoginView extends GetView<LoginController> {
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   child: TextField(
-                    controller: controller.phoneController,
+                    controller: controller.emailController,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       prefixIcon: Icon(Icons.email_outlined,

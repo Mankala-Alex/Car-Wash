@@ -57,7 +57,6 @@ flutter:
     - assets/app_icon/
     - assets/carwash/
     - assets/carwash/logo/
-    - assets/carwash/no_data/
     - assets/carwash/animations/
 
 

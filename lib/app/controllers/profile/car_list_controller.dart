@@ -28,6 +28,7 @@ class CarListController extends GetxController {
     try {
       final response = await ApiService.get(
         "customer-vehicles?customer_id=$customerId",
+        requireAuthToken: true,
       );
 
       if (response.statusCode == 200) {

@@ -432,7 +432,10 @@ Widget _trackingCard(Datum b) {
             ),
             ElevatedButton(
               onPressed: () {
-                // open full tracking UI
+                Get.toNamed(
+                  Routes.tracttechnicianview,
+                  arguments: b, // 👈 pass Datum
+                );
               },
               child: const Text("Track"),
             )

@@ -4,88 +4,57 @@ import '../../helpers/flutter_toast.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../models/auth/login_model.dart';
 import '../../routes/app_routes.dart';
-import '../../helpers/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final AuthRepository repository = AuthRepository();
 
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   RxBool isLoading = false.obs;
 
-  Future<Loginmodel?> requestOtp() async {
-    if (phoneController.text.trim().isEmpty) {
-      errorToast("Enter mobile number");
-      return null;
+  Future<void> requestOtp() async {
+    if (emailController.text.trim().isEmpty) {
+      errorToast("Enter email");
+      return;
     }
 
     isLoading(true);
 
     try {
       final resp = await repository.postRequestOtp({
-        "email": phoneController.text.trim(),
+        "email": emailController.text.trim(),
       });
 
       isLoading(false);
-
-      print("🔵 API RESPONSE = ${resp.data}");
 
       final data = Loginmodel.fromJson(resp.data);
 
       if (!data.success) {
         errorToast(data.message);
-        return null;
+        return;
       }
 
-      // -----------------------------------------
-      // SAVE UUID + BASIC DETAILS FOR EXISTING USER
-      // -----------------------------------------
-      if (resp.data["exists"] == true && resp.data["customer"] != null) {
-        final customer = resp.data["customer"];
-
-        final String? uuid = customer["id"];
-        final String fullName =
-            "${customer["firstName"] ?? ""} ${customer["lastName"] ?? ""}"
-                .trim();
-        final String email = customer["email"] ?? "";
-
-        print("✅ Saving UUID: $uuid");
-
-        await SharedPrefsHelper.setString("customerUuid", uuid ?? "");
-        await SharedPrefsHelper.setString("customerName", fullName);
-        await SharedPrefsHelper.setString("customerEmail", email);
-
-        // NOTE: we NO LONGER store numeric ID
-      }
-
-      // -----------------------------------------
-      // NEW USER → GO TO SIGNUP
-      // -----------------------------------------
+      // 🔹 NEW USER → SIGNUP
       if (resp.data["exists"] == false) {
         Get.toNamed(
           Routes.signUp,
-          arguments: {"phone": phoneController.text.trim()},
+          arguments: {
+            "email": emailController.text.trim(),
+          },
         );
-        return null;
+        return;
       }
 
-      // -----------------------------------------
-      // EXISTING USER → GO TO OTP PAGE
-      // -----------------------------------------
+      // 🔹 EXISTING USER → OTP
       Get.toNamed(
         Routes.otpPage,
         arguments: {
-          "customerId": resp.data["id"],
-          // this is UUID
-          "email": phoneController.text.trim(),
+          "customerId": resp.data["id"], // ONLY ID
+          "email": emailController.text.trim(),
         },
       );
-
-      return data;
-    } catch (e, st) {
-      print("🔥 requestOtp ERROR: $e\n$st");
+    } catch (e) {
       isLoading(false);
       errorToast("Something went wrong");
-      return null;
     }
   }
 }

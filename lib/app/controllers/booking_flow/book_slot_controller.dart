@@ -145,12 +145,12 @@ class BookSlotController extends GetxController {
 
       final resp = await ApiService.get(
         "customer-vehicles?customer_id=$customerUuid",
+        requireAuthToken: true, // ✅ REQUIRED
       );
 
       if (resp.statusCode == 200) {
         print("📥 VEHICLES RESPONSE: ${resp.data}");
 
-        // Only assign vehicles that belong to this customer
         customerVehicles.value = List.from(resp.data);
 
         if (customerVehicles.isEmpty) {

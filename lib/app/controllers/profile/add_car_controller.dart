@@ -51,6 +51,7 @@ class AddCarController extends GetxController {
     try {
       final existing = await ApiService.get(
         "customer-vehicles?customer_id=$customerId",
+        requireAuthToken: true,
       );
 
       final alreadyExists = (existing.data as List).any((v) =>

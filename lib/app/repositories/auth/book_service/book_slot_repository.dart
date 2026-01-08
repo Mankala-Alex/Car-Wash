@@ -20,13 +20,18 @@ class BookSlotRepository {
   }
 
   Future<Response> postAddVehicle(requestBody) async {
-    return await ApiService.post(EndPoints.apiPostAddvehicle, requestBody,
-        requireAuthToken: false);
+    return await ApiService.post(
+      EndPoints.apiPostAddvehicle,
+      requestBody,
+      requireAuthToken: true, // ✅ FIX
+    );
   }
 
   Future<Response> apigetvehicles(String customerId) async {
     return await ApiService.get(
-        "${EndPoints.apiGetvehicles}?customer_id=$customerId");
+      "${EndPoints.apiGetvehicles}?customer_id=$customerId",
+      requireAuthToken: true, // ✅ ADD THIS
+    );
   }
 
   Future<Response> apiGetslotdates() async {
@@ -39,12 +44,12 @@ class BookSlotRepository {
 
   Future<Response> postBookingsHistory(requestBody) async {
     return await ApiService.post(EndPoints.apiGetbookinghistory, requestBody,
-        requireAuthToken: false);
+        requireAuthToken: true);
   }
 
   Future<Response> postBookSlot(requestBody) async {
     return await ApiService.post(EndPoints.apiPostbookslot, requestBody,
-        requireAuthToken: false);
+        requireAuthToken: true);
   }
 
   Future<Response> cancelBooking(String bookingCode) async {

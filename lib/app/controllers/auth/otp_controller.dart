@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
-import 'package:my_new_app/app/models/auth/otp_model.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../helpers/flutter_toast.dart';
 import '../../helpers/shared_preferences.dart';
+import '../../helpers/secure_store.dart';
+import '../../models/auth/otp_model.dart';
+import '../../routes/app_routes.dart';
 
 class OtpController extends GetxController {
   final AuthRepository repository = AuthRepository();
@@ -10,12 +12,12 @@ class OtpController extends GetxController {
   RxString otp = "".obs;
 
   late String customerId;
-  late String email; // ✅ EMAIL, not phone
+  late String email;
 
   @override
   void onInit() {
-    customerId = Get.arguments["customerId"] ?? "";
-    email = Get.arguments["email"]; // ✅ FIX
+    customerId = Get.arguments["customerId"];
+    email = Get.arguments["email"];
     super.onInit();
   }
 
@@ -23,10 +25,10 @@ class OtpController extends GetxController {
     otp.value = value;
   }
 
-  Future<Otpmodel?> verifyOtp() async {
+  Future<void> verifyOtp() async {
     if (otp.value.length != 4) {
       errorToast("Enter valid OTP");
-      return null;
+      return;
     }
 
     loadingPopUp(true);
@@ -43,25 +45,32 @@ class OtpController extends GetxController {
 
       if (!data.success) {
         errorToast(data.message);
-        return null;
+        return;
       }
 
       final customer = resp.data["customer"];
-      if (customer != null) {
-        await SharedPrefsHelper.setString("customerUuid", customer["id"]);
-        await SharedPrefsHelper.setString(
-          "customerName",
-          "${customer["firstName"]} ${customer["lastName"]}".trim(),
-        );
-        await SharedPrefsHelper.setString("customerEmail", customer["email"]);
-      }
+      final token = resp.data["token"];
 
-      successToast("OTP Verified!");
-      return data;
+      // ✅ SAVE JWT TOKEN TO SECURE STORAGE (ApiService expects it here)
+      await FlutterSecureStore().storeSingleValue(
+        SharedPrefsHelper.accessToken,
+        token,
+      );
+
+      // ✅ SAVE CUSTOMER DETAILS TO SHARED PREFS
+      await SharedPrefsHelper.setString("customerUuid", customer["id"]);
+      await SharedPrefsHelper.setString(
+        "customerName",
+        "${customer["firstName"]} ${customer["lastName"]}".trim(),
+      );
+      await SharedPrefsHelper.setString("customerEmail", customer["email"]);
+      await SharedPrefsHelper.setString("customerPhone", customer["mobile"]);
+
+      successToast("OTP Verified");
+      Get.offAllNamed(Routes.dashboard);
     } catch (e) {
       loadingPopUp(false);
       errorToast("OTP verification failed");
-      return null;
     }
   }
 }

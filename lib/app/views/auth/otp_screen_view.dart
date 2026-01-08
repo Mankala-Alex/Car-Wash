@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import '../../controllers/auth/otp_controller.dart';
-import '../../helpers/shared_preferences.dart';
-import '../../helpers/secure_store.dart';
-import '../../routes/app_routes.dart';
 
 class OtpScreenView extends GetView<OtpController> {
   const OtpScreenView({super.key});
@@ -102,18 +99,7 @@ class OtpScreenView extends GetView<OtpController> {
                         ),
                       ),
                       onPressed: () async {
-                        final result = await controller.verifyOtp();
-                        if (result == null) return;
-
-                        await SharedPrefsHelper.setString(
-                            SharedPrefsHelper.accessToken, result.token);
-
-                        // SAVE CUSTOMER ID
-
-                        await FlutterSecureStore().storeSingleValue(
-                            SharedPrefsHelper.accessToken, result.token);
-
-                        Get.offAllNamed(Routes.dashboard);
+                        await controller.verifyOtp();
                       },
                       child: const Text(
                         "Verify",
