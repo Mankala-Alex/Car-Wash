@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:my_new_app/app/config/constants.dart';
 import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:my_new_app/app/controllers/profile/offers_controller.dart';
+import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
+import 'package:my_new_app/app/custome_widgets/skeleton_corousel.dart';
 import 'package:my_new_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
@@ -67,9 +69,9 @@ class Page1View extends GetView<DashboardController> {
             // --- Top Carousel Section ---
             Obx(() {
               if (featuresController.isLoading.value) {
-                return const SizedBox(
-                  height: 180,
-                  child: Center(child: CircularProgressIndicator()),
+                return const SkeletonCarousel(
+                  height: 150,
+                  itemCount: 3,
                 );
               }
 
@@ -256,22 +258,10 @@ class Page1View extends GetView<DashboardController> {
                         height: 180,
                         width: double.infinity,
                         margin: const EdgeInsets.only(top: 10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          gradient: const LinearGradient(
-                            colors: [
-                              AppColors.primaryLight,
-                              AppColors.primaryLight
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Loading offer...",
-                            style: TextStyle(color: Colors.black, fontSize: 18),
-                          ),
+                        child: const SkeletonBox(
+                          width: double.infinity,
+                          height: 180,
+                          radius: 18,
                         ),
                       );
                     }

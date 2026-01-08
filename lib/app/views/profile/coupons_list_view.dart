@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/controllers/profile/coupons_list_controller.dart';
+import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_theme.dart';
 
@@ -19,7 +20,41 @@ class CouponsListView extends GetView<CouponsListController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return Column(
+            children: [
+              // ===== TOP BANNER SKELETON =====
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: SkeletonBox(
+                  width: double.infinity,
+                  height: 135,
+                  radius: 26,
+                ),
+              ),
+
+              // ===== COUPON GRID SKELETON =====
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemCount: 4, // fake count while loading
+                  itemBuilder: (_, __) {
+                    return const SkeletonBox(
+                      width: double.infinity,
+                      height: double.infinity,
+                      radius: 18,
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
         }
 
         if (controller.coupons.isEmpty) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_new_app/app/config/constants.dart';
 import 'package:my_new_app/app/controllers/dashboard/booking_history_details_controller.dart';
+import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
 import 'package:my_new_app/app/theme/app_theme.dart';
 
 class BookingHistoryDetailsView
@@ -245,16 +246,46 @@ Widget _imageCard({
     return const Text("No images available");
   }
 
+  final imageUrl = Constants.imageBaseUrl + images.first.replaceAll("\\", "/");
+
   return ClipRRect(
     borderRadius: BorderRadius.circular(22),
     child: Stack(
       children: [
         Image.network(
-          Constants.imageBaseUrl + images.first.replaceAll("\\", "/"),
+          imageUrl,
           height: 220,
           width: double.infinity,
           fit: BoxFit.cover,
+
+          // 🔥 SKELETON LOADING
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+
+            return const SkeletonBox(
+              width: double.infinity,
+              height: 220,
+              radius: 22,
+            );
+          },
+
+          // ❌ ERROR STATE
+          errorBuilder: (_, __, ___) {
+            return Container(
+              height: 220,
+              width: double.infinity,
+              color: Colors.grey.shade200,
+              alignment: Alignment.center,
+              child: const Icon(
+                Icons.broken_image,
+                size: 48,
+                color: Colors.grey,
+              ),
+            );
+          },
         ),
+
+        // ===== TITLE CHIP =====
         Positioned(
           bottom: 12,
           left: 12,

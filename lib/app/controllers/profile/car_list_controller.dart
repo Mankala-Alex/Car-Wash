@@ -6,6 +6,8 @@ class CarListController extends GetxController {
   String customerId = ""; // ← ADD THIS
   RxList customerVehicles = [].obs;
 
+  RxBool isLoading = true.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -26,6 +28,8 @@ class CarListController extends GetxController {
 
   Future<void> fetchVehicles() async {
     try {
+      isLoading.value = true; // 🔥 START LOADING
+
       final response = await ApiService.get(
         "customer-vehicles?customer_id=$customerId",
         requireAuthToken: true,
@@ -36,6 +40,8 @@ class CarListController extends GetxController {
       }
     } catch (e) {
       print("Vehicle fetch failed: $e");
+    } finally {
+      isLoading.value = false; // 🔥 STOP LOADING (THIS FIXES EVERYTHING)
     }
   }
 }
