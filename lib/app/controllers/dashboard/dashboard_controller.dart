@@ -8,8 +8,26 @@ import 'package:my_new_app/app/models/booking slot/booking_history_model.dart';
 import 'package:my_new_app/app/repositories/auth/auth_repository.dart';
 import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:my_new_app/app/services/socket_service.dart';
 
 class DashboardController extends GetxController {
+  //for demo purpose only
+  Timer? _refreshTimer;
+  // this is just for demo purpose for auto refreshing
+  void _startAutoRefresh() {
+    _refreshTimer?.cancel();
+
+    _refreshTimer = Timer.periodic(
+      const Duration(seconds: 5), // 👈 demo-friendly
+      (timer) {
+        if (customerUuid.isNotEmpty) {
+          fetchBookingHistory();
+        }
+      },
+    );
+  }
+  // this is just for demo purpose for auto refreshing
+
   var selectedIndex = 0.obs;
   final repo = BookSlotRepository();
 
@@ -49,6 +67,12 @@ class DashboardController extends GetxController {
 
       if (customerUuid.isNotEmpty) {
         await fetchBookingHistory();
+        // Connect socket and set up listeners
+        _setupSocketConnection();
+        _setupSocketListeners();
+        // this is just for demo purpose for auto refreshing
+        _startAutoRefresh();
+        // this is just for demo purpose for auto refreshing
       }
     } catch (e) {
       print("❌ Dashboard init error: $e");
@@ -56,6 +80,131 @@ class DashboardController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // ===== SOCKET.IO INTEGRATION =====
+
+  /// Setup socket connection
+  Future<void> _setupSocketConnection() async {
+    try {
+      final socketService = Get.find<SocketService>();
+      if (!socketService.isConnected) {
+        await socketService.connect();
+      }
+    } catch (e) {
+      print("❌ Socket connection error: $e");
+    }
+  }
+
+  /// Setup socket event listeners
+  void _setupSocketListeners() {
+    try {
+      final socketService = Get.find<SocketService>();
+
+      // Listen to booking_accepted event
+      ever(socketService.bookingAcceptedEvent, (data) {
+        if (data != null) {
+          print("📡 Socket: booking_accepted received");
+          _updateBookingFromSocket(data, "ASSIGNED");
+        }
+      });
+
+      // Listen to booking_arrived event
+      ever(socketService.bookingArrivedEvent, (data) {
+        if (data != null) {
+          print("📡 Socket: booking_arrived received");
+          _updateBookingFromSocket(data, "ARRIVED");
+        }
+      });
+
+      // Listen to booking_started event
+      ever(socketService.bookingStartedEvent, (data) {
+        if (data != null) {
+          print("📡 Socket: booking_started received");
+          _updateBookingFromSocket(data, "IN_PROGRESS");
+        }
+      });
+
+      // Listen to booking_completed event
+      ever(socketService.bookingCompletedEvent, (data) {
+        if (data != null) {
+          print("📡 Socket: booking_completed received");
+          _updateBookingFromSocket(data, "COMPLETED");
+        }
+      });
+
+      print("✅ Socket listeners set up successfully");
+    } catch (e) {
+      print("❌ Error setting up socket listeners: $e");
+    }
+  }
+
+  /// Update booking status from socket event
+  /// Safely handles both payload formats
+  void _updateBookingFromSocket(
+    Map<String, dynamic> socketData,
+    String expectedStatus,
+  ) {
+    try {
+      // Extract booking ID from socket data
+      final bookingId = socketData['id'] ?? socketData['booking_id'];
+      if (bookingId == null) {
+        print("⚠️ No booking ID found in socket data");
+        return;
+      }
+
+      print("🔄 Updating booking: $bookingId to status: $expectedStatus");
+
+      // Update in currentBookings
+      final currentIndex = currentBookings.indexWhere(
+        (booking) => booking.id == bookingId,
+      );
+
+      if (currentIndex != -1) {
+        // UPDATE existing booking
+        final oldBooking = currentBookings[currentIndex];
+        final updatedJson = oldBooking.toJson();
+        updatedJson['status'] = expectedStatus;
+
+        if (socketData.containsKey('washer_id')) {
+          updatedJson['washer_id'] = socketData['washer_id'];
+        }
+        if (socketData.containsKey('washer_name')) {
+          updatedJson['washer_name'] = socketData['washer_name'];
+        }
+
+        final updatedBooking = Datum.fromJson(updatedJson);
+        currentBookings[currentIndex] = updatedBooking;
+
+        trackingBooking.value = updatedBooking;
+      } else if (expectedStatus != "COMPLETED") {
+        // 🔥 THIS IS THE MISSING PART
+        final newBooking = Datum.fromJson(socketData);
+
+        currentBookings.insert(0, newBooking);
+        trackingBooking.value = newBooking;
+      }
+
+      // Check if booking should move to past bookings (COMPLETED)
+      if (expectedStatus == "COMPLETED") {
+        final pastIndex = pastBookings.indexWhere(
+          (booking) => booking.id == bookingId,
+        );
+
+        if (pastIndex == -1 && currentIndex != -1) {
+          // Move from current to past
+          final booking = currentBookings.removeAt(currentIndex);
+          pastBookings.add(booking);
+          trackingBooking.value = null;
+
+          print("✅ Booking moved to past bookings: $bookingId");
+        }
+      }
+    } catch (e) {
+      print("❌ Error updating booking from socket: $e");
+    }
+  }
+
+  // ===== END SOCKET.IO INTEGRATION =====
 
   // -----------------------------------------------------
   // LOAD CUSTOMER DATA (UUID + NAME + EMAIL)
@@ -100,12 +249,16 @@ class DashboardController extends GetxController {
         .where((b) =>
             b.status == "PENDING" ||
             b.status == "ASSIGNED" ||
+            b.status == "ARRIVED" ||
             b.status == "IN_PROGRESS")
         .toList();
 
     // TRACKING BOOKING (PRIORITY BASED)
     final trackingList = allBookings
-        .where((b) => b.status == "IN_PROGRESS" || b.status == "ASSIGNED")
+        .where((b) =>
+            b.status == "IN_PROGRESS" ||
+            b.status == "ARRIVED" ||
+            b.status == "ASSIGNED")
         .toList();
 
     trackingBooking.value = trackingList.isNotEmpty ? trackingList.first : null;
@@ -167,7 +320,6 @@ class DashboardController extends GetxController {
 
   void setRating(int bookingIndex, int rating) {
     ratingMap[bookingIndex] = rating;
-    update();
   }
 
   Future<void> cancelBooking(String bookingCode) async {
@@ -209,19 +361,28 @@ class DashboardController extends GetxController {
 
   Future<void> logout() async {
     try {
-      // 1️⃣ Call logout API
+      // 1️⃣ Disconnect socket
+      final socketService = Get.find<SocketService>();
+      await socketService.disconnect();
+    } catch (e) {
+      // Socket disconnect failure should NOT block logout
+      print("⚠️ Socket disconnect error: $e");
+    }
+
+    try {
+      // 2️⃣ Call logout API
       await _authRepo.postLogout();
     } catch (e) {
       // API failure should NOT block logout
       print("Logout API error: $e");
     } finally {
-      // 2️⃣ Clear local data ALWAYS
+      // 3️⃣ Clear local data ALWAYS
       await SharedPrefsHelper.clearAll();
 
-      // 3️⃣ Reset GetX state
+      // 4️⃣ Reset GetX state
       Get.deleteAll(force: true);
 
-      // 4️⃣ Navigate to login
+      // 5️⃣ Navigate to login
       Get.offAllNamed(Routes.login);
     }
   }
