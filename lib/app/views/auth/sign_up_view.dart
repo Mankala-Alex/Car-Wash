@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/auth/sign_up_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/auth/sign_up_controller.dart';
 import '../../theme/app_theme.dart';
 
 class SignupView extends GetView<SignupController> {

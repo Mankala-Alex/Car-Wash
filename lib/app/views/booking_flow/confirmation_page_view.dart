@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:my_new_app/app/controllers/booking_flow/confirmation_page_controller.dart';
-import 'package:my_new_app/app/routes/app_routes.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/confirmation_page_controller.dart';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 class ConfirmationPageView extends GetView<ConfirmationPageController> {
   const ConfirmationPageView({super.key});

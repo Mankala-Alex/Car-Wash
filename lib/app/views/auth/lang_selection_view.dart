@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import '../../controllers/auth/lang_selection_controller.dart';
 
 class LangSelectionView extends GetView<LangSelectionController> {

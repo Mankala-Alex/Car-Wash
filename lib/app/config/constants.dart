@@ -5,6 +5,6 @@ class Constants {
 
   static Color bgBackDropColor = Colors.transparent;
 
-  static const imageBaseUrl = "http://192.168.1.15:3000";
-  // static const imageBaseUrlHost = "http://6758056cb3fc.sn.mynetname.net:195/";
+  static const imageBaseUrl = "http://109.199.106.107:3000";
+  //static const imageBaseUrlHost = "http://6758056cb3fc.sn.mynetname.net:195/";
 }

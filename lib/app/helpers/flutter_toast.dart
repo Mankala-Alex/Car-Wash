@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -38,8 +40,12 @@ loadingPopUp(show) {
           alignment: FractionalOffset.center,
           height: 60,
           padding: const EdgeInsets.all(8),
-          child: CircularProgressIndicator
-          (color: Constants.primaryColor),
+          child: Platform.isIOS
+              ? CupertinoActivityIndicator(
+                  color: Constants.primaryColor,
+                  radius: 15,
+                )
+              : CircularProgressIndicator(color: Constants.primaryColor),
         ),
       ),
     );

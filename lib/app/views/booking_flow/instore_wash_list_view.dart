@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/config/constants.dart';
-import 'package:my_new_app/app/controllers/booking_flow/instore_wash_controller.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/config/constants.dart';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/instore_wash_controller.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 class InstoreWashListView extends GetView<InstoreWashController> {
   const InstoreWashListView({super.key});

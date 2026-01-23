@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
-// import 'package:my_new_app/app/controllers/dashboard/dashboard_controller.dart';
-// import 'package:my_new_app/app/theme/app_theme.dart';
+// import 'package:car_wash_customer_app/app/controllers/dashboard/dashboard_controller.dart';
+// import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 // class Page3View extends GetView<DashboardController> {
 //   const Page3View({super.key});

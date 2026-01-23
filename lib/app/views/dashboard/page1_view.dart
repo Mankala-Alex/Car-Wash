@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'; // Ensure this import is correct
 import 'package:get/get.dart';
-import 'package:my_new_app/app/config/constants.dart';
-import 'package:my_new_app/app/controllers/booking_flow/features_list_controller.dart';
-import 'package:my_new_app/app/controllers/profile/offers_controller.dart';
-import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
-import 'package:my_new_app/app/custome_widgets/skeleton_corousel.dart';
-import 'package:my_new_app/app/models/booking%20slot/booking_history_model.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/config/constants.dart';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_corousel.dart';
+import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
 import '../../routes/app_routes.dart'; // To navigate to Routes.BOOK_SLOT

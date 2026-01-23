@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/booking_flow/booking_qr_coupon_controller.dart';
-import 'package:my_new_app/app/custome_widgets/loader.dart';
-import 'package:my_new_app/app/routes/app_routes.dart';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/booking_qr_coupon_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/loader.dart';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
 
@@ -156,8 +156,8 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
 
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
-// import 'package:my_new_app/app/controllers/profile/qr_coupon_controller.dart';
-// import 'package:my_new_app/app/theme/app_theme.dart';
+// import 'package:car_wash_customer_app/app/controllers/profile/qr_coupon_controller.dart';
+// import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 // class BookingQrCouponView extends GetView<QrCouponController> {
 //   const BookingQrCouponView({super.key});

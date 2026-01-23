@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:my_new_app/app/models/instores_model.dart';
-import 'package:my_new_app/app/repositories/instore_repository.dart';
+import 'package:car_wash_customer_app/app/models/instores_model.dart';
+import 'package:car_wash_customer_app/app/repositories/instore_repository.dart';
 
 class InstoreWashController extends GetxController {
   final InstoreRepository repository = InstoreRepository();

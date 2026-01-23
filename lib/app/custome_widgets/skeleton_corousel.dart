@@ -1,5 +1,5 @@
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:flutter/material.dart';
-import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
 
 class SkeletonCarousel extends StatelessWidget {
   final int itemCount;

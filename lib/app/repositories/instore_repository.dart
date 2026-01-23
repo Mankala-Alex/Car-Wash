@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:my_new_app/app/services/api_service.dart';
-import 'package:my_new_app/app/services/endpoints.dart';
+import 'package:car_wash_customer_app/app/services/api_service.dart';
+import 'package:car_wash_customer_app/app/services/endpoints.dart';
 
 class InstoreRepository {
   Future<Response> getInStoreWashStores() async {

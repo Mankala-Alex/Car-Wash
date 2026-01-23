@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/views/dashboard/page1_view.dart';
-import 'package:my_new_app/app/views/dashboard/page2_view.dart';
-import 'package:my_new_app/app/views/dashboard/page4_view.dart';
+import 'package:car_wash_customer_app/app/views/dashboard/page1_view.dart';
+import 'package:car_wash_customer_app/app/views/dashboard/page2_view.dart';
+import 'package:car_wash_customer_app/app/views/dashboard/page4_view.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
 import '../../theme/app_theme.dart';

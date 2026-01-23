@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:my_new_app/app/helpers/flutter_toast.dart';
-import 'package:my_new_app/app/helpers/shared_preferences.dart';
-import 'package:my_new_app/app/models/booking slot/slot_dates_model.dart';
-import 'package:my_new_app/app/models/booking slot/slot_times_model.dart';
-import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
-import 'package:my_new_app/app/routes/app_routes.dart';
-import 'package:my_new_app/app/services/api_service.dart';
+import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
+import 'package:car_wash_customer_app/app/models/booking slot/slot_dates_model.dart';
+import 'package:car_wash_customer_app/app/models/booking slot/slot_times_model.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+import 'package:car_wash_customer_app/app/services/api_service.dart';
 
 class BookSlotController extends GetxController {
   final BookSlotRepository repository = BookSlotRepository();

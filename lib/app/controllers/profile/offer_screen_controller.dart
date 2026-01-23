@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:my_new_app/app/models/offers_model.dart';
+import 'package:car_wash_customer_app/app/models/offers_model.dart';
 
 class OfferScreenController extends GetxController {
   late Offersmodel offer;

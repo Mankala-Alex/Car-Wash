@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/config/constants.dart';
-import 'package:my_new_app/app/controllers/dashboard/booking_history_details_controller.dart';
-import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/config/constants.dart';
+import 'package:car_wash_customer_app/app/controllers/dashboard/booking_history_details_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 class BookingHistoryDetailsView
     extends GetView<BookingHistoryDetailsController> {
@@ -311,9 +311,9 @@ Widget _imageCard({
 
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
-// import 'package:my_new_app/app/config/constants.dart';
-// import 'package:my_new_app/app/controllers/dashboard/booking_history_details_controller.dart';
-// import 'package:my_new_app/app/theme/app_theme.dart';
+// import 'package:car_wash_customer_app/app/config/constants.dart';
+// import 'package:car_wash_customer_app/app/controllers/dashboard/booking_history_details_controller.dart';
+// import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 // class BookingHistoryDetailsView
 //     extends GetView<BookingHistoryDetailsController> {

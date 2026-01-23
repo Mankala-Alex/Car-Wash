@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/dashboard/notification_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/dashboard/notification_controller.dart';
 
 class NotificationsView extends GetView<NotificationController> {
   const NotificationsView({super.key});

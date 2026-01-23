@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/profile/coupons_list_controller.dart';
-import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
+import 'package:car_wash_customer_app/app/controllers/profile/coupons_list_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_theme.dart';
 

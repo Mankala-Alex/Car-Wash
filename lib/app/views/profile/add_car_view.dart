@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/profile/add_car_controller.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/controllers/profile/add_car_controller.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 class AddCarView extends GetView<AddCarController> {
   const AddCarView({super.key});

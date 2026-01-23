@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/custome_widgets/wheel_loader.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
 import '../../controllers/profile/coupon_details_controller.dart';

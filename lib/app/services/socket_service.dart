@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:my_new_app/app/config/environment.dart';
-import 'package:my_new_app/app/helpers/shared_preferences.dart';
+import 'package:car_wash_customer_app/app/config/environment.dart';
+import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
 
 /// SocketService handles real-time communication with the backend.
 ///

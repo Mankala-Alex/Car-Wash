@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import '../../controllers/auth/login_controller.dart';
 import '../../custome_widgets/wheel_loader.dart';
 

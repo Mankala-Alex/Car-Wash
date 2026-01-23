@@ -1,4 +1,4 @@
-import 'package:my_new_app/app/models/auth/customer_model.dart';
+import 'package:car_wash_customer_app/app/models/auth/customer_model.dart';
 
 class Signupmodel {
   final bool success;

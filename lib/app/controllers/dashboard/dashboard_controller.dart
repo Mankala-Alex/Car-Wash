@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/helpers/flutter_toast.dart';
-import 'package:my_new_app/app/helpers/shared_preferences.dart';
-import 'package:my_new_app/app/models/booking slot/booking_history_model.dart';
-import 'package:my_new_app/app/repositories/auth/auth_repository.dart';
-import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
-import 'package:my_new_app/app/routes/app_routes.dart';
-import 'package:my_new_app/app/services/socket_service.dart';
+import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
+import 'package:car_wash_customer_app/app/models/booking slot/booking_history_model.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/auth_repository.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+import 'package:car_wash_customer_app/app/services/socket_service.dart';
 
 class DashboardController extends GetxController {
   //for demo purpose only

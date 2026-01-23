@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/profile/car_list_controller.dart';
-import 'package:my_new_app/app/custome_widgets/skeleton_box.dart';
-import 'package:my_new_app/app/routes/app_routes.dart';
-import 'package:my_new_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/controllers/profile/car_list_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 class CarListView extends GetView<CarListController> {
   const CarListView({super.key});

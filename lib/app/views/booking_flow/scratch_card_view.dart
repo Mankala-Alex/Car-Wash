@@ -1,9 +1,9 @@
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 // import 'package:lottie/lottie.dart';
-// import 'package:my_new_app/app/controllers/booking_flow/scratch_card_controller.dart';
-// import 'package:my_new_app/app/routes/app_routes.dart';
-// import 'package:my_new_app/app/theme/app_theme.dart';
+// import 'package:car_wash_customer_app/app/controllers/booking_flow/scratch_card_controller.dart';
+// import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+// import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 // import 'package:scratcher/scratcher.dart';
 
 // class ScratchCardView extends GetView<ScratchCardController> {

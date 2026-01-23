@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/profile/offer_screen_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/profile/offer_screen_controller.dart';
 
 class OfferScreenView extends GetView<OfferScreenController> {
   const OfferScreenView({super.key});

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:my_new_app/app/models/booking%20slot/services_model.dart';
-import 'package:my_new_app/app/repositories/auth/book_service/book_slot_repository.dart';
+import 'package:car_wash_customer_app/app/models/booking%20slot/services_model.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
 
 class FeaturesListController extends GetxController {
   final BookSlotRepository repository = BookSlotRepository();

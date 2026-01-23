@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:my_new_app/app/models/offers_model.dart';
-import 'package:my_new_app/app/repositories/auth/book_service/profile_repository.dart';
+import 'package:car_wash_customer_app/app/models/offers_model.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/book_service/profile_repository.dart';
 
 class OffersController extends GetxController {
   final ProfileRepository repository = ProfileRepository();

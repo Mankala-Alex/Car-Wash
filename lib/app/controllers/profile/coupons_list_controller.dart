@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:my_new_app/app/models/coupons_list_model.dart';
+import 'package:car_wash_customer_app/app/models/coupons_list_model.dart';
 import '../../services/api_service.dart';
 import '../../services/endpoints.dart';
 import '../../helpers/shared_preferences.dart';

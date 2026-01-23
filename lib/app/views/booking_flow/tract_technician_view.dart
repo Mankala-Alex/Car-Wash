@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_new_app/app/controllers/booking_flow/tract_technician_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/tract_technician_controller.dart';
 
 class TractTechnicianView extends GetView<TrackTechnicianController> {
   const TractTechnicianView({super.key});

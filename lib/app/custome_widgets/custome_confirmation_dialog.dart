@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,6 +29,46 @@ class CustomConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (Platform.isIOS) {
+      return CupertinoAlertDialog(
+        title: Text(
+          header,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 12.0),
+          child: Text(body, style: const TextStyle(fontSize: 16)),
+        ),
+        actions: <Widget>[
+          Visibility(
+            visible: isCancel ?? true,
+            child: CupertinoDialogAction(
+              onPressed: onNo ?? Get.back,
+              child: Text(
+                noText,
+                style: TextStyle(
+                  color: Constants.primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          CupertinoDialogAction(
+            onPressed: onYes,
+            isDefaultAction: true,
+            child: Text(
+              yesText,
+              style: TextStyle(
+                color: Constants.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Android Material Dialog
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       backgroundColor: AppColors.bgLight,
