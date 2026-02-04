@@ -279,18 +279,21 @@ class InstoreWashListView extends GetView<InstoreWashController> {
 
                     // Call Button
                     Expanded(
-                      child: Container(
-                        height: 42,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.secondaryLight),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "📞 Call",
-                            style: TextStyle(
-                              color: AppColors.textDefaultLight,
-                              fontWeight: FontWeight.w700,
+                      child: GestureDetector(
+                        onTap: () => controller.makePhoneCall("9999999999"),
+                        child: Container(
+                          height: 42,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.secondaryLight),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "📞 Call",
+                              style: TextStyle(
+                                color: AppColors.textDefaultLight,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),

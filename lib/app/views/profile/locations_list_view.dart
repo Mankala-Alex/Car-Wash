@@ -72,13 +72,13 @@ class LocationsListView extends GetView<LocationListController> {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
             child: InkWell(
               onTap: () {
-                Get.toNamed(Routes.addlocation);
+                Get.toNamed(Routes.locationPicker);
               },
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.secondaryLight,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -90,19 +90,19 @@ class LocationsListView extends GetView<LocationListController> {
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.add, color: AppColors.secondaryLight, size: 26),
+                    Icon(Icons.add, color: AppColors.bgLight, size: 26),
                     SizedBox(width: 12),
                     Text(
                       "Add New Address",
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppColors.secondaryLight,
+                        color: AppColors.bgLight,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Spacer(),
                     Icon(Icons.arrow_forward_ios,
-                        size: 18, color: Colors.black54),
+                        size: 18, color: AppColors.bgLight),
                   ],
                 ),
               ),

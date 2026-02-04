@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_dialog.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/custom_feedback_dialog.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
@@ -483,20 +484,37 @@ class Page2View extends GetView<DashboardController> {
 
               const SizedBox(height: 10),
 
-              // ⭐ RATING
-              Row(
-                children: List.generate(5, (starIndex) {
-                  bool isFilled = starIndex < rating;
-
-                  return GestureDetector(
-                    onTap: () => ctrl.setRating(index, starIndex + 1),
-                    child: Icon(
-                      isFilled ? Icons.star : Icons.star_border,
-                      size: 26,
-                      color: isFilled ? AppColors.warningLight : Colors.grey,
+              // ⭐ RATING - DISPLAY ONLY (clickable to open feedback dialog)
+              GestureDetector(
+                onTap: () {
+                  // Open feedback dialog when clicking on stars
+                  Get.dialog(
+                    CustomFeedbackDialog(
+                      initialRating: rating,
+                      onSubmit: (newRating, comments) {
+                        ctrl.setRating(index, newRating);
+                        print("📝 Rating: $newRating, Comments: $comments");
+                      },
                     ),
+                    barrierDismissible: false,
                   );
-                }),
+                },
+                child: Row(
+                  children: List.generate(5, (starIndex) {
+                    bool isFilled = starIndex < rating;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(
+                        isFilled
+                            ? Icons.star_rounded
+                            : Icons.star_border_rounded,
+                        size: 36,
+                        color: isFilled ? AppColors.warningLight : Colors.grey,
+                      ),
+                    );
+                  }),
+                ),
               ),
 
               const SizedBox(height: 14),

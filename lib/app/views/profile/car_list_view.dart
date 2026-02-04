@@ -80,7 +80,7 @@ class CarListView extends GetView<CarListController> {
             final v = controller.customerVehicles[index];
 
             return _vehicleCard(
-              imagePath: "assets/carwash/splash_2.jpg", // static image
+              imagePath: "assets/carwash/car1.png", // static image
               title: "${v["make"]} ${v["model"]}",
               subtitle: v["vehicle_number"],
             );

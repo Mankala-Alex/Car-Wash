@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:car_wash_customer_app/app/models/instores_model.dart';
 import 'package:car_wash_customer_app/app/repositories/instore_repository.dart';
 
@@ -26,6 +27,19 @@ class InstoreWashController extends GetxController {
       print("Error fetching stores: $e");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // ===== PHONE CALL FUNCTION =====
+  Future<void> makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    try {
+      await launchUrl(launchUri);
+    } catch (e) {
+      print('Phone call error: $e');
     }
   }
 }

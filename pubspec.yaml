@@ -38,6 +38,12 @@ dependencies:
   connectivity_plus: ^6.1.3
   permission_handler: ^11.3.1
   socket_io_client: ^2.0.3
+  
+  # Location and Maps
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
   # google_maps_flutter: ^2.10.1
   # geolocator: ^14.0.1
   # location: ^8.0.0

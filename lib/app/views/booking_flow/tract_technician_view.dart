@@ -154,7 +154,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                         const CircleAvatar(
                           radius: 24,
                           backgroundImage:
-                              AssetImage("assets/profile/profile.png"),
+                              AssetImage("assets/carwash/avatar.png"),
                         ),
                         const SizedBox(width: 12),
                         Expanded(

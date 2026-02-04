@@ -15,7 +15,7 @@ class BookSlotView extends GetView<BookSlotController> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        //backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
@@ -227,7 +227,7 @@ class BookSlotView extends GetView<BookSlotController> {
               context,
               vehicleName: "${v["make"]} ${v["model"]}",
               plateNumber: v["vehicle_number"] ?? "",
-              imagePath: "assets/carwash/splash_2.jpg",
+              imagePath: "assets/carwash/car1.png",
             );
           },
         ),
@@ -514,7 +514,7 @@ class BookSlotView extends GetView<BookSlotController> {
         const SizedBox(height: 15),
         GestureDetector(
           onTap: () {
-            Get.toNamed(Routes.addlocation);
+            controller.openLocationPicker();
           },
           child: Container(
             padding: const EdgeInsets.all(16),

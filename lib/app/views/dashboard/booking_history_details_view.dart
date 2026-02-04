@@ -161,7 +161,7 @@ class BookingHistoryDetailsView
             children: [
               const CircleAvatar(
                 radius: 22,
-                backgroundImage: AssetImage("assets/profile/profile.png"),
+                backgroundImage: AssetImage("assets/carwash/avatar.png"),
               ),
               const SizedBox(width: 10),
               Expanded(

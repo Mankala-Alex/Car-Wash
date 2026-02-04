@@ -12,20 +12,20 @@ import 'package:car_wash_customer_app/app/services/socket_service.dart';
 
 class DashboardController extends GetxController {
   //for demo purpose only
-  Timer? _refreshTimer;
-  // this is just for demo purpose for auto refreshing
-  void _startAutoRefresh() {
-    _refreshTimer?.cancel();
+  // Timer? _refreshTimer;
+  // // this is just for demo purpose for auto refreshing
+  // void _startAutoRefresh() {
+  //   _refreshTimer?.cancel();
 
-    _refreshTimer = Timer.periodic(
-      const Duration(seconds: 5), // 👈 demo-friendly
-      (timer) {
-        if (customerUuid.isNotEmpty) {
-          fetchBookingHistory();
-        }
-      },
-    );
-  }
+  //   _refreshTimer = Timer.periodic(
+  //     const Duration(seconds: 5), // 👈 demo-friendly
+  //     (timer) {
+  //       if (customerUuid.isNotEmpty) {
+  //         fetchBookingHistory();
+  //       }
+  //     },
+  //   );
+  // }
   // this is just for demo purpose for auto refreshing
 
   var selectedIndex = 0.obs;
@@ -71,7 +71,7 @@ class DashboardController extends GetxController {
         _setupSocketConnection();
         _setupSocketListeners();
         // this is just for demo purpose for auto refreshing
-        _startAutoRefresh();
+        //_startAutoRefresh();
         // this is just for demo purpose for auto refreshing
       }
     } catch (e) {
@@ -320,6 +320,7 @@ class DashboardController extends GetxController {
 
   void setRating(int bookingIndex, int rating) {
     ratingMap[bookingIndex] = rating;
+    update(); // Trigger GetBuilder rebuild
   }
 
   Future<void> cancelBooking(String bookingCode) async {

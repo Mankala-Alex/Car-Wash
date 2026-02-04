@@ -23,6 +23,12 @@ class BookSlotController extends GetxController {
   final selectedVehicle = Rx<String?>(null);
   final selectedAddress = Rx<String?>("Home");
 
+  // Location variables
+  final savedLocations = <Map<String, dynamic>>[].obs;
+  RxString selectedLocationAddress = "Home".obs;
+  RxDouble selectedLocationLatitude = 0.0.obs;
+  RxDouble selectedLocationLongitude = 0.0.obs;
+
   int? selectedDateId;
   final selectedSlotId = 0.obs;
 
@@ -369,5 +375,83 @@ class BookSlotController extends GetxController {
 
   double get totalAmount {
     return servicePrice + vatAmount;
+  }
+
+  // ===== LOCATION MANAGEMENT =====
+
+  /// Navigate to location picker and save selected location
+  Future<void> openLocationPicker() async {
+    try {
+      final result = await Get.toNamed(Routes.locationPicker);
+
+      if (result != null && result is Map<String, dynamic>) {
+        final latitude = result['latitude'] as double;
+        final longitude = result['longitude'] as double;
+        final address = result['address'] as String;
+
+        // Save the selected location
+        addLocation(address, latitude, longitude);
+
+        successToast('Location saved');
+      }
+    } catch (e) {
+      errorToast('Error selecting location: $e');
+    }
+  }
+
+  /// Add a new location to saved locations
+  void addLocation(String address, double latitude, double longitude) {
+    savedLocations.add({
+      'address': address,
+      'latitude': latitude,
+      'longitude': longitude,
+      'timestamp': DateTime.now(),
+    });
+
+    // Select the newly added location
+    updateSelectedLocation(address, latitude, longitude);
+
+    print('✅ Location saved: $address');
+  }
+
+  /// Update selected location
+  void updateSelectedLocation(
+      String address, double latitude, double longitude) {
+    selectedLocationAddress.value = address;
+    selectedLocationLatitude.value = latitude;
+    selectedLocationLongitude.value = longitude;
+    selectedAddress.value = address;
+
+    print('📍 Selected location: $address ($latitude, $longitude)');
+  }
+
+  /// Get saved locations for display
+  List<Map<String, dynamic>> getDisplayLocations() {
+    // Default locations
+    List<Map<String, dynamic>> locations = [
+      {
+        'title': 'Home',
+        'address': '123 Market St, San Francisco',
+        'icon': 'home',
+      },
+      {
+        'title': 'Work',
+        'address': '456 Tech Ave, Silicon Valley',
+        'icon': 'work',
+      },
+    ];
+
+    // Add saved locations
+    locations.addAll(savedLocations
+        .map((loc) => {
+              'title': loc['address'],
+              'address': loc['address'],
+              'icon': 'location',
+              'latitude': loc['latitude'],
+              'longitude': loc['longitude'],
+            })
+        .toList());
+
+    return locations;
   }
 }

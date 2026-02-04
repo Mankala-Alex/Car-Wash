@@ -4,6 +4,7 @@ import 'package:car_wash_customer_app/app/bindings/booking_flow/book_slot_bindin
 import 'package:car_wash_customer_app/app/bindings/booking_flow/confirmation_page_bindings.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/features_list_bindings.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/instore_wash_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/booking_flow/location_picker_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/tract_technician_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/dashboard/booking_history_details_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/dashboard/dashboard_bindings.dart';
@@ -23,6 +24,7 @@ import 'package:car_wash_customer_app/app/views/auth/sign_up_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/instore_wash_list_view.dart';
+import 'package:car_wash_customer_app/app/views/booking_flow/location_picker_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/tract_technician_view.dart';
 import 'package:car_wash_customer_app/app/views/dashboard/booking_history_details_view.dart';
 import 'package:car_wash_customer_app/app/views/dashboard/dashboard_view.dart';
@@ -125,6 +127,11 @@ class AppPages {
       name: Routes.addlocation,
       page: () => const AddLocationView(),
       binding: AddLocationBinding(),
+    ),
+    GetPage(
+      name: Routes.locationPicker,
+      page: () => const LocationPickerView(),
+      binding: LocationPickerBinding(),
     ),
     GetPage(
       name: Routes.notification,

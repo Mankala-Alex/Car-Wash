@@ -17,20 +17,6 @@ class LocationListController extends GetxController {
       fullAddress: "pws42, SR Nagar, Hyderabad",
       icon: Icons.location_on_outlined,
     ),
-    AddressModel(
-      title: "Other",
-      distance: "498 m",
-      fullAddress:
-          "alinagar nagar padmaja hostel, ali nagar, Yousufguda, Hyderabad",
-      icon: Icons.location_on_outlined,
-    ),
-    AddressModel(
-      title: "Home",
-      distance: "258 m",
-      fullAddress:
-          "1, anupama ladies pg, sri chakra food court, Delta Chambers, Mumbai Highway",
-      icon: Icons.home_filled,
-    ),
   ].obs;
 
   // -----------------------------------------------------
