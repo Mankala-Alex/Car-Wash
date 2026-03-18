@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
-import 'package:car_wash_customer_app/app/custome_widgets/loader.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -32,7 +32,20 @@ class FeaturesListView extends GetView<FeaturesListController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return loader();
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return const Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: SkeletonBox(
+                  width: double.infinity,
+                  height: 350,
+                  radius: 18,
+                ),
+              );
+            },
+          );
         }
 
         return ListView.builder(

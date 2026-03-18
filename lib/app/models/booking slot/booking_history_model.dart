@@ -1,38 +1,44 @@
 class Bookinghistorymodel {
+  final bool success;
+  final List<Datum> bookings;
+
   Bookinghistorymodel({
     required this.success,
-    required this.data,
+    required this.bookings,
   });
 
-  final bool success;
-  final List<Datum> data;
-
   factory Bookinghistorymodel.fromJson(Map<String, dynamic> json) {
+    final list = json["bookings"] ?? [];
+
     return Bookinghistorymodel(
       success: json["success"] ?? false,
-      data: json["data"] == null
-          ? []
-          : List<Datum>.from(
-              json["data"].map((x) => Datum.fromJson(x)),
-            ),
+      bookings: List<Datum>.from(
+        list.map((x) => Datum.fromJson(x)),
+      ),
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        "success": success,
-        "data": data.map((x) => x.toJson()).toList(),
-      };
 }
 
-// =======================================================
-// SINGLE BOOKING ITEM
-// =======================================================
-
 class Datum {
+  final String id;
+  final String bookingCode;
+  final String customerName;
+  final String vehicle;
+  final String serviceId;
+  final String serviceName;
+  final DateTime? scheduledAt;
+  final String? washerId;
+  final String? washerName;
+  final String status;
+  final String amount;
+  final int slotId;
+  final String customerId;
+  final List<BookingImage> images;
+  final List<BookingVideo> videos;
+
   Datum({
     required this.id,
     required this.bookingCode,
-    required this.customerId,
     required this.customerName,
     required this.vehicle,
     required this.serviceId,
@@ -42,78 +48,94 @@ class Datum {
     required this.washerName,
     required this.status,
     required this.amount,
-    required this.createdAt,
-    required this.updatedAt,
     required this.slotId,
-    required this.beforeImages,
-    required this.afterImages,
+    required this.customerId,
+    required this.images,
+    required this.videos,
   });
-
-  final String id;
-  final String bookingCode;
-  final String customerId;
-  final String customerName;
-  final String vehicle;
-  final String serviceId;
-  final String serviceName;
-  final String? scheduledAt;
-  final String washerId;
-  final String washerName;
-  final String status;
-  final String amount;
-  final DateTime? createdAt;
-  final dynamic updatedAt;
-  final int slotId;
-
-  /// ✅ IMAGE LISTS
-  final List<String> beforeImages;
-  final List<String> afterImages;
 
   factory Datum.fromJson(Map<String, dynamic> json) {
     return Datum(
       id: json["id"] ?? "",
       bookingCode: json["booking_code"] ?? "",
-      customerId: json["customer_id"]?.toString() ?? "",
       customerName: json["customer_name"] ?? "",
       vehicle: json["vehicle"] ?? "",
-      serviceId: json["service_id"]?.toString() ?? "",
+      serviceId: json["service_id"] ?? "",
       serviceName: json["service_name"] ?? "",
-      scheduledAt: json["scheduled_at"],
-      washerId: json["washer_id"]?.toString() ?? "",
-      washerName: json["washer_name"]?.toString() ?? "",
+      scheduledAt: DateTime.tryParse(json["scheduled_at"] ?? ""),
+      washerId: json["washer_id"]?.toString(),
+      washerName: json["washer_name"]?.toString(),
       status: json["status"] ?? "",
-      amount: json["amount"]?.toString() ?? "",
-      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-      updatedAt: json["updated_at"],
+      amount: json["amount"] ?? "",
       slotId: json["slot_id"] ?? 0,
-
-      /// ✅ SAFE IMAGE PARSING
-      beforeImages: json["before_images"] == null
-          ? []
-          : List<String>.from(json["before_images"]),
-      afterImages: json["after_images"] == null
-          ? []
-          : List<String>.from(json["after_images"]),
+      customerId: json["customer_id"] ?? "",
+      images: (json["images"] ?? [])
+          .map<BookingImage>((x) => BookingImage.fromJson(x))
+          .toList(),
+      videos: (json["videos"] ?? [])
+          .map<BookingVideo>((x) => BookingVideo.fromJson(x))
+          .toList(),
     );
   }
-
   Map<String, dynamic> toJson() => {
         "id": id,
         "booking_code": bookingCode,
-        "customer_id": customerId,
         "customer_name": customerName,
         "vehicle": vehicle,
         "service_id": serviceId,
         "service_name": serviceName,
-        "scheduled_at": scheduledAt,
+        "scheduled_at": scheduledAt?.toIso8601String(),
         "washer_id": washerId,
         "washer_name": washerName,
         "status": status,
         "amount": amount,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt,
         "slot_id": slotId,
-        "before_images": beforeImages,
-        "after_images": afterImages,
+        "customer_id": customerId,
+        "images": images
+            .map((e) => {
+                  "image_url": e.url,
+                  "image_type": e.type,
+                })
+            .toList(),
+        "videos": videos
+            .map((e) => {
+                  "video_url": e.url,
+                  "video_type": e.type,
+                })
+            .toList(),
       };
+}
+
+class BookingImage {
+  final String url;
+  final String type;
+
+  BookingImage({
+    required this.url,
+    required this.type,
+  });
+
+  factory BookingImage.fromJson(Map<String, dynamic> json) {
+    return BookingImage(
+      url: json["image_url"] ?? "",
+      type: json["image_type"] ?? "",
+    );
+  }
+}
+
+class BookingVideo {
+  final String url;
+  final String type;
+
+  BookingVideo({
+    required this.url,
+    required this.type,
+  });
+
+  factory BookingVideo.fromJson(Map<String, dynamic> json) {
+    return BookingVideo(
+      url: json["video_url"] ?? "",
+      type: json["video_type"] ?? "",
+    );
+  }
 }

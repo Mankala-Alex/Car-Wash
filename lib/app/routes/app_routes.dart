@@ -16,6 +16,7 @@ abstract class Routes {
   static const locationslist = '/location_list';
   static const addlocation = '/addlocation';
   static const locationPicker = '/location_picker';
+  static const locationDetails = '/location_details';
   static const notification = '/notification_view';
   static const help = '/help_n_support';
   static const langchange = '/lang_change';

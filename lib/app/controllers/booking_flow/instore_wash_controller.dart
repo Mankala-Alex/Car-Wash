@@ -8,6 +8,8 @@ class InstoreWashController extends GetxController {
 
   RxBool isLoading = false.obs;
   RxList<InstoresModel> stores = <InstoresModel>[].obs;
+  RxList<InstoresModel> filteredStores = <InstoresModel>[].obs;
+  RxString searchQuery = ''.obs;
 
   @override
   void onInit() {
@@ -23,10 +25,26 @@ class InstoreWashController extends GetxController {
       List data = response.data;
 
       stores.value = data.map((e) => InstoresModel.fromJson(e)).toList();
+      filteredStores.value = stores;
     } catch (e) {
       print("Error fetching stores: $e");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // ===== SEARCH FUNCTION =====
+  void searchStores(String query) {
+    searchQuery.value = query;
+    if (query.isEmpty) {
+      filteredStores.value = stores;
+    } else {
+      filteredStores.value = stores
+          .where((store) =>
+              store.companyName.toLowerCase().contains(query.toLowerCase()) ||
+              store.city.toLowerCase().contains(query.toLowerCase()) ||
+              store.streetName.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     }
   }
 

@@ -498,19 +498,48 @@ class BookSlotView extends GetView<BookSlotController> {
           ),
         ),
         const SizedBox(height: 16),
-        _buildAddressCard(
-          context,
-          icon: Icons.home_outlined,
-          title: "Home",
-          address: "123 Market St, San Francisco",
-        ),
-        const SizedBox(height: 12),
-        _buildAddressCard(
-          context,
-          icon: Icons.work_outline,
-          title: "Work",
-          address: "456 Tech Ave, Silicon Valley",
-        ),
+
+        // Static Home and Work locations
+        // _buildAddressCard(
+        //   context,
+        //   icon: Icons.home_outlined,
+        //   title: "Home",
+        //   address: "123 Market St, San Francisco",
+        // ),
+        // const SizedBox(height: 12),
+        // _buildAddressCard(
+        //   context,
+        //   icon: Icons.work_outline,
+        //   title: "Work",
+        //   address: "456 Tech Ave, Silicon Valley",
+        // ),
+
+        // Dynamically render saved locations
+        Obx(() {
+          if (controller.savedLocations.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Column(
+            children: controller.savedLocations.map((location) {
+              return Column(
+                children: [
+                  const SizedBox(height: 12),
+                  _buildSavedLocationCard(
+                    context,
+                    icon: Icons.location_on_outlined,
+                    title: location.label,
+                    address: location.address,
+                    houseNo: location.houseNo,
+                    landmark: location.landmark,
+                    phoneNumber: location.phoneNumber,
+                  ),
+                ],
+              );
+            }).toList(),
+          );
+        }),
+
         const SizedBox(height: 15),
         GestureDetector(
           onTap: () {
@@ -624,6 +653,87 @@ class BookSlotView extends GetView<BookSlotController> {
                           .textTheme
                           .bodyMedium
                           ?.copyWith(color: AppColors.textLightGrayLight),
+                    ),
+                  ],
+                ),
+              ),
+              Radio<bool>(
+                value: true,
+                groupValue: controller.selectedAddress.value == title,
+                onChanged: (v) {
+                  if (v == true) controller.updateSelectedAddress(title);
+                },
+                activeColor: AppColors.secondaryLight,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSavedLocationCard(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String address,
+    required String houseNo,
+    String? landmark,
+    required String phoneNumber,
+  }) {
+    return Obx(
+      () => GestureDetector(
+        onTap: () => controller.updateSelectedAddress(title),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: controller.selectedAddress.value == title
+                  ? AppColors.primaryLight
+                  : Colors.grey[300]!,
+              width: controller.selectedAddress.value == title ? 2 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 24, color: AppColors.bgLight),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1E293B),
+                          ),
+                    ),
+                    Text(
+                      address,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: AppColors.textLightGrayLight),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

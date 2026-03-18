@@ -87,16 +87,25 @@ class DashboardView extends GetView<DashboardController> {
                 ];
 
                 return BottomNavigationBarItem(
-                  icon: SizedBox(
-                    width: screenWidth * 0.06,
-                    height: screenHeight * 0.025,
-                    child: Image.asset(
-                      icons[index],
-                      color: controller.selectedIndex.value == index
-                          ? customTheme.primaryColor
-                          : customTheme.textLightGray,
-                    ),
-                  ),
+                  icon: Obx(() {
+                    final isSelected = controller.selectedIndex.value == index;
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                      width:
+                          isSelected ? screenWidth * 0.07 : screenWidth * 0.05,
+                      height: isSelected
+                          ? screenHeight * 0.04
+                          : screenHeight * 0.03,
+                      child: Image.asset(
+                        icons[index],
+                        color: isSelected
+                            ? customTheme.primaryColor
+                            : customTheme.textLightGray,
+                      ),
+                    );
+                  }),
                   label: labels[index],
                 );
               }),

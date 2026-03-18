@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
+import 'dart:convert';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/slot_dates_model.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/slot_times_model.dart';
+import 'package:car_wash_customer_app/app/models/booking slot/saved_location_model.dart';
 import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/services/api_service.dart';
@@ -24,7 +26,7 @@ class BookSlotController extends GetxController {
   final selectedAddress = Rx<String?>("Home");
 
   // Location variables
-  final savedLocations = <Map<String, dynamic>>[].obs;
+  final savedLocations = <SavedLocation>[].obs;
   RxString selectedLocationAddress = "Home".obs;
   RxDouble selectedLocationLatitude = 0.0.obs;
   RxDouble selectedLocationLongitude = 0.0.obs;
@@ -85,6 +87,7 @@ class BookSlotController extends GetxController {
     features = List<String>.from(data["features"] ?? []);
 
     initData();
+    loadSavedLocations(); // Load locations from storage
   }
 
   Future<void> initData() async {
@@ -379,6 +382,79 @@ class BookSlotController extends GetxController {
 
   // ===== LOCATION MANAGEMENT =====
 
+  /// Add a saved location
+  void addSavedLocation(SavedLocation location) {
+    savedLocations.add(location);
+
+    // Select the newly added location
+    selectedAddress.value = location.label;
+    selectedLocationAddress.value = location.address;
+    selectedLocationLatitude.value = location.latitude;
+    selectedLocationLongitude.value = location.longitude;
+
+    // Persist to storage
+    _saveSavedLocations();
+
+    print('✅ Location saved: ${location.label} - ${location.address}');
+  }
+
+  /// Update an existing saved location
+  void updateSavedLocation(
+      SavedLocation oldLocation, SavedLocation newLocation) {
+    int index = savedLocations.indexWhere(
+      (loc) => loc.id == oldLocation.id,
+    );
+
+    if (index != -1) {
+      savedLocations[index] = newLocation;
+
+      // Select the updated location
+      selectedAddress.value = newLocation.label;
+      selectedLocationAddress.value = newLocation.address;
+      selectedLocationLatitude.value = newLocation.latitude;
+      selectedLocationLongitude.value = newLocation.longitude;
+
+      // Persist to storage
+      _saveSavedLocations();
+
+      print(
+          '✏️ Location updated: ${newLocation.label} - ${newLocation.address}');
+    }
+  }
+
+  /// Load saved locations from SharedPreferences
+  Future<void> loadSavedLocations() async {
+    try {
+      String? locationsJson =
+          await SharedPrefsHelper.getString("savedLocations");
+      if (locationsJson.isNotEmpty) {
+        final List<dynamic> jsonList = jsonDecode(locationsJson);
+        savedLocations.value = jsonList
+            .map((json) => SavedLocation.fromJson(json as Map<String, dynamic>))
+            .toList();
+        print(
+            '📍 Loaded ${savedLocations.length} saved locations from storage');
+      }
+    } catch (e) {
+      print('Error loading saved locations: $e');
+    }
+  }
+
+  /// Save locations to SharedPreferences
+  Future<void> saveSavedLocations() async {
+    try {
+      final locationsJson = jsonEncode(
+        savedLocations.map((loc) => loc.toJson()).toList(),
+      );
+      await SharedPrefsHelper.setString("savedLocations", locationsJson);
+      print('💾 Saved locations to storage');
+    } catch (e) {
+      print('Error saving locations: $e');
+    }
+  }
+
+  Future<void> _saveSavedLocations() async => saveSavedLocations();
+
   /// Navigate to location picker and save selected location
   Future<void> openLocationPicker() async {
     try {
@@ -401,17 +477,17 @@ class BookSlotController extends GetxController {
 
   /// Add a new location to saved locations
   void addLocation(String address, double latitude, double longitude) {
-    savedLocations.add({
-      'address': address,
-      'latitude': latitude,
-      'longitude': longitude,
-      'timestamp': DateTime.now(),
-    });
+    final location = SavedLocation(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      label: 'Other',
+      address: address,
+      latitude: latitude,
+      longitude: longitude,
+      houseNo: '',
+      phoneNumber: '',
+    );
 
-    // Select the newly added location
-    updateSelectedLocation(address, latitude, longitude);
-
-    print('✅ Location saved: $address');
+    addSavedLocation(location);
   }
 
   /// Update selected location
@@ -444,11 +520,14 @@ class BookSlotController extends GetxController {
     // Add saved locations
     locations.addAll(savedLocations
         .map((loc) => {
-              'title': loc['address'],
-              'address': loc['address'],
+              'title': loc.label,
+              'address': loc.address,
               'icon': 'location',
-              'latitude': loc['latitude'],
-              'longitude': loc['longitude'],
+              'latitude': loc.latitude,
+              'longitude': loc.longitude,
+              'houseNo': loc.houseNo,
+              'landmark': loc.landmark,
+              'phoneNumber': loc.phoneNumber,
             })
         .toList());
 

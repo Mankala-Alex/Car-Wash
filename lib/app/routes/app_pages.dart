@@ -16,6 +16,7 @@ import 'package:car_wash_customer_app/app/bindings/profile/coupon_details_bindin
 import 'package:car_wash_customer_app/app/bindings/profile/help_n_support_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/lang_change_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/location_list_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/profile/location_details_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/my_coupons_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/offer_screen_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/offers_list_bindings.dart';
@@ -36,6 +37,7 @@ import 'package:car_wash_customer_app/app/views/profile/coupon_details_view.dart
 import 'package:car_wash_customer_app/app/views/profile/help_n_support_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/lang_change_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/locations_list_view.dart';
+import 'package:car_wash_customer_app/app/views/profile/location_details_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/coupons_list_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/offer_screen_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/offers_list_view.dart';
@@ -132,6 +134,11 @@ class AppPages {
       name: Routes.locationPicker,
       page: () => const LocationPickerView(),
       binding: LocationPickerBinding(),
+    ),
+    GetPage(
+      name: Routes.locationDetails,
+      page: () => const LocationDetailsView(),
+      binding: LocationDetailsBinding(),
     ),
     GetPage(
       name: Routes.notification,

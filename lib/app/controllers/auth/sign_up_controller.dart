@@ -13,6 +13,15 @@ class SignupController extends GetxController {
   TextEditingController phoneCtrl = TextEditingController();
 
   RxBool isLoading = false.obs;
+  @override
+  void onInit() {
+    super.onInit();
+
+    // ✅ GET EMAIL FROM LOGIN PAGE
+    if (Get.arguments != null && Get.arguments["email"] != null) {
+      emailCtrl.text = Get.arguments["email"];
+    }
+  }
 
   Future<void> submitSignup() async {
     if (firstNameCtrl.text.trim().isEmpty ||

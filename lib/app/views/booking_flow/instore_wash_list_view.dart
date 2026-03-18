@@ -1,3 +1,4 @@
+import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/config/constants.dart';
@@ -51,13 +52,16 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.borderGray),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.search, color: Colors.grey),
-                    SizedBox(width: 10),
+                    const Icon(Icons.search, color: Colors.grey),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: TextField(
-                        decoration: InputDecoration(
+                        onChanged: (value) {
+                          controller.searchStores(value);
+                        },
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: "Search by name or area",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -73,20 +77,27 @@ class InstoreWashListView extends GetView<InstoreWashController> {
               // ---------------- DYNAMIC LOCATIONS LIST ----------------
               Obx(() {
                 if (controller.isLoading.value) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 50),
-                      child: CircularProgressIndicator(),
+                  return Column(
+                    children: List.generate(
+                      5, // Number of skeleton boxes to show
+                      (index) => const Padding(
+                        padding: EdgeInsets.only(bottom: 22),
+                        child: SkeletonBox(
+                          width: double.infinity,
+                          height: 280,
+                          radius: 16,
+                        ),
+                      ),
                     ),
                   );
                 }
 
-                if (controller.stores.isEmpty) {
+                if (controller.filteredStores.isEmpty) {
                   return noLocationFoundCard();
                 }
 
                 return Column(
-                  children: controller.stores.map((store) {
+                  children: controller.filteredStores.map((store) {
                     return locationCard(
                       image: store.imageUrl, // static placeholder
                       title: store.companyName,

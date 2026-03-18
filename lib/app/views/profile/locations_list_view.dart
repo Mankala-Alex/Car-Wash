@@ -1,6 +1,8 @@
+import 'package:car_wash_customer_app/app/models/booking%20slot/saved_location_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/location_list_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_dialog.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -56,10 +58,10 @@ class LocationsListView extends GetView<LocationListController> {
             child: Obx(() {
               return ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: controller.addresses.length,
+                itemCount: controller.locations.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 14),
                 itemBuilder: (context, index) {
-                  return _addressContainer(controller.addresses[index], index);
+                  return _addressContainer(controller.locations[index]);
                 },
               );
             }),
@@ -114,7 +116,7 @@ class LocationsListView extends GetView<LocationListController> {
   }
 
   // ---------------------------- ADDRESS TILE ----------------------------
-  Widget _addressContainer(AddressModel address, int index) {
+  Widget _addressContainer(SavedLocation location) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -126,56 +128,22 @@ class LocationsListView extends GetView<LocationListController> {
         children: [
           Row(
             children: [
-              Icon(address.icon, size: 26, color: Colors.black87),
+              const Icon(Icons.location_on_outlined,
+                  size: 26, color: Colors.black87),
               const SizedBox(width: 12),
-
-              // Title + distance
               Expanded(
-                child: Row(
-                  children: [
-                    Text(
-                      address.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      "• ${address.distance}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                    ),
-
-                    // Selected Badge
-                    if (address.isSelected)
-                      Container(
-                        margin: const EdgeInsets.only(left: 8),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD9F9D8),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          "Selected",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF2B8A3E),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                  ],
+                child: Text(
+                  location.label, // Home / Work / Other
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
                 ),
               ),
-
               InkWell(
                 onTap: () {
-                  controller.showBottomSheet(address);
+                  _showLocationOptionsSheet(location);
                 },
                 child: const Icon(Icons.more_vert, color: Colors.black54),
               ),
@@ -183,7 +151,7 @@ class LocationsListView extends GetView<LocationListController> {
           ),
           const SizedBox(height: 8),
           Text(
-            address.fullAddress,
+            location.address,
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -194,6 +162,95 @@ class LocationsListView extends GetView<LocationListController> {
           ),
         ],
       ),
+    );
+  }
+
+  // Bottom sheet with Edit and Delete options
+  void _showLocationOptionsSheet(SavedLocation location) {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              location.label,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              location.address,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Colors.black54,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 20),
+
+            // ---- Edit Button ----
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.black87),
+              title: const Text(
+                "Edit",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              onTap: () {
+                Get.back(); // Close bottom sheet
+                // Navigate to location picker with location data for editing
+                Get.toNamed(
+                  Routes.locationPicker,
+                  arguments: {
+                    'isEditing': true,
+                    'editingLocation': location,
+                  },
+                );
+              },
+            ),
+
+            const Divider(),
+
+            // ---- Delete Button ----
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text(
+                "Delete",
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red),
+              ),
+              onTap: () {
+                Get.back(); // Close bottom sheet
+                // Show confirmation dialog
+                Get.dialog(
+                  CustomConfirmationDialog(
+                    header: "Delete Address",
+                    body: "Are you sure you want to delete ${location.label}?",
+                    yesText: "Delete",
+                    noText: "Cancel",
+                    onYes: () {
+                      controller.deleteLocation(location);
+                      Get.back();
+                    },
+                    onNo: () => Get.back(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
     );
   }
 }

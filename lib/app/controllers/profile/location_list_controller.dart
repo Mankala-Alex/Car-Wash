@@ -1,106 +1,21 @@
-import 'package:flutter/material.dart';
+import 'package:car_wash_customer_app/app/models/booking%20slot/saved_location_model.dart';
 import 'package:get/get.dart';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/book_slot_controller.dart';
 
 class LocationListController extends GetxController {
-  var addresses = <AddressModel>[
-    AddressModel(
-      title: "Work",
-      distance: "8 m",
-      fullAddress:
-          "Floor 5, Miaprosoft, Vasavi MPM Grand, Yella Reddy Guda, Hyderabad",
-      icon: Icons.apartment,
-      isSelected: true,
-    ),
-    AddressModel(
-      title: "Other",
-      distance: "1.2 km",
-      fullAddress: "pws42, SR Nagar, Hyderabad",
-      icon: Icons.location_on_outlined,
-    ),
-  ].obs;
+  late BookSlotController bookSlotController;
 
-  // -----------------------------------------------------
-  // SHOW BOTTOM SHEET (like the screenshot)
-  // -----------------------------------------------------
-  void showBottomSheet(AddressModel item) {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              item.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              item.fullAddress,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Colors.black54,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ---- Edit Button ----
-            ListTile(
-              leading: const Icon(Icons.edit, color: Colors.black87),
-              title: const Text(
-                "Edit",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              onTap: () {
-                Get.back();
-              },
-            ),
-
-            const Divider(),
-
-            // ---- Delete Button ----
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text(
-                "Delete",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.red),
-              ),
-              onTap: () {
-                addresses.remove(item);
-                Get.back();
-              },
-            ),
-          ],
-        ),
-      ),
-      isScrollControlled: true,
-    );
+  @override
+  void onInit() {
+    super.onInit();
+    bookSlotController = Get.find<BookSlotController>();
   }
-}
 
-class AddressModel {
-  String title;
-  String distance;
-  String fullAddress;
-  IconData icon;
-  bool isSelected;
+  RxList<SavedLocation> get locations => bookSlotController.savedLocations;
 
-  AddressModel({
-    required this.title,
-    required this.distance,
-    required this.fullAddress,
-    required this.icon,
-    this.isSelected = false,
-  });
+  void deleteLocation(SavedLocation location) {
+    locations.remove(location);
+    // Save changes to storage
+    bookSlotController.saveSavedLocations();
+  }
 }

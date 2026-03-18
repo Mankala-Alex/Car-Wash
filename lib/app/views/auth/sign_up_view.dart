@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/auth/sign_up_controller.dart';
 import '../../theme/app_theme.dart';
@@ -70,6 +71,21 @@ class SignupView extends GetView<SignupController> {
     TextEditingController controller, {
     TextInputType type = TextInputType.text,
   }) {
+    // Determine input formatters based on field type
+    List<TextInputFormatter> inputFormatters = [];
+
+    if (label == "First Name" || label == "Last Name") {
+      // Allow only letters and spaces
+      inputFormatters = [
+        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+      ];
+    } else if (label == "Phone Number") {
+      // Allow only digits
+      inputFormatters = [
+        FilteringTextInputFormatter.digitsOnly,
+      ];
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -82,6 +98,7 @@ class SignupView extends GetView<SignupController> {
         TextField(
           controller: controller,
           keyboardType: type,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             filled: true,
             fillColor: const Color(0xFFF5F6FA),

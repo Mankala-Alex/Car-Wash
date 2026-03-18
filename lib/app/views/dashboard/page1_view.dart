@@ -407,7 +407,7 @@ Widget _trackingCard(Datum b) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    b.washerName.isEmpty ? "Technician Assigned" : b.washerName,
+                    b.washerName ?? "Not Assigned",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

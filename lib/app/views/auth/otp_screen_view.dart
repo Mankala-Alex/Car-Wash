@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 import '../../controllers/auth/otp_controller.dart';
@@ -73,6 +74,9 @@ class OtpScreenView extends GetView<OtpController> {
                     child: Pinput(
                       length: 4,
                       onChanged: controller.setOtp,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       defaultPinTheme: defaultPinTheme,
                       focusedPinTheme: defaultPinTheme.copyWith(
                         decoration: defaultPinTheme.decoration!.copyWith(

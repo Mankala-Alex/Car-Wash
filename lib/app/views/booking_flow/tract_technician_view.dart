@@ -162,9 +162,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                booking.washerName.isEmpty
-                                    ? "Technician Assigned"
-                                    : booking.washerName,
+                                booking.washerName ?? "Technician Assigned",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

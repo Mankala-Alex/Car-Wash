@@ -1,9 +1,14 @@
+import 'package:car_wash_customer_app/app/helpers/ful_screen_image.dart';
+import 'package:car_wash_customer_app/app/helpers/video_player.dart';
+import 'package:car_wash_customer_app/app/helpers/video_thumbnail.dart';
+import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/dashboard/booking_history_details_controller.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
+import 'package:intl/intl.dart';
 
 class BookingHistoryDetailsView
     extends GetView<BookingHistoryDetailsController> {
@@ -67,16 +72,16 @@ class BookingHistoryDetailsView
 
             const SizedBox(height: 16),
 
-            _imageCard(
+            _mediaSection(
               title: "Before",
-              images: b.beforeImages,
+              images: b.images.where((e) => e.type == "BEFORE").toList(),
+              videos: b.videos.where((e) => e.type == "BEFORE").toList(),
             ),
-
             const SizedBox(height: 16),
-
-            _imageCard(
+            _mediaSection(
               title: "After",
-              images: b.afterImages,
+              images: b.images.where((e) => e.type == "AFTER").toList(),
+              videos: b.videos.where((e) => e.type == "AFTER").toList(),
             ),
 
             const SizedBox(height: 24),
@@ -194,7 +199,10 @@ class BookingHistoryDetailsView
           _detailRow(
             Icons.calendar_today,
             "Date & Time",
-            b.scheduledAt,
+            b.scheduledAt == null
+                ? "N/A"
+                : DateFormat('dd MMM yyyy • hh:mm a')
+                    .format(b.scheduledAt!.toLocal()),
           ),
           const Divider(),
           _detailRow(
@@ -309,89 +317,88 @@ Widget _imageCard({
   );
 }
 
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:car_wash_customer_app/app/config/constants.dart';
-// import 'package:car_wash_customer_app/app/controllers/dashboard/booking_history_details_controller.dart';
-// import 'package:car_wash_customer_app/app/theme/app_theme.dart';
+Widget _mediaSection({
+  required String title,
+  required List<BookingImage> images,
+  required List<BookingVideo> videos,
+}) {
+  if (images.isEmpty && videos.isEmpty) {
+    return const Text("No media available");
+  }
 
-// class BookingHistoryDetailsView
-//     extends GetView<BookingHistoryDetailsController> {
-//   const BookingHistoryDetailsView({super.key});
+  final List<Widget> mediaWidgets = [];
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final b = controller.booking;
+  // 🔹 Images
+  for (var img in images) {
+    final imageUrl = Constants.imageBaseUrl + img.url.replaceAll("\\", "/");
 
-//     return Scaffold(
-//       backgroundColor: AppColors.bgLight,
-//       appBar: AppBar(
-//         title: const Text("Service Details"),
-//         backgroundColor: Colors.white,
-//         foregroundColor: Colors.black,
-//       ),
-//       body: SingleChildScrollView(
-//         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             _info("Service", b.serviceName),
-//             _info("Customer", b.customerName),
-//             _info("Vehicle", b.vehicle),
-//             _info("Amount", "₹${b.amount}"),
-//             _info("Status", b.status),
-//             const SizedBox(height: 24),
-//             const Text("Before Wash",
-//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-//             const SizedBox(height: 10),
-//             _imageRow(b.beforeImages),
-//             const SizedBox(height: 24),
-//             const Text("After Wash",
-//                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-//             const SizedBox(height: 10),
-//             _imageRow(b.afterImages),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+    mediaWidgets.add(
+      GestureDetector(
+        onTap: () {
+          Get.to(
+            () => FullscreenImageView(imageUrl: imageUrl),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.network(
+            imageUrl,
+            width: 150,
+            height: 150,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
 
-//   Widget _info(String title, String value) {
-//     return Padding(
-//       padding: const EdgeInsets.only(bottom: 6),
-//       child: Row(
-//         children: [
-//           Text("$title: ", style: const TextStyle(fontWeight: FontWeight.w600)),
-//           Expanded(child: Text(value)),
-//         ],
-//       ),
-//     );
-//   }
+  // 🔹 Videos
+  for (var vid in videos) {
+    String cleanPath = vid.url.replaceAll("\\", "/");
 
-//   Widget _imageRow(List<String> images) {
-//     if (images.isEmpty) {
-//       return const Text("No images available");
-//     }
+    if (!cleanPath.startsWith("/")) {
+      cleanPath = "/$cleanPath";
+    }
 
-//     return SizedBox(
-//       height: 140,
-//       child: ListView.separated(
-//         scrollDirection: Axis.horizontal,
-//         itemCount: images.length,
-//         separatorBuilder: (_, __) => const SizedBox(width: 12),
-//         itemBuilder: (_, i) {
-//           final path = images[i].replaceAll("\\", "/");
+    final fileName = cleanPath.split('/').last;
 
-//           return ClipRRect(
-//             borderRadius: BorderRadius.circular(14),
-//             child: Image.network(
-//               Constants.imageBaseUrl + path,
-//               width: 180,
-//               fit: BoxFit.cover,
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
+    final videoUrl =
+        "${Constants.imageBaseUrl}/api/employee/bookings/stream/$fileName";
+
+    print("VIDEO URL: $videoUrl");
+
+    mediaWidgets.add(
+      VideoThumbnail(
+        videoUrl: videoUrl,
+        width: 150,
+        height: 150,
+        onTap: () {
+          Get.to(() => VideoPlayerScreen(videoUrl: videoUrl));
+        },
+      ),
+    );
+  }
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      const SizedBox(height: 10),
+      SizedBox(
+        height: 150,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: mediaWidgets.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 12),
+          itemBuilder: (_, index) => mediaWidgets[index],
+        ),
+      ),
+    ],
+  );
+}

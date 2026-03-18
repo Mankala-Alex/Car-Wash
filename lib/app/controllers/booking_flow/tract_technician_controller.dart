@@ -17,21 +17,19 @@ class TrackTechnicianController extends GetxController {
       booking = Datum(
         id: "",
         bookingCode: "",
-        customerId: "",
         customerName: "",
         vehicle: "",
         serviceId: "",
         serviceName: "",
         scheduledAt: null,
-        washerId: "",
-        washerName: "",
+        washerId: null,
+        washerName: null,
         status: "",
         amount: "",
-        createdAt: null,
-        updatedAt: null,
         slotId: 0,
-        beforeImages: [],
-        afterImages: [],
+        customerId: "",
+        images: [],
+        videos: [],
       ).obs;
     }
   }

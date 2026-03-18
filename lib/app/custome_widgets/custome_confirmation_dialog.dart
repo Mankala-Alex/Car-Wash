@@ -84,8 +84,8 @@ class CustomConfirmationDialog extends StatelessWidget {
             onPressed: onNo ?? Get.back,
             child: Text(
               noText,
-              style: TextStyle(
-                color: Constants.primaryColor,
+              style: const TextStyle(
+                color: AppColors.textLightGrayLight,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -95,8 +95,8 @@ class CustomConfirmationDialog extends StatelessWidget {
           onPressed: onYes,
           child: Text(
             yesText,
-            style: TextStyle(
-              color: Constants.primaryColor,
+            style: const TextStyle(
+              color: AppColors.errorLight,
               fontWeight: FontWeight.w600,
             ),
           ),

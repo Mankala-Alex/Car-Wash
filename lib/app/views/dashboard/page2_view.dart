@@ -7,6 +7,7 @@ import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/booking_history_model.dart';
+import 'package:intl/intl.dart';
 
 class Page2View extends GetView<DashboardController> {
   const Page2View({super.key});
@@ -60,9 +61,10 @@ class Page2View extends GetView<DashboardController> {
 
               Obx(() {
                 if (controller.currentBookings.isEmpty) {
-                  return const Text(
-                    "No current bookings",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  return Image.asset(
+                    "assets/no_data/current_booking.png",
+                    height: 400,
+                    width: 400,
                   );
                 }
 
@@ -94,10 +96,8 @@ class Page2View extends GetView<DashboardController> {
 
               Obx(() {
                 if (controller.pastBookings.isEmpty) {
-                  return const Text(
-                    "No past bookings",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  );
+                  return Image.asset("assets/no_data/past_history.png",
+                      width: 400, height: 400);
                 }
 
                 return Column(
@@ -130,12 +130,9 @@ class Page2View extends GetView<DashboardController> {
     String dateText = "N/A";
     String timeText = "N/A";
 
-    if (b.scheduledAt != null && b.scheduledAt!.contains("T")) {
-      final parts = b.scheduledAt!.split("T");
-      dateText = parts[0];
-      if (parts.length > 1 && parts[1].length >= 5) {
-        timeText = parts[1].substring(0, 5);
-      }
+    if (b.scheduledAt != null) {
+      dateText = DateFormat('dd MMM yyyy').format(b.scheduledAt!);
+      timeText = DateFormat('hh:mm a').format(b.scheduledAt!);
     }
 
     return Container(
@@ -209,7 +206,7 @@ class Page2View extends GetView<DashboardController> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Provider: ${b.washerName.isEmpty ? "Not Assigned" : b.washerName}",
+                        "Provider: ${b.washerName ?? "Not Assigned"}",
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black54,
@@ -396,12 +393,11 @@ class Page2View extends GetView<DashboardController> {
     String dateText = "N/A";
     String timeText = "N/A";
 
-    if (booking.scheduledAt != null && booking.scheduledAt!.contains("T")) {
-      final parts = booking.scheduledAt!.split("T");
-      dateText = parts[0];
-      if (parts.length > 1 && parts[1].length >= 5) {
-        timeText = parts[1].substring(0, 5);
-      }
+    if (booking.scheduledAt != null) {
+      final localTime = booking.scheduledAt!.toLocal();
+
+      dateText = DateFormat('dd MMM yyyy').format(localTime);
+      timeText = DateFormat('hh:mm a').format(localTime);
     }
 
     return GetBuilder<DashboardController>(

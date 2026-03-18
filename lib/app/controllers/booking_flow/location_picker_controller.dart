@@ -1,9 +1,11 @@
+import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 
 class LocationPickerController extends GetxController {
   final MapController mapController = MapController();
@@ -155,13 +157,23 @@ class LocationPickerController extends GetxController {
 
   void confirmLocation() {
     if (selectedLocation.value != null) {
-      Get.back(result: {
-        'latitude': selectedLocation.value!.latitude,
-        'longitude': selectedLocation.value!.longitude,
-        'address': selectedAddress.value,
-      });
+      // Check if we're editing an existing location
+      final args = Get.arguments ?? {};
+      final isEditing = args['isEditing'] ?? false;
+      final editingLocation = args['editingLocation'];
+
+      // Navigate to location details screen with arguments
+      Get.toNamed(
+        Routes.locationDetails,
+        arguments: {
+          'latitude': selectedLocation.value!.latitude,
+          'longitude': selectedLocation.value!.longitude,
+          'address': selectedAddress.value,
+          'editingLocation': isEditing ? editingLocation : null,
+        },
+      );
     } else {
-      Get.snackbar('Error', 'Please select a location');
+      errorToast('Error' 'Please select a location');
     }
   }
 }
