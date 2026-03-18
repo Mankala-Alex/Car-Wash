@@ -209,8 +209,9 @@ class BookSlotView extends GetView<BookSlotController> {
   // ---------------- VEHICLES ----------------
 
   Widget _buildVehicleList(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 2.2, // controls height RELATIVE to width
+    final double screenHeight = MediaQuery.of(context).size.height;
+    return SizedBox(
+      height: screenHeight * 0.22, // Responsive height (22% of screen height)
       child: Obx(
         () => ListView.separated(
           scrollDirection: Axis.horizontal,

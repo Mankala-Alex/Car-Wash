@@ -10,6 +10,8 @@ class CouponsListView extends GetView<CouponsListController> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
@@ -111,12 +113,13 @@ class CouponsListView extends GetView<CouponsListController> {
                 itemBuilder: (_, index) {
                   final coupon = controller.coupons[index];
                   final isActive = controller.canUse(coupon);
-
                   return Container(
-                    padding: const EdgeInsets.all(15),
+                    width: screenWidth * 0.44, // Responsive width for 2 cards
+                    height: screenHeight * 0.22, // Responsive height
+                    padding: EdgeInsets.all(screenWidth * 0.035),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.045),
                       boxShadow: const [
                         BoxShadow(
                           color: AppColors.borderGray,
@@ -140,7 +143,7 @@ class CouponsListView extends GetView<CouponsListController> {
                               child: const Icon(
                                 Icons.percent,
                                 color: AppColors.secondaryLight,
-                                size: 22,
+                                size: 20,
                               ),
                             ),
 
@@ -150,7 +153,7 @@ class CouponsListView extends GetView<CouponsListController> {
                             Text(
                               "${coupon.discountPercent}% OFF",
                               style: const TextStyle(
-                                fontSize: 22,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
