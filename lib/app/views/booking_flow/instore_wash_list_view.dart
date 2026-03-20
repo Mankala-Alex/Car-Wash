@@ -25,10 +25,6 @@ class InstoreWashListView extends GetView<InstoreWashController> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.map_outlined, color: Colors.black),
@@ -274,14 +270,23 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                           color: AppColors.primaryLight,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Center(
-                          child: Text(
-                            "📍 Location",
-                            style: TextStyle(
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.location_on,
                               color: AppColors.textDefaultLight,
-                              fontWeight: FontWeight.w700,
+                              size: 20,
                             ),
-                          ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Location",
+                              style: TextStyle(
+                                color: AppColors.textDefaultLight,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -298,14 +303,23 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                             border: Border.all(color: AppColors.secondaryLight),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Center(
-                            child: Text(
-                              "📞 Call",
-                              style: TextStyle(
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.phone,
                                 color: AppColors.textDefaultLight,
-                                fontWeight: FontWeight.w700,
+                                size: 20,
                               ),
-                            ),
+                              SizedBox(width: 8),
+                              Text(
+                                "Call",
+                                style: TextStyle(
+                                  color: AppColors.textDefaultLight,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),

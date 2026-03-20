@@ -16,10 +16,6 @@ class CarListView extends GetView<CarListController> {
         backgroundColor: AppColors.bgLight,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
         title: const Text(
           "My Vehicles",
           style: TextStyle(

@@ -18,10 +18,6 @@ class LocationsListView extends GetView<LocationListController> {
         backgroundColor: const Color(0xFFF6F6F8),
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
         title: const Text(
           "Addresses",
           style: TextStyle(

@@ -19,10 +19,7 @@ class BookSlotView extends GetView<BookSlotController> {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
-          onPressed: () => Get.back(),
-        ),
+
         title: const Text(
           "Confirm Car Wash",
           style: TextStyle(

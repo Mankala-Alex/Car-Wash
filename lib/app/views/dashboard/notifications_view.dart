@@ -13,10 +13,6 @@ class NotificationsView extends GetView<NotificationController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-        ),
         title: const Text(
           "Notifications",
           style: TextStyle(

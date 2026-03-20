@@ -17,10 +17,6 @@ class LocationPickerView extends GetView<LocationPickerController> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
         title: const Text(
           "Pick Location",
           style: TextStyle(

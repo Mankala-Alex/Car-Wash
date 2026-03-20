@@ -14,10 +14,6 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
         backgroundColor: AppColors.primaryLight,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
         title: const Text(
           "Help & Support",
           style: TextStyle(
