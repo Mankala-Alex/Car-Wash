@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class ConfirmationPageController extends GetxController {
   late String serviceName;
   late String scheduledAt;
-  late String amount;
+  late dynamic amount;
   late String image;
   late String bookingCode;
 
@@ -22,7 +22,10 @@ class ConfirmationPageController extends GetxController {
 
     serviceName = args["service_name"] ?? "";
     scheduledAt = args["scheduled_at"] ?? "";
-    amount = args["amount"] ?? "";
+
+    /// ⭐ FIX HERE
+    amount = args["amount"]?.toString() ?? "";
+
     image = args["image"] ?? "";
     bookingCode = args["booking_code"] ?? "";
   }

@@ -305,17 +305,24 @@ class BookSlotController extends GetxController {
       print("📥 BOOKING RESPONSE: ${resp.data}");
 
       if (resp.data["success"] == true) {
-        print("🎉 BOOKING SUCCESS — NAVIGATING");
-        successToast("Booking Confirmed!");
+        successToast("Booking Created!");
+
+        final bookingId = resp.data["data"]["id"];
+
         final bookingCode = resp.data["data"]["booking_code"];
-        Get.offNamed(
-          Routes.confirmationpageview,
+
+        /// Navigate to payment
+        Get.toNamed(
+          Routes.payment,
           arguments: {
+            "bookingId": bookingId,
+            "amount": totalAmount,
+
+            /// Needed for confirmation page
             "service_name": name,
             "scheduled_at": buildScheduledAt(),
-            "amount": price,
             "image": image,
-            "booking_code": bookingCode, // ✅ REQUIRED
+            "booking_code": bookingCode,
           },
         );
       } else {

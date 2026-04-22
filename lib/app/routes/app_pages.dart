@@ -1,3 +1,4 @@
+import 'package:car_wash_customer_app/app/views/booking_flow/payment_webview.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:car_wash_customer_app/app/bindings/auth/sign_up_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/book_slot_bindings.dart';
@@ -21,6 +22,8 @@ import 'package:car_wash_customer_app/app/bindings/profile/my_coupons_binding.da
 import 'package:car_wash_customer_app/app/bindings/profile/offer_screen_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/offers_list_bindings.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/booking_qr_coupon_binding.dart';
+import 'package:car_wash_customer_app/app/views/booking_flow/payment_view.dart';
+import 'package:car_wash_customer_app/app/bindings/booking_flow/payment_binding.dart';
 import 'package:car_wash_customer_app/app/views/auth/sign_up_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/confirmation_page_view.dart';
@@ -194,6 +197,15 @@ class AppPages {
       name: Routes.tracttechnicianview,
       page: () => const TractTechnicianView(),
       binding: TractTechnicianBinding(),
+    ),
+    GetPage(
+      name: Routes.payment,
+      page: () => const PaymentScreen(),
+      binding: PaymentBinding(),
+    ),
+    GetPage(
+      name: "/payment_webview",
+      page: () => const PaymentWebView(),
     ),
   ];
 }

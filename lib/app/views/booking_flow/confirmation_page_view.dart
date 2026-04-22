@@ -70,7 +70,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                               height: 150,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Image.asset(
-                                "assets/carwash/default_service.png",
+                                "assets/carwash/car1.png",
                                 width: 150,
                                 height: 150,
                                 fit: BoxFit.cover,
@@ -79,7 +79,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                           : Image.asset(
                               controller.image.isNotEmpty
                                   ? controller.image
-                                  : "assets/carwash/default_service.png",
+                                  : "assets/carwash/car1.png",
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,

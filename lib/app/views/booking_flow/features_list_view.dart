@@ -78,7 +78,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                     ),
                     child: service.imageUrl.isEmpty
                         ? Image.asset(
-                            "assets/carwash/default_service.png",
+                            "assets/carwash/car1.png",
                             height: 155,
                             width: double.infinity,
                             fit: BoxFit.cover,

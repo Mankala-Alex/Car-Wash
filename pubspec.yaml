@@ -49,6 +49,7 @@ dependencies:
   # geolocator: ^14.0.1
   # location: ^8.0.0
   # device_info_plus: ^11.3.3
+  webview_flutter: ^4.13.1
 
 dev_dependencies:
   flutter_test:

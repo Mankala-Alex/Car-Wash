@@ -28,4 +28,5 @@ abstract class Routes {
   static const coupondetailsview = '/coupon_details_view';
   static const bookinghistorydetailsview = '/booking_history_view';
   static const tracttechnicianview = '/tract_technician_view';
+  static const payment = '/payment_screen';
 }

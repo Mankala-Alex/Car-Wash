@@ -153,7 +153,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
             ),
             child: image.isEmpty
                 ? Image.asset(
-                    "assets/carwash/default_service.png",
+                    "assets/carwash/car1.png",
                     height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -165,7 +165,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        "assets/carwash/default_service.png",
+                        "assets/carwash/car1.png",
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,

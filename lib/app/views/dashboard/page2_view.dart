@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_dialog.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/custom_feedback_dialog.dart';
-import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/booking_history_model.dart';
@@ -37,9 +36,9 @@ class Page2View extends GetView<DashboardController> {
       // -------------------------------------------------------
       body: Obx(() {
         if (controller.isLoading.value) {
-          return Center(
-            child: wheelloader(), // your lottie loader here
-          );
+          // return Center(
+          //   child: wheelloader(), // your lottie loader here
+          // );
         }
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

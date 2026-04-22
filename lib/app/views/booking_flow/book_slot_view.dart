@@ -19,7 +19,10 @@ class BookSlotView extends GetView<BookSlotController> {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
-
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
+          onPressed: () => Get.back(),
+        ),
         title: const Text(
           "Confirm Car Wash",
           style: TextStyle(
@@ -117,7 +120,7 @@ class BookSlotView extends GetView<BookSlotController> {
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Image.asset(
-                      "assets/carwash/default_service.png",
+                      "assets/carwash/car1.png",
                       height: 140,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -891,8 +894,8 @@ class BookSlotView extends GetView<BookSlotController> {
               ],
             ),
             ElevatedButton(
-              onPressed: () {
-                controller.bookSlot();
+              onPressed: () async {
+                await controller.bookSlot();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryLight,
