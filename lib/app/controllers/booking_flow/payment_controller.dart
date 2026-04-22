@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:car_wash_customer_app/app/services/payment_services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class PaymentController extends GetxController {
   final PaymentService _service = PaymentService();
@@ -11,15 +12,32 @@ class PaymentController extends GetxController {
   String bookingId = "";
   double amount = 0.0;
 
+  /// NEW fields
+  String serviceName = "";
+  String scheduledAt = "";
+  String image = "";
+  String bookingCode = "";
+
+  String get formattedDate {
+    final dt = DateTime.tryParse(scheduledAt);
+    if (dt == null) return "";
+    return DateFormat('EEE, dd MMM • hh:mm a').format(dt.toLocal());
+  }
+
   @override
   void onInit() {
     super.onInit();
 
-    /// Receive booking data
-    final args = Get.arguments;
+    final args = Get.arguments ?? {};
 
     bookingId = args["bookingId"];
     amount = args["amount"];
+
+    /// NEW
+    serviceName = args["service_name"] ?? "";
+    scheduledAt = args["scheduled_at"] ?? "";
+    image = args["image"] ?? "";
+    bookingCode = args["booking_code"] ?? "";
   }
 
   /// Pay Now
@@ -35,7 +53,6 @@ class PaymentController extends GetxController {
       if (response["success"]) {
         String paymentUrl = response["payment_url"];
 
-        /// Open WebView
         Get.toNamed(
           "/payment_webview",
           arguments: {
@@ -43,11 +60,11 @@ class PaymentController extends GetxController {
             "bookingId": bookingId,
 
             /// Forward confirmation data
-            "service_name": Get.arguments["service_name"],
-            "scheduled_at": Get.arguments["scheduled_at"],
-            "amount": Get.arguments["amount"],
-            "image": Get.arguments["image"],
-            "booking_code": Get.arguments["booking_code"],
+            "service_name": serviceName,
+            "scheduled_at": scheduledAt,
+            "amount": amount,
+            "image": image,
+            "booking_code": bookingCode,
           },
         );
       } else {
