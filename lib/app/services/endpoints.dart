@@ -7,6 +7,12 @@ class EndPoints {
   static const apiPostrequstotp = 'auth/request-otp'; //login
   static const apiPostverifyotp = 'auth/verify-otp'; //sign up
   static const apiPostsignup = 'auth/complete-signup';
+
+  //sms login
+  static const apiPostRequestOtpPhone = 'authentical/send-otp';
+  static const apiPostVerifyOtpPhone = 'authentical/verify-otp';
+  static const apiPostSignupPhone = 'authentical/complete-signup';
+
   static const apiPostAddvehicle = 'customer-vehicles';
   static const apiGetslotdates = 'admin/dates';
   static const apiGettimeslots = 'admin/time-slots';

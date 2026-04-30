@@ -4,6 +4,7 @@ import '../../helpers/flutter_toast.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../models/auth/login_model.dart';
 import '../../routes/app_routes.dart';
+import 'package:dio/dio.dart' as dio;
 
 class LoginController extends GetxController {
   final AuthRepository repository = AuthRepository();
@@ -13,15 +14,17 @@ class LoginController extends GetxController {
 
   Future<void> requestOtp() async {
     if (emailController.text.trim().isEmpty) {
-      errorToast("Enter email");
+      errorToast("Enter phone number");
       return;
     }
 
     isLoading(true);
 
     try {
-      final resp = await repository.postRequestOtp({
-        "email": emailController.text.trim(),
+      final input = emailController.text.trim();
+
+      final resp = await repository.postRequestOtpPhone({
+        "phone": input,
       });
 
       isLoading(false);
@@ -33,23 +36,23 @@ class LoginController extends GetxController {
         return;
       }
 
-      // 🔹 NEW USER → SIGNUP
-      if (resp.data["exists"] == false) {
+      /// NEW USER → SIGNUP
+      if (data.exists == false) {
         Get.toNamed(
           Routes.signUp,
           arguments: {
-            "email": emailController.text.trim(),
+            "phone": input,
           },
         );
         return;
       }
 
-      // 🔹 EXISTING USER → OTP
+      /// EXISTING USER → OTP
       Get.toNamed(
         Routes.otpPage,
         arguments: {
-          "customerId": resp.data["id"], // ONLY ID
-          "email": emailController.text.trim(),
+          "customerId": data.id,
+          "phone": input,
         },
       );
     } catch (e) {

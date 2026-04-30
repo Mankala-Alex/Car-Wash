@@ -51,6 +51,12 @@ dependencies:
   # device_info_plus: ^11.3.3
   webview_flutter: ^4.13.1
 
+
+  #push notifications
+  firebase_core: ^4.7.0
+  firebase_messaging: ^16.2.0
+  flutter_local_notifications: ^21.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

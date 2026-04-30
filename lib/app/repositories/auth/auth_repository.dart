@@ -21,6 +21,33 @@ class AuthRepository {
         requireAuthToken: false);
   }
 
+// PHONE OTP SEND
+  Future<Response> postRequestOtpPhone(requestBody) async {
+    return await ApiService.post(
+      EndPoints.apiPostRequestOtpPhone,
+      requestBody,
+      requireAuthToken: false,
+    );
+  }
+
+// PHONE VERIFY
+  Future<Response> postVerifyOtpPhone(requestBody) async {
+    return await ApiService.post(
+      EndPoints.apiPostVerifyOtpPhone,
+      requestBody,
+      requireAuthToken: false,
+    );
+  }
+
+// PHONE SIGNUP
+  Future<Response> postSignupPhone(requestBody) async {
+    return await ApiService.post(
+      EndPoints.apiPostSignupPhone,
+      requestBody,
+      requireAuthToken: false,
+    );
+  }
+
   Future<void> postLogout() async {
     await ApiService.post(
       EndPoints.apiPostLogOut, // ex: partners/logout

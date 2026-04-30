@@ -72,7 +72,7 @@ class OtpScreenView extends GetView<OtpController> {
                   // --------------------- OTP BOXES ---------------------
                   Center(
                     child: Pinput(
-                      length: 4,
+                      length: 6,
                       onChanged: controller.setOtp,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,

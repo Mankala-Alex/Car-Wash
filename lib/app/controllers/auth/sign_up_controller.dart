@@ -17,9 +17,8 @@ class SignupController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // ✅ GET EMAIL FROM LOGIN PAGE
-    if (Get.arguments != null && Get.arguments["email"] != null) {
-      emailCtrl.text = Get.arguments["email"];
+    if (Get.arguments != null && Get.arguments["phone"] != null) {
+      phoneCtrl.text = Get.arguments["phone"];
     }
   }
 
@@ -35,7 +34,7 @@ class SignupController extends GetxController {
     isLoading(true);
 
     try {
-      final resp = await repository.postSignup({
+      final resp = await repository.postSignupPhone({
         "firstName": firstNameCtrl.text.trim(),
         "lastName": lastNameCtrl.text.trim(),
         "email": emailCtrl.text.trim(),
@@ -49,16 +48,20 @@ class SignupController extends GetxController {
         return;
       }
 
-      // 👉 Signup DONE, now go to OTP
+      /// MOVE TO OTP PAGE
+
       Get.toNamed(
         Routes.otpPage,
         arguments: {
           "customerId": resp.data["id"],
-          "email": emailCtrl.text.trim(),
+          "phone": resp.data["phone"],
         },
       );
     } catch (e) {
       isLoading(false);
+
+      print("Signup Error: $e");
+
       errorToast("Signup failed");
     }
   }
