@@ -156,15 +156,20 @@ class _MyAppState extends State<MyApp> {
     setupFCM();
   }
 
+  String? fcmToken;
   Future<void> setupFCM() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    /// Request permission
     NotificationSettings settings = await messaging.requestPermission();
 
     print("Permission: ${settings.authorizationStatus}");
 
-    /// Initialize local notifications (Android)
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("NOTIFICATION PERMISSION GRANTED");
+    } else {
+      print("NOTIFICATION PERMISSION DENIED");
+    }
+
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -175,7 +180,6 @@ class _MyAppState extends State<MyApp> {
       settings: initSettings,
     );
 
-    /// Create notification channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'default_channel',
       'Default Notifications',
@@ -187,34 +191,47 @@ class _MyAppState extends State<MyApp> {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    /// Get FCM Token
-    String? token = await messaging.getToken();
+    /// 🔥 GET TOKEN
+    fcmToken = await messaging.getToken();
 
     print("FCM TOKEN:");
-    print(token);
+    print(fcmToken);
 
-    /// Foreground messages (SHOW notification)
-    FirebaseMessaging.onMessage.listen(
-      (RemoteMessage message) {
-        print("Foreground message received");
+    /// 🔁 TOKEN REFRESH
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      print("NEW TOKEN: $newToken");
+      fcmToken = newToken;
+    });
 
-        if (message.notification != null) {
-          flutterLocalNotificationsPlugin.show(
-            id: 0,
-            title: message.notification!.title,
-            body: message.notification!.body,
-            notificationDetails: const NotificationDetails(
-              android: AndroidNotificationDetails(
-                'default_channel',
-                'Default Notifications',
-                importance: Importance.max,
-                priority: Priority.high,
-              ),
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("Foreground message received");
+
+      if (message.notification != null) {
+        flutterLocalNotificationsPlugin.show(
+          id: 0,
+          title: message.notification!.title,
+          body: message.notification!.body,
+          notificationDetails: const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'default_channel',
+              'Default Notifications',
+              importance: Importance.max,
+              priority: Priority.high,
             ),
-          );
-        }
-      },
-    );
+          ),
+        );
+      }
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print("Notification clicked!");
+    });
+
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      print("App opened from terminated notification");
+    }
   }
 
   @override

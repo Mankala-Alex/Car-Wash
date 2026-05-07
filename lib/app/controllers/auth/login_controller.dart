@@ -4,7 +4,6 @@ import '../../helpers/flutter_toast.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../models/auth/login_model.dart';
 import '../../routes/app_routes.dart';
-import 'package:dio/dio.dart' as dio;
 
 class LoginController extends GetxController {
   final AuthRepository repository = AuthRepository();

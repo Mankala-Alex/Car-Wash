@@ -380,7 +380,7 @@ class BookSlotController extends GetxController {
   }
 
   double get vatAmount {
-    return 5.0; // static VAT
+    return servicePrice * 0.18;
   }
 
   double get totalAmount {

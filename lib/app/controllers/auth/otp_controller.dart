@@ -1,3 +1,5 @@
+import 'package:car_wash_customer_app/app/services/api_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../helpers/flutter_toast.dart';
@@ -100,6 +102,18 @@ class OtpController extends GetxController {
 
       successToast("OTP Verified");
 
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+      print("REAL FCM TOKEN: $fcmToken");
+
+      if (fcmToken != null) {
+        await sendFcmTokenToBackend(fcmToken);
+
+        /// SUBSCRIBE USER TO ALL USERS TOPIC
+        await FirebaseMessaging.instance.subscribeToTopic("all_users");
+
+        print("Subscribed to all_users topic");
+      }
       Get.offAllNamed(
         Routes.dashboard,
       );
@@ -111,6 +125,22 @@ class OtpController extends GetxController {
       errorToast(
         "OTP verification failed",
       );
+    }
+  }
+
+  Future<void> sendFcmTokenToBackend(String token) async {
+    try {
+      await ApiService.put(
+        "customers/fcm-token",
+        {
+          "fcmToken": token,
+        },
+        requireAuthToken: true,
+      );
+
+      print("FCM token sent to backend");
+    } catch (e) {
+      print("Error sending FCM token: $e");
     }
   }
 }
