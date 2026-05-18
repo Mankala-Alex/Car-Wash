@@ -15,8 +15,8 @@ class AddCarView extends GetView<AddCarController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Add Vehicle",
+        title: Text(
+          "add_vehicle".tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -44,8 +44,8 @@ class AddCarView extends GetView<AddCarController> {
             ),
             child: controller.isLoading.value
                 ? const CircularProgressIndicator(color: Colors.white)
-                : const Text(
-                    "Save Vehicle",
+                : Text(
+                    "save_vehicle".tr,
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
@@ -62,16 +62,16 @@ class AddCarView extends GetView<AddCarController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _inputField("Vehicle Number", controller.vehicleNumberController,
+            _inputField("vehicle_number".tr, controller.vehicleNumberController,
                 TextInputType.text),
             const SizedBox(height: 16),
             _inputField(
-                "Make (Brand)", controller.makeController, TextInputType.text),
+                "brand".tr, controller.makeController, TextInputType.text),
             const SizedBox(height: 16),
             _inputField(
-                "Model", controller.modelController, TextInputType.text),
+                "model".tr, controller.modelController, TextInputType.text),
             const SizedBox(height: 16),
-            _inputField("Type (Sedan, SUV, etc.)", controller.typeController,
+            _inputField("type_sedan_suv_etc".tr, controller.typeController,
                 TextInputType.text),
             const SizedBox(height: 60),
           ],

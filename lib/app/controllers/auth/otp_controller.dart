@@ -26,7 +26,7 @@ class OtpController extends GetxController {
     phone = args["phone"];
 
     if (customerId.isEmpty) {
-      errorToast("Invalid customer ID");
+      errorToast("invalid_customer_id".tr);
       Get.back();
       return;
     }
@@ -41,12 +41,12 @@ class OtpController extends GetxController {
 
   Future<void> verifyOtp() async {
     if (otp.value.length != 6) {
-      errorToast("Enter valid OTP");
+      errorToast("enter_valid_otp".tr);
       return;
     }
 
     if (customerId.isEmpty) {
-      errorToast("Invalid customer ID");
+      errorToast("invalid_customer_id".tr);
       return;
     }
 
@@ -123,7 +123,7 @@ class OtpController extends GetxController {
       print("Verify OTP Error: $e");
 
       errorToast(
-        "OTP verification failed",
+        "otp_verification_failed".tr,
       );
     }
   }

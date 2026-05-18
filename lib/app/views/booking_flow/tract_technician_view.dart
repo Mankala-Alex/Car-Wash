@@ -80,14 +80,14 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                             Expanded(
                               child: Text(
                                 booking.vehicle.isEmpty
-                                    ? "Tracking service"
+                                    ? "tracking_service".tr
                                     : booking.vehicle,
                                 style: const TextStyle(color: Colors.grey),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            const Text(
-                              "Live",
+                            Text(
+                              "live".tr,
                               style: TextStyle(
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold,
@@ -126,8 +126,8 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                     // ===== EXPECTED TIME =====
                     Text(
                       booking.scheduledAt == null
-                          ? "Expected soon"
-                          : "Scheduled at ${booking.scheduledAt}",
+                          ? "expected_soon".tr
+                          : "scheduled_at".tr + ": ${booking.scheduledAt}",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -162,7 +162,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                booking.washerName ?? "Technician Assigned",
+                                booking.washerName ?? "technician_assigned".tr,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

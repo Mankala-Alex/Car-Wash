@@ -14,7 +14,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: const Text("Your Coupon"),
+        title: Text("your_coupon".tr),
         centerTitle: true,
         backgroundColor: AppColors.bgLight,
       ),
@@ -28,9 +28,9 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
 
           // ❌ No coupon
           if (controller.coupon.value == null) {
-            return const Center(
+            return Center(
               child: Text(
-                "Coupon not available",
+                "coupon_not_available".tr,
                 style: TextStyle(fontSize: 16),
               ),
             );
@@ -110,7 +110,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
                   const Icon(Icons.calendar_today, size: 18),
                   const SizedBox(width: 6),
                   Text(
-                    "Valid till ${controller.formattedExpiry}",
+                    "valid_till".tr + " ${controller.formattedExpiry}",
                   ),
                 ],
               ),
@@ -136,8 +136,8 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "Done",
+                  child: Text(
+                    "done".tr,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

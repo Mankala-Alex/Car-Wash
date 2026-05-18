@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:car_wash_customer_app/app/helpers/secure_store.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
@@ -330,12 +331,12 @@ class DashboardController extends GetxController {
       final resp = await repo.cancelBooking(bookingCode);
 
       if (resp.data["success"] == true) {
-        successToast("Booking cancelled successfully");
+        successToast("booking_cancelled_successfully".tr);
 
         // re-fetch history
         fetchBookingHistory();
       } else {
-        errorToast("Failed to cancel booking");
+        errorToast("failed_to_cancel_booking".tr);
       }
     } catch (e) {
       errorToast("Error: $e");
@@ -366,7 +367,6 @@ class DashboardController extends GetxController {
       final socketService = Get.find<SocketService>();
       await socketService.disconnect();
     } catch (e) {
-      // Socket disconnect failure should NOT block logout
       print("⚠️ Socket disconnect error: $e");
     }
 
@@ -374,17 +374,46 @@ class DashboardController extends GetxController {
       // 2️⃣ Call logout API
       await _authRepo.postLogout();
     } catch (e) {
-      // API failure should NOT block logout
       print("Logout API error: $e");
     } finally {
-      // 3️⃣ Clear local data ALWAYS
+      // 3️⃣ Clear SharedPreferences
       await SharedPrefsHelper.clearAll();
 
-      // 4️⃣ Reset GetX state
+      // 4️⃣ Clear Secure Storage  🔥 IMPORTANT
+      await FlutterSecureStore().deleteAllData();
+
+      // 5️⃣ Reset GetX
       Get.deleteAll(force: true);
 
-      // 5️⃣ Navigate to login
+      // 6️⃣ Navigate
       Get.offAllNamed(Routes.login);
     }
   }
+  // Future<void> logout() async {
+  //   try {
+  //     // 1️⃣ Disconnect socket
+  //     final socketService = Get.find<SocketService>();
+  //     await socketService.disconnect();
+  //   } catch (e) {
+  //     // Socket disconnect failure should NOT block logout
+  //     print("⚠️ Socket disconnect error: $e");
+  //   }
+
+  //   try {
+  //     // 2️⃣ Call logout API
+  //     await _authRepo.postLogout();
+  //   } catch (e) {
+  //     // API failure should NOT block logout
+  //     print("Logout API error: $e");
+  //   } finally {
+  //     // 3️⃣ Clear local data ALWAYS
+  //     await SharedPrefsHelper.clearAll();
+
+  //     // 4️⃣ Reset GetX state
+  //     Get.deleteAll(force: true);
+
+  //     // 5️⃣ Navigate to login
+  //     Get.offAllNamed(Routes.login);
+  //   }
+  // }
 }

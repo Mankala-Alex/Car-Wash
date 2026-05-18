@@ -19,8 +19,8 @@ class Page4View extends GetView<DashboardController> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
         backgroundColor: AppColors.bgLight,
-        title: const Text(
-          "My Profile",
+        title: Text(
+          "my_profile".tr,
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w600,
@@ -69,7 +69,7 @@ class Page4View extends GetView<DashboardController> {
                 const SizedBox(height: 4),
                 Obx(() => Text(
                       controller.customerEmail.value.isEmpty
-                          ? "No Email"
+                          ? "no_email".tr
                           : controller.customerEmail.value,
                       style: const TextStyle(
                         fontSize: 16,
@@ -120,22 +120,22 @@ class Page4View extends GetView<DashboardController> {
                   children: [
                     const SizedBox(height: 10),
                     _simpleMenuTile(
-                      title: "My Locations",
+                      title: "my_locations".tr,
                       onTap: () => Get.toNamed(Routes.locationslist),
                     ),
                     const SizedBox(height: 10),
                     _simpleMenuTile(
-                      title: "Language Selection",
+                      title: "language_selection".tr,
                       onTap: () => Get.toNamed(Routes.langchange),
                     ),
                     const SizedBox(height: 10),
                     _simpleMenuTile(
-                      title: "My Coupons",
+                      title: "my_coupons".tr,
                       onTap: () => Get.toNamed(Routes.mycoupons),
                     ),
                     const SizedBox(height: 10),
                     _simpleMenuTile(
-                      title: "Offers",
+                      title: "offers".tr,
                       onTap: () => Get.toNamed(Routes.offers),
                     ),
                   ],
@@ -148,10 +148,10 @@ class Page4View extends GetView<DashboardController> {
                   onTap: () {
                     Get.dialog(
                       CustomConfirmationDialog(
-                        header: "Logout",
-                        body: "Are you sure you want to logout?",
-                        yesText: "Logout",
-                        noText: "Cancel",
+                        header: "logout".tr,
+                        body: "are_you_sure_you_want_to_logout".tr,
+                        yesText: "logout".tr,
+                        noText: "cancel".tr,
                         onYes: () {
                           Get.back(); // close dialog
                           controller.logout(); // actual logout

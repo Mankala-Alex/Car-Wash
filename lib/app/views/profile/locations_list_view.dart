@@ -18,8 +18,8 @@ class LocationsListView extends GetView<LocationListController> {
         backgroundColor: const Color(0xFFF6F6F8),
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Addresses",
+        title: Text(
+          "addresses".tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -35,10 +35,10 @@ class LocationsListView extends GetView<LocationListController> {
           const SizedBox(height: 12),
 
           // Saved Addresses Title
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              "Saved Addresses",
+              "saved_addresses".tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -86,12 +86,12 @@ class LocationsListView extends GetView<LocationListController> {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(Icons.add, color: AppColors.bgLight, size: 26),
                     SizedBox(width: 12),
                     Text(
-                      "Add New Address",
+                      "add_new_address".tr,
                       style: TextStyle(
                         fontSize: 16,
                         color: AppColors.bgLight,
@@ -218,8 +218,8 @@ class LocationsListView extends GetView<LocationListController> {
             // ---- Delete Button ----
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text(
-                "Delete",
+              title: Text(
+                "delete".tr,
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -230,10 +230,11 @@ class LocationsListView extends GetView<LocationListController> {
                 // Show confirmation dialog
                 Get.dialog(
                   CustomConfirmationDialog(
-                    header: "Delete Address",
-                    body: "Are you sure you want to delete ${location.label}?",
-                    yesText: "Delete",
-                    noText: "Cancel",
+                    header: "delete_address".tr,
+                    body: "are_you_sure_you_want_to_delete".tr +
+                        " ${location.label}?",
+                    yesText: "delete".tr,
+                    noText: "Cancel".tr,
                     onYes: () {
                       controller.deleteLocation(location);
                       Get.back();

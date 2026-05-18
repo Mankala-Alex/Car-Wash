@@ -12,7 +12,7 @@ class SignupView extends GetView<SignupController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Create Account"),
+        title: Text("create_account".tr),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -20,18 +20,18 @@ class SignupView extends GetView<SignupController> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            _input("First Name", controller.firstNameCtrl),
+            _input("first_name".tr, controller.firstNameCtrl),
             const SizedBox(height: 20),
-            _input("Last Name", controller.lastNameCtrl),
+            _input("last_name".tr, controller.lastNameCtrl),
             const SizedBox(height: 20),
             _input(
-              "Email",
+              "email".tr,
               controller.emailCtrl,
               type: TextInputType.emailAddress,
             ),
             const SizedBox(height: 20),
             _input(
-              "Phone Number", // ✅ NEW FIELD
+              "phone_number".tr, // ✅ NEW FIELD
               controller.phoneCtrl,
               type: TextInputType.phone,
             ),
@@ -51,8 +51,8 @@ class SignupView extends GetView<SignupController> {
                     ),
                     child: controller.isLoading.value
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            "Continue",
+                        : Text(
+                            "continue".tr,
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
@@ -74,12 +74,12 @@ class SignupView extends GetView<SignupController> {
     // Determine input formatters based on field type
     List<TextInputFormatter> inputFormatters = [];
 
-    if (label == "First Name" || label == "Last Name") {
+    if (label == "first_name".tr || label == "last_name".tr) {
       // Allow only letters and spaces
       inputFormatters = [
         FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
       ];
-    } else if (label == "Phone Number") {
+    } else if (label == "phone_number".tr) {
       // Allow only digits
       inputFormatters = [
         FilteringTextInputFormatter.digitsOnly,

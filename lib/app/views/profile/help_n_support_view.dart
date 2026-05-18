@@ -14,8 +14,8 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
         backgroundColor: AppColors.primaryLight,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Help & Support",
+        title: Text(
+          "help_support".tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -38,8 +38,8 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                   bottomRight: Radius.circular(22),
                 ),
               ),
-              child: const Text(
-                "Find quick answers to your questions",
+              child: Text(
+                "find_quick_answers_to_your_questions".tr,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.black,
@@ -53,7 +53,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Frequently Asked Questions",
+                "frequently_asked_questions".tr,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -120,7 +120,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 12),
                                     child: Text(
-                                      faq["answer"] as String,
+                                      faq["answer".tr] as String,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         height: 1.4,
@@ -160,37 +160,38 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Contact Support",
+                    Text(
+                      "contact_support".tr,
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "Fill the form below — we typically reply within 24 hours.",
+                      "contact_support_message".tr,
                       style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 16),
 
-                    _inputField("Full name"),
+                    _inputField("full_name".tr),
                     const SizedBox(height: 12),
 
                     Row(
                       children: [
-                        Expanded(child: _inputField("Email (optional)")),
+                        Expanded(
+                            child: _inputField("email".tr + " (optional)")),
                         const SizedBox(width: 12),
-                        Expanded(child: _inputField("Mobile number")),
+                        Expanded(child: _inputField("mobile_number".tr)),
                       ],
                     ),
                     const SizedBox(height: 12),
 
-                    _dropdownField("General inquiry"),
+                    _dropdownField("general_inquiry".tr),
                     const SizedBox(height: 12),
 
-                    _inputField("Booking ID (if relevant)"),
+                    _inputField("booking_id_if_relevant".tr),
                     const SizedBox(height: 12),
 
-                    _textArea("Describe your issue or question"),
+                    _textArea("describe_your_issue_or_question".tr),
                     const SizedBox(height: 12),
 
                     // Send button
@@ -203,8 +204,8 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         alignment: Alignment.center,
-                        child: const Text(
-                          "Send message",
+                        child: Text(
+                          "send_message".tr,
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,

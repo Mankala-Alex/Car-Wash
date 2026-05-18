@@ -226,30 +226,30 @@ class BookSlotController extends GetxController {
 
     if (customerUuid.isEmpty) {
       print("❌ FAILED: Customer ID missing");
-      errorToast("Customer ID missing");
+      errorToast("customer_id_missing".tr);
       return;
     }
 
     if ((selectedVehicle.value ?? "").isEmpty) {
       print("❌ FAILED: Vehicle not selected");
-      errorToast("Please select a vehicle");
+      errorToast("please_select_a_vehicle".tr);
       return;
     }
 
     if ((selectedTimeSlot.value ?? "").isEmpty) {
       print("❌ FAILED: Time slot not selected");
-      errorToast("Please select a time slot");
+      errorToast("please_select_a_time_slot".tr);
       return;
     }
 
     if (selectedSlotId.value == 0) {
       print("❌ FAILED: Slot ID = 0 (invalid)");
-      errorToast("Invalid slot selected");
+      errorToast("invalid_slot_selected".tr);
       return;
     }
     if (isEditMode) {
       if (selectedSlotId.value == 0) {
-        errorToast("Please select a slot");
+        errorToast("please_select_a_slot".tr);
         return;
       }
 
@@ -267,7 +267,7 @@ class BookSlotController extends GetxController {
       final resp = await repository.updateBooking(editBookingCode, updateBody);
 
       if (resp.data["success"] == true) {
-        successToast("Booking Updated Successfully!");
+        successToast("booking_updated_successfully".tr);
 
         // GO DIRECTLY TO HISTORY PAGE (Page 2)
         Get.offAllNamed(
@@ -275,7 +275,7 @@ class BookSlotController extends GetxController {
           arguments: 1, // <-- Page2 index
         );
       } else {
-        errorToast("Failed to update booking");
+        errorToast("failed_to_update_booking".tr);
       }
 
       return; // IMPORTANT
@@ -327,11 +327,11 @@ class BookSlotController extends GetxController {
         );
       } else {
         print("❌ BOOKING FAILED FROM API");
-        errorToast(resp.data["error"] ?? "Booking failed");
+        errorToast(resp.data["error"] ?? "booking_failed".tr);
       }
     } catch (e) {
       print("🔥 EXCEPTION IN API: $e");
-      errorToast("Booking failed. Try again.");
+      errorToast("booking_failed_try_again".tr);
     }
   }
 
@@ -475,10 +475,10 @@ class BookSlotController extends GetxController {
         // Save the selected location
         addLocation(address, latitude, longitude);
 
-        successToast('Location saved');
+        successToast('location_saved'.tr);
       }
     } catch (e) {
-      errorToast('Error selecting location: $e');
+      errorToast('error_selecting_location'.tr + ' $e');
     }
   }
 
@@ -486,7 +486,7 @@ class BookSlotController extends GetxController {
   void addLocation(String address, double latitude, double longitude) {
     final location = SavedLocation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      label: 'Other',
+      label: 'other'.tr,
       address: address,
       latitude: latitude,
       longitude: longitude,
@@ -513,12 +513,12 @@ class BookSlotController extends GetxController {
     // Default locations
     List<Map<String, dynamic>> locations = [
       {
-        'title': 'Home',
+        'title': 'home'.tr,
         'address': '123 Market St, San Francisco',
         'icon': 'home',
       },
       {
-        'title': 'Work',
+        'title': 'work'.tr,
         'address': '456 Tech Ave, Silicon Valley',
         'icon': 'work',
       },

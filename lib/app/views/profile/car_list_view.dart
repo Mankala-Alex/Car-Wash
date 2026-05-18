@@ -16,8 +16,8 @@ class CarListView extends GetView<CarListController> {
         backgroundColor: AppColors.bgLight,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "My Vehicles",
+        title: Text(
+          "my_vehicles".tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -60,9 +60,9 @@ class CarListView extends GetView<CarListController> {
 
         // ===== EMPTY =====
         if (controller.customerVehicles.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
-              "No Vehicles Added",
+              "no_vehicles_added".tr,
               style: TextStyle(fontSize: 16),
             ),
           );

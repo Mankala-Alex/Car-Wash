@@ -17,8 +17,8 @@ class LocationPickerView extends GetView<LocationPickerController> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        title: const Text(
-          "Pick Location",
+        title: Text(
+          "pick_location".tr,
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -144,8 +144,8 @@ class LocationPickerView extends GetView<LocationPickerController> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Selected Location",
+                  Text(
+                    "selected_location".tr,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -197,8 +197,8 @@ class LocationPickerView extends GetView<LocationPickerController> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        "Confirm Location",
+                      child: Text(
+                        "confirm_location".tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

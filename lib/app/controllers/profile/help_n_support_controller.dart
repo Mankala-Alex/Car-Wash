@@ -9,25 +9,25 @@ class HelpNSupportController extends GetxController {
     {
       "id": 1,
       "question": "How do I cancel or reschedule a booking?",
-      "answer":
+      "answer".tr:
           "You can cancel or reschedule your booking from the 'My Bookings' section. Charges may apply based on policy."
     },
     {
       "id": 2,
       "question": "What payment methods are accepted?",
-      "answer":
+      "answer".tr:
           "We accept UPI, debit/credit cards, net banking, and wallet payments."
     },
     {
       "id": 3,
       "question": "How do I apply promo codes or coupons?",
-      "answer":
+      "answer".tr:
           "Promo codes can be applied during the checkout process on the payment page."
     },
     {
       "id": 4,
       "question": "I forgot my password. What should I do?",
-      "answer":
+      "answer".tr:
           "You can reset your password using the 'Forgot Password' option on the login page."
     },
   ];

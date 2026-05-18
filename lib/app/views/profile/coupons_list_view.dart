@@ -60,7 +60,7 @@ class CouponsListView extends GetView<CouponsListController> {
         }
 
         if (controller.coupons.isEmpty) {
-          return const Center(child: Text("No coupons available"));
+          return Center(child: Text("no_coupons_available".tr));
         }
 
         return Column(
@@ -195,7 +195,7 @@ class CouponsListView extends GetView<CouponsListController> {
                               elevation: 0,
                             ),
                             child: Text(
-                              isActive ? "Use Now" : "Not Active",
+                              isActive ? "use_now".tr : "not_active".tr,
                               style: TextStyle(
                                 color: isActive ? Colors.white : Colors.black45,
                                 fontWeight: FontWeight.bold,

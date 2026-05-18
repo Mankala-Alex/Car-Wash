@@ -62,12 +62,12 @@ class LocationDetailsController extends GetxController {
   void saveLocation() {
     // Validate required fields
     if (houseNoController.text.isEmpty) {
-      errorToast('Please enter house number');
+      errorToast('please_enter_house_number'.tr);
       return;
     }
 
     if (phoneController.text.isEmpty) {
-      errorToast('Please enter phone number');
+      errorToast('please_enter_phone_number'.tr);
       return;
     }
 
@@ -90,7 +90,7 @@ class LocationDetailsController extends GetxController {
         updatedLocation,
       );
 
-      successToast('Location updated successfully');
+      successToast('location_updated_successfully'.tr);
     } else {
       // Create new location
       final savedLocation = SavedLocation(
@@ -106,7 +106,7 @@ class LocationDetailsController extends GetxController {
       );
 
       bookSlotController.addSavedLocation(savedLocation);
-      successToast('Location saved successfully');
+      successToast('location_saved_successfully'.tr);
     }
 
     Get.back();

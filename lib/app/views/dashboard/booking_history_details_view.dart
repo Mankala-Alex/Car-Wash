@@ -45,8 +45,8 @@ class BookingHistoryDetailsView
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  "VISUAL PROOF",
+                Text(
+                  "visual_proof".tr,
                   style: TextStyle(
                     letterSpacing: 1,
                     fontWeight: FontWeight.w600,
@@ -107,8 +107,8 @@ class BookingHistoryDetailsView
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            child: const Text(
-              "Book Again",
+            child: Text(
+              "book_again".tr,
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -198,7 +198,7 @@ class BookingHistoryDetailsView
         children: [
           _detailRow(
             Icons.calendar_today,
-            "Date & Time",
+            "date_time".tr,
             b.scheduledAt == null
                 ? "N/A"
                 : DateFormat('dd MMM yyyy • hh:mm a')
@@ -213,7 +213,7 @@ class BookingHistoryDetailsView
           const Divider(),
           _detailRow(
             Icons.credit_card,
-            "Payment",
+            "payment".tr,
             b.status,
           ),
         ],
@@ -251,7 +251,7 @@ Widget _imageCard({
   required List<String> images,
 }) {
   if (images.isEmpty) {
-    return const Text("No images available");
+    return Text("no_images_available".tr);
   }
 
   final imageUrl = Constants.imageBaseUrl + images.first.replaceAll("\\", "/");
@@ -323,7 +323,7 @@ Widget _mediaSection({
   required List<BookingVideo> videos,
 }) {
   if (images.isEmpty && videos.isEmpty) {
-    return const Text("No media available");
+    return Text("no_media_available".tr);
   }
 
   final List<Widget> mediaWidgets = [];

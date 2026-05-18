@@ -21,8 +21,8 @@ class Page2View extends GetView<DashboardController> {
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         centerTitle: true,
-        title: const Text(
-          "My Bookings",
+        title: Text(
+          "my_bookings".tr,
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -48,8 +48,8 @@ class Page2View extends GetView<DashboardController> {
               // ---------------------------------------------------
               // CURRENT BOOKING (DYNAMIC)
               // ---------------------------------------------------
-              const Text(
-                "Current Booking",
+              Text(
+                "current_booking".tr,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -83,8 +83,8 @@ class Page2View extends GetView<DashboardController> {
               // ---------------------------------------------------
               // PAST BOOKINGS
               // ---------------------------------------------------
-              const Text(
-                "Past Bookings",
+              Text(
+                "past_bookings".tr,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -205,7 +205,7 @@ class Page2View extends GetView<DashboardController> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Provider: ${b.washerName ?? "Not Assigned"}",
+                        "Provider: ${b.washerName ?? "not_assigned".tr}",
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black54,
@@ -273,10 +273,10 @@ class Page2View extends GetView<DashboardController> {
                     onTap: () {
                       Get.dialog(
                         CustomConfirmationDialog(
-                          header: "Edit Booking",
-                          body: "Do you want to edit this booking?",
-                          yesText: "Yes, Edit",
-                          noText: "No",
+                          header: "edit_booking".tr,
+                          body: "do_you_want_to_edit_this_booking".tr,
+                          yesText: "yes_edit".tr,
+                          noText: "no".tr,
                           onYes: () {
                             Get.back();
 
@@ -328,10 +328,11 @@ class Page2View extends GetView<DashboardController> {
                     onTap: () {
                       Get.dialog(
                         CustomConfirmationDialog(
-                          header: "Cancel Booking",
-                          body: "Are you sure you want to cancel this booking?",
-                          yesText: "Yes, Cancel",
-                          noText: "No",
+                          header: "cancel_booking".tr,
+                          body:
+                              "are_you_sure_you_want_to_cancel_this_booking".tr,
+                          yesText: "yes_cancel".tr,
+                          noText: "no".tr,
                           onYes: () async {
                             Get.back(); // close dialog
 
@@ -353,14 +354,14 @@ class Page2View extends GetView<DashboardController> {
                         borderRadius: BorderRadius.circular(14),
                         color: Colors.red.withOpacity(0.9),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.close, color: Colors.white),
                             SizedBox(width: 7),
                             Text(
-                              "Cancel",
+                              "cancel".tr,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -532,14 +533,14 @@ class Page2View extends GetView<DashboardController> {
                     borderRadius: BorderRadius.circular(14),
                     color: AppColors.secondaryLight,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.refresh, color: Colors.white),
                         SizedBox(width: 8),
                         Text(
-                          "Book Again",
+                          "book_again".tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -566,9 +567,9 @@ class Page2View extends GetView<DashboardController> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: AppColors.secondaryLight),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      "View Details",
+                      "view_details".tr,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,

@@ -75,6 +75,7 @@
 //after adding the firebase for push notification, the main.dart file is changed to this:
 
 import 'dart:io';
+import 'package:car_wash_customer_app/app/localization/localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -238,7 +239,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: Environment.appName,
+      translations: Localization(),
       locale: widget.initialLocale,
+      fallbackLocale: Localization.fallbackLocale,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       initialRoute: AppPages.initialPage,

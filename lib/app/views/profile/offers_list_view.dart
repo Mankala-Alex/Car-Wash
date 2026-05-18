@@ -29,7 +29,7 @@ class OffersListView extends GetView<OffersController> {
         }
 
         if (controller.offers.isEmpty) {
-          return const Center(child: Text("No offers available"));
+          return Center(child: Text("no_offers_available".tr));
         }
 
         return ListView.builder(
@@ -132,8 +132,8 @@ class OffersListView extends GetView<OffersController> {
                                   color: Colors.orange,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Text(
-                                  "View Details",
+                                child: Text(
+                                  "view_details".tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,

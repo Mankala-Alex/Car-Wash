@@ -23,8 +23,8 @@ class BookSlotView extends GetView<BookSlotController> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E293B)),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          "Confirm Car Wash",
+        title: Text(
+          "confirm_car_wash".tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -138,8 +138,8 @@ class BookSlotView extends GetView<BookSlotController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'SERVICE DETAILS',
+                Text(
+                  'service_details'.tr,
                   style: TextStyle(
                     color: AppColors.textLightGrayLight,
                     fontWeight: FontWeight.bold,
@@ -329,7 +329,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 size: 30, color: AppColors.textDefaultLight),
             const SizedBox(height: 8),
             Text(
-              "Add New",
+              "add_new".tr,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textDefaultLight,
@@ -416,20 +416,20 @@ class BookSlotView extends GetView<BookSlotController> {
       }
 
       if (controller.selectedDate.value == null) {
-        return const Padding(
+        return Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
-            "Please select a date",
+            "please_select_a_date".tr,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         );
       }
 
       if (controller.slotTimes.isEmpty) {
-        return const Padding(
+        return Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
-            "No slots available for this date",
+            "no_slots_available_for_this_date".tr,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         );
@@ -577,7 +577,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    "Add New Address",
+                    "add_new_address".tr,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF1E293B),
@@ -761,7 +761,7 @@ class BookSlotView extends GetView<BookSlotController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Price Details",
+          "price_details".tr,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.textDefaultLight,
@@ -786,7 +786,7 @@ class BookSlotView extends GetView<BookSlotController> {
               // SERVICE PRICE
               Row(
                 children: [
-                  const Text('Service Price'),
+                  Text('service_price'.tr),
                   const Spacer(),
                   Image.asset("assets/carwash/SAR.png", width: 15),
                   const SizedBox(width: 5),
@@ -802,7 +802,7 @@ class BookSlotView extends GetView<BookSlotController> {
               // VAT
               Row(
                 children: [
-                  const Text('VAT'),
+                  Text('vat'.tr),
                   const Spacer(),
                   Image.asset("assets/carwash/SAR.png", width: 15),
                   const SizedBox(width: 5),
@@ -818,8 +818,8 @@ class BookSlotView extends GetView<BookSlotController> {
               // TOTAL
               Row(
                 children: [
-                  const Text(
-                    'Total Amount',
+                  Text(
+                    'total_amount'.tr,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
@@ -869,7 +869,7 @@ class BookSlotView extends GetView<BookSlotController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Total",
+                  "total".tr,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: Colors.grey[600],
                       ),

@@ -14,8 +14,8 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Location Details',
+        title: Text(
+          'location_details'.tr,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -57,8 +57,8 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             const SizedBox(height: 20),
 
             // House Number Field
-            const Text(
-              'House Number',
+            Text(
+              'house_number'.tr,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -69,13 +69,13 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             TextField(
               controller: controller.houseNoController,
               textInputAction: TextInputAction.next,
-              decoration: _inputStyle('Enter house/flat number'),
+              decoration: _inputStyle('enter_house_flat_number'.tr),
             ),
             const SizedBox(height: 16),
 
             // Landmark Field
-            const Text(
-              'Landmark (Optional)',
+            Text(
+              'landmark_optional'.tr,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -86,13 +86,13 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             TextField(
               controller: controller.landmarkController,
               textInputAction: TextInputAction.next,
-              decoration: _inputStyle('Enter nearby landmark'),
+              decoration: _inputStyle('enter_nearby_landmark'.tr),
             ),
             const SizedBox(height: 16),
 
             // Save As Dropdown
-            const Text(
-              'Save As',
+            Text(
+              'save_as'.tr,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -127,8 +127,8 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             const SizedBox(height: 16),
 
             // Phone Number Field
-            const Text(
-              'Phone Number',
+            Text(
+              'phone_number'.tr,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -143,7 +143,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
               ],
-              decoration: _inputStyle('Enter phone number'),
+              decoration: _inputStyle('enter_phone_number'.tr),
             ),
             const SizedBox(height: 32),
 
@@ -159,8 +159,8 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Save Location',
+                child: Text(
+                  'save_location'.tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

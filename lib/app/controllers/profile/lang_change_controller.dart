@@ -1,3 +1,4 @@
+import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,11 +14,35 @@ class LangChangeController extends GetxController {
     print("📍 Current language: $currentLocale");
   }
 
-  void applyLanguageChange() {
+  void applyLanguageChange() async {
     if (selectedValue.value.isEmpty) return;
 
-    Get.updateLocale(Locale(selectedValue.value));
+    if (selectedValue.value == "en") {
+      await SharedPrefsHelper.setString(
+        SharedPrefsHelper.languageCode,
+        "en",
+      );
 
-    Get.back(); // Go back to previous page after saving
+      await SharedPrefsHelper.setString(
+        SharedPrefsHelper.countryCode,
+        "US",
+      );
+
+      Get.updateLocale(const Locale("en", "US"));
+    } else {
+      await SharedPrefsHelper.setString(
+        SharedPrefsHelper.languageCode,
+        "ar",
+      );
+
+      await SharedPrefsHelper.setString(
+        SharedPrefsHelper.countryCode,
+        "SA",
+      );
+
+      Get.updateLocale(const Locale("ar", "SA"));
+    }
+
+    Get.back();
   }
 }

@@ -13,7 +13,7 @@ class CouponDetailsView extends GetView<CouponDetailsController> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        title: const Text("Coupon Details"),
+        title: Text("coupon_details".tr),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -25,7 +25,7 @@ class CouponDetailsView extends GetView<CouponDetailsController> {
 
         final c = controller.coupon.value;
         if (c == null) {
-          return const Center(child: Text("Coupon not found"));
+          return Center(child: Text("coupon_not_found".tr));
         }
 
         return SingleChildScrollView(

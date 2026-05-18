@@ -13,7 +13,7 @@ class LoginController extends GetxController {
 
   Future<void> requestOtp() async {
     if (emailController.text.trim().isEmpty) {
-      errorToast("Enter phone number");
+      errorToast("enter_phone_number".tr);
       return;
     }
 
@@ -56,7 +56,7 @@ class LoginController extends GetxController {
       );
     } catch (e) {
       isLoading(false);
-      errorToast("Something went wrong");
+      errorToast("something_went_wrong".tr);
     }
   }
 }

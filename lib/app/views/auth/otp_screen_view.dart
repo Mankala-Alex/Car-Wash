@@ -27,8 +27,8 @@ class OtpScreenView extends GetView<OtpController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Verify OTP",
+        title: Text(
+          "verify_otp".tr,
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.black,
@@ -61,8 +61,8 @@ class OtpScreenView extends GetView<OtpController> {
               ),
               child: Column(
                 children: [
-                  const Text(
-                    "Enter the OTP sent to your number",
+                  Text(
+                    "enter_the_otp_sent_to_your_number".tr,
                     style: TextStyle(fontSize: 15, color: Colors.black54),
                     textAlign: TextAlign.center,
                   ),
@@ -105,8 +105,8 @@ class OtpScreenView extends GetView<OtpController> {
                       onPressed: () async {
                         await controller.verifyOtp();
                       },
-                      child: const Text(
-                        "Verify",
+                      child: Text(
+                        "verify".tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,

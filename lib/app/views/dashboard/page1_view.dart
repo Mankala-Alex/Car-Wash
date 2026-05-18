@@ -40,25 +40,25 @@ class Page1View extends GetView<DashboardController> {
             //       color: AppColors.warningLight,
             //       size: 30,
             //     )),
-            const SizedBox(width: 10),
-            const Text(
-              "CAR WASH",
+            SizedBox(width: 10),
+            Text(
+              "aguawash".tr,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1E293B), // Dark text color
               ),
             ),
-            const Spacer(),
-            IconButton(
-                onPressed: () {
-                  Get.toNamed(Routes.notification);
-                },
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.bgBlackLight,
-                  size: 30,
-                ))
+            Spacer(),
+            // IconButton(
+            //     onPressed: () {
+            //       Get.toNamed(Routes.notification);
+            //     },
+            //     icon: const Icon(
+            //       Icons.notifications_outlined,
+            //       color: AppColors.bgBlackLight,
+            //       size: 30,
+            //     ))
           ],
         ),
       ),
@@ -76,9 +76,9 @@ class Page1View extends GetView<DashboardController> {
               }
 
               if (featuresController.services.isEmpty) {
-                return const SizedBox(
+                return SizedBox(
                   height: 180,
-                  child: Center(child: Text("No services available")),
+                  child: Center(child: Text("no_services_available".tr)),
                 );
               }
 
@@ -189,8 +189,8 @@ class Page1View extends GetView<DashboardController> {
                                       ),
                                     ],
                                   ),
-                                  child: const Text(
-                                    "Book Now",
+                                  child: Text(
+                                    "book_now".tr,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
@@ -219,9 +219,9 @@ class Page1View extends GetView<DashboardController> {
                 children: [
                   // --- SERVICE CARDS USING THE SAME WIDGET ---
                   ServiceCard(
-                    title: "Doorstep Car Wash",
-                    subtitle: "Convenience at your home",
-                    buttonText: "Book Now",
+                    title: "doorstep_car_wash".tr,
+                    subtitle: "convenience_at_your_home".tr,
+                    buttonText: "book_now".tr,
                     imagePath: "assets/carwash/door_step.png",
                     onTap: () {
                       Get.toNamed(Routes.featureslist);
@@ -229,11 +229,11 @@ class Page1View extends GetView<DashboardController> {
                   ),
 
                   ServiceCard(
-                    title: "In-Store Car Wash",
-                    subtitle: "Visit us for a premium clean",
-                    buttonText: "Book Now",
+                    title: "in_store_car_wash".tr,
+                    subtitle: "visit_us_for_a_premium_clean".tr,
+                    buttonText: "book_now".tr,
                     imagePath: "assets/carwash/in_store.png",
-                    discountText: "50% OFF",
+                    discountText: "off_50".tr,
                     onTap: () {
                       Get.toNamed(Routes.instorewash);
                     },
@@ -348,7 +348,7 @@ class Page1View extends GetView<DashboardController> {
 
                                 // Expiry
                                 Text(
-                                  "Expires in ${offer.expiryDays} days",
+                                  "expires_in.tr ${offer.expiryDays} days",
                                   style: const TextStyle(
                                     color: Colors.black87,
                                     fontSize: 13,
@@ -407,7 +407,7 @@ Widget _trackingCard(Datum b) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    b.washerName ?? "Not Assigned",
+                    b.washerName ?? "not_assigned".tr,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

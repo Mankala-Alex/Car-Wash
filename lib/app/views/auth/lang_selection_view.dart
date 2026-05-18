@@ -20,8 +20,8 @@ class LangSelectionView extends GetView<LangSelectionController> {
         //   icon: const Icon(Icons.arrow_back, color: Colors.black),
         //   onPressed: () => Get.back(),
         // ),
-        title: const Text(
-          "Choose Your Language",
+        title: Text(
+          "choose_your_language".tr,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -38,7 +38,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
           // ================== ENGLISH CARD ==================
           Obx(() {
             return _languageCard(
-              label: "English",
+              label: "english".tr,
               value: "en",
               isSelected: controller.selectedValue.value == "en",
               onTap: () => controller.selectedValue.value = "en",
@@ -76,7 +76,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "Continue",
+                    "continue".tr,
                     style: TextStyle(
                       color: enabled ? Colors.white : Colors.black45,
                       fontSize: 18,

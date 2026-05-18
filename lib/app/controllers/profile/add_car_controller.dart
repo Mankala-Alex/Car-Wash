@@ -41,7 +41,7 @@ class AddCarController extends GetxController {
         makeController.text.trim().isEmpty ||
         modelController.text.trim().isEmpty ||
         typeController.text.trim().isEmpty) {
-      errorToast("Please fill all fields");
+      errorToast("please_fill_all_fields".tr);
       return;
     }
 
@@ -82,13 +82,13 @@ class AddCarController extends GetxController {
       print("📥 RESPONSE → ${response.data}");
 
       if (response.data["success"] == true) {
-        successToast("Vehicle added successfully");
+        successToast("vehicle_added_successfully".tr);
         Get.back(result: true);
       } else {
-        errorToast(response.data["error"] ?? "Unable to add vehicle");
+        errorToast(response.data["error"] ?? "unable_to_add_vehicle".tr);
       }
     } catch (e) {
-      errorToast("Something went wrong: $e");
+      errorToast("something_went_wrong".tr + ": $e");
     } finally {
       isLoading.value = false;
     }

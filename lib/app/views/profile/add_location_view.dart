@@ -66,13 +66,13 @@ class AddLocationView extends GetView<AddLocationController> {
                         ),
                       ],
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         Icon(Icons.search, color: Colors.grey),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            "Search an area or address",
+                            "search_an_area_or_address".tr,
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -117,13 +117,13 @@ class AddLocationView extends GetView<AddLocationController> {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.my_location, color: Colors.orange),
                     SizedBox(width: 8),
                     Text(
-                      "Current location",
+                      "current_location".tr,
                       style: TextStyle(fontSize: 15),
                     ),
                   ],
@@ -153,8 +153,8 @@ class AddLocationView extends GetView<AddLocationController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Order will be delivered here",
+                  Text(
+                    "order_will_be_delivered_here".tr,
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,

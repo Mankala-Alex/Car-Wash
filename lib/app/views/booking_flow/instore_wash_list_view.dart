@@ -17,8 +17,8 @@ class InstoreWashListView extends GetView<InstoreWashController> {
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
-        title: const Text(
-          "In-Store Locations",
+        title: Text(
+          "in_store_locations".tr,
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -57,9 +57,9 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                         onChanged: (value) {
                           controller.searchStores(value);
                         },
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Search by name or area",
+                          hintText: "search_by_name_or_area".tr,
                           hintStyle: TextStyle(color: Colors.grey),
                         ),
                       ),
@@ -98,7 +98,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                       image: store.imageUrl, // static placeholder
                       title: store.companyName,
                       rating: "0.0",
-                      reviews: "No reviews yet",
+                      reviews: "no_reviews_yet".tr,
                       address: "${store.streetName}, ${store.city}",
                       statusText: store.status == "Active" ? "Closed" : "Open",
                       statusColor:
@@ -243,10 +243,10 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                 const SizedBox(height: 10),
 
                 // ---- View Reviews ----
-                const Row(
+                Row(
                   children: [
                     Text(
-                      "View Reviews",
+                      "view_reviews".tr,
                       style: TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.w600,
@@ -303,7 +303,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                             border: Border.all(color: AppColors.secondaryLight),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
@@ -313,7 +313,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                               ),
                               SizedBox(width: 8),
                               Text(
-                                "Call",
+                                "call".tr,
                                 style: TextStyle(
                                   color: AppColors.textDefaultLight,
                                   fontWeight: FontWeight.w700,

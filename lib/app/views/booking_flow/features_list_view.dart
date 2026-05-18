@@ -21,7 +21,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
         title: Text(
-          'Door Step Services',
+          'door_step_services'.tr,
           style: TextStyle(
             fontSize: textTheme.titleLarge?.fontSize,
             fontWeight: FontWeight.bold,
@@ -194,7 +194,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                             },
                           );
                         },
-                        child: const Text('Book Now'),
+                        child: Text('book_now'.tr),
                       ),
                     ),
                   ),

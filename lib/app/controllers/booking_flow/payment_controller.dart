@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/services/payment_services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -68,17 +69,15 @@ class PaymentController extends GetxController {
           },
         );
       } else {
-        Get.snackbar(
-          "Error",
-          "Payment creation failed",
+        errorToast(
+          "payment_failed".tr,
         );
       }
     } catch (e) {
       print("Payment Error: $e");
 
-      Get.snackbar(
-        "Error",
-        "Payment failed",
+      errorToast(
+        "payment_failed".tr,
       );
     } finally {
       isLoading.value = false;

@@ -73,10 +73,10 @@ class DashboardView extends GetView<DashboardController> {
               ),
               items: List.generate(3, (index) {
                 final labels = [
-                  "Home".tr,
-                  "My Bookings".tr,
+                  "btm_menu_home".tr,
+                  "my_bookings".tr,
                   //"Wallet".tr,
-                  "Profile".tr,
+                  "btm_menu_profile".tr,
                 ];
 
                 final icons = [

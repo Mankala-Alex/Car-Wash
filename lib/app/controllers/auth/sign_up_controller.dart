@@ -27,7 +27,7 @@ class SignupController extends GetxController {
         lastNameCtrl.text.trim().isEmpty ||
         emailCtrl.text.trim().isEmpty ||
         phoneCtrl.text.trim().isEmpty) {
-      errorToast("Please fill all fields");
+      errorToast("please_fill_all_fields".tr);
       return;
     }
 
@@ -62,7 +62,7 @@ class SignupController extends GetxController {
 
       print("Signup Error: $e");
 
-      errorToast("Signup failed");
+      errorToast("signup_failed".tr);
     }
   }
 }

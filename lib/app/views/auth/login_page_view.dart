@@ -46,8 +46,8 @@ class LoginView extends GetView<LoginController> {
                 const SizedBox(height: 35),
 
                 // ---------------- LABEL ----------------
-                const Text(
-                  "Email or Phone Number",
+                Text(
+                  "mobile_number".tr,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -66,13 +66,40 @@ class LoginView extends GetView<LoginController> {
                   ),
                   child: TextField(
                     controller: controller.emailController,
+                    keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      prefixIcon: Icon(Icons.email_outlined,
-                          color: Colors.grey), // Optional
-                      hintText: "Enter your email or mobile number",
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(left: 12, right: 6),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.phone,
+                              color: Colors.grey,
+                              size: 20,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              "+966",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
+                      hintText: "Enter your Mobile number",
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -96,8 +123,8 @@ class LoginView extends GetView<LoginController> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      child: const Text(
-                        "Continue",
+                      child: Text(
+                        "continue".tr,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,

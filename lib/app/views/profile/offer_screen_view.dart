@@ -23,8 +23,8 @@ class OfferScreenView extends GetView<OfferScreenController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Offer Details",
+        title: Text(
+          "offer_details".tr,
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
@@ -57,7 +57,7 @@ class OfferScreenView extends GetView<OfferScreenController> {
             Text(
               offer.terms.isNotEmpty
                   ? offer.title
-                  : "No description available.",
+                  : "no_description_available".tr,
               style: TextStyle(
                 fontSize: 15,
                 height: 1.5,
@@ -129,8 +129,8 @@ class OfferScreenView extends GetView<OfferScreenController> {
                   const SizedBox(height: 14),
 
                   /// TERMS TITLE
-                  const Text(
-                    "Terms & Conditions",
+                  Text(
+                    "terms_conditions".tr,
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
@@ -167,8 +167,8 @@ class OfferScreenView extends GetView<OfferScreenController> {
               ),
               child: TextButton(
                 onPressed: () {},
-                child: const Text(
-                  "Redeem Now",
+                child: Text(
+                  "redeem_now".tr,
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,

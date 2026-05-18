@@ -173,7 +173,7 @@ class LocationPickerController extends GetxController {
         },
       );
     } else {
-      errorToast('Error' 'Please select a location');
+      errorToast('error'.tr + 'please_select_a_location'.tr);
     }
   }
 }
