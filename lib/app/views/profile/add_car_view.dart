@@ -17,7 +17,7 @@ class AddCarView extends GetView<AddCarController> {
         centerTitle: true,
         title: Text(
           "add_vehicle".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -46,7 +46,7 @@ class AddCarView extends GetView<AddCarController> {
                 ? const CircularProgressIndicator(color: Colors.white)
                 : Text(
                     "save_vehicle".tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,

@@ -1,23 +1,117 @@
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:car_wash_customer_app/app/models/google_places/place_details_model.dart';
+import 'package:car_wash_customer_app/app/models/google_places/place_prediction_model.dart';
+import 'package:car_wash_customer_app/app/repositories/google_places/google_places_repository.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:latlong2/latlong.dart';
 import 'dart:async';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 
 class LocationPickerController extends GetxController {
-  final MapController mapController = MapController();
+  GoogleMapController? googleMapController;
+  final GooglePlacesRepository _googlePlacesRepository =
+      GooglePlacesRepository();
+
+  Timer? _debounce;
+
+  Future<void> moveCamera(LatLng location, {double zoom = 18}) async {
+    if (googleMapController == null) return;
+
+    await googleMapController!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: location,
+          zoom: zoom,
+        ),
+      ),
+    );
+  }
 
   Rx<LatLng?> selectedLocation = Rx<LatLng?>(null);
   RxString selectedAddress = "Select location on map".obs;
   RxBool isLoadingLocation = false.obs;
+  final RxList<PlacePredictionModel> suggestions = <PlacePredictionModel>[].obs;
+
+  final RxBool isSearching = false.obs;
+
+  final TextEditingController searchController = TextEditingController();
+  // RxSet<Marker> markers = <Marker>{}.obs;
 
   @override
   void onInit() {
     super.onInit();
     getCurrentLocation();
+  }
+
+  void onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) {
+      _debounce!.cancel();
+    }
+
+    _debounce = Timer(
+      const Duration(milliseconds: 400),
+      () {
+        searchPlaces(query);
+      },
+    );
+  }
+
+  Future<void> searchPlaces(String query) async {
+    if (query.trim().isEmpty) {
+      suggestions.clear();
+      return;
+    }
+
+    try {
+      isSearching.value = true;
+
+      final response = await _googlePlacesRepository.autocomplete(query);
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        final List data = response.data["data"];
+
+        suggestions.assignAll(
+          data.map((e) => PlacePredictionModel.fromJson(e)).toList(),
+        );
+      }
+    } catch (e) {
+      print("Search error : $e");
+    } finally {
+      isSearching.value = false;
+    }
+  }
+
+  Future<void> selectPlace(String placeId) async {
+    try {
+      final response = await _googlePlacesRepository.getPlaceDetails(placeId);
+
+      if (response.statusCode == 200 && response.data["success"] == true) {
+        final place = PlaceDetailsModel.fromJson(response.data["data"]);
+        final location = LatLng(
+          place.latitude,
+          place.longitude,
+        );
+
+        selectedLocation.value = location; // <-- ADD THIS
+
+        selectedAddress.value = place.address;
+
+        await moveCamera(location);
+
+        searchController.text = place.address;
+
+        suggestions.clear();
+
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+    } catch (e) {
+      print("Place details error : $e");
+    }
   }
 
   Future<void> getCurrentLocation() async {
@@ -30,8 +124,20 @@ class LocationPickerController extends GetxController {
       print("📍 Location services enabled: $serviceEnabled");
 
       if (!serviceEnabled) {
-        print("⚠️ Location services are disabled on this device");
-        _useDefaultLocation();
+        isLoadingLocation.value = false;
+
+        Get.defaultDialog(
+          title: "Location Required",
+          middleText: "Please enable your device location to continue.",
+          textConfirm: "Settings",
+          textCancel: "Cancel",
+          confirmTextColor: Colors.white,
+          onConfirm: () async {
+            Get.back();
+            await Geolocator.openLocationSettings();
+          },
+        );
+
         return;
       }
 
@@ -46,15 +152,33 @@ class LocationPickerController extends GetxController {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        print("❌ Location permission permanently denied");
-        _useDefaultLocation();
+        isLoadingLocation.value = false;
+
+        Get.defaultDialog(
+          title: "Permission Required",
+          middleText: "Please allow location permission from App Settings.",
+          textConfirm: "Open Settings",
+          textCancel: "Cancel",
+          confirmTextColor: Colors.white,
+          onConfirm: () async {
+            Get.back();
+            await Geolocator.openAppSettings();
+          },
+        );
+
         return;
       }
 
       if (permission != LocationPermission.whileInUse &&
           permission != LocationPermission.always) {
-        print("❌ Location permission not granted: $permission");
-        _useDefaultLocation();
+        isLoadingLocation.value = false;
+
+        Get.snackbar(
+          "Location Permission",
+          "Location permission is required.",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
         return;
       }
 
@@ -81,6 +205,16 @@ class LocationPickerController extends GetxController {
 
         LatLng currentLocation = LatLng(position.latitude, position.longitude);
         selectedLocation.value = currentLocation;
+        //markers.clear();
+
+        // markers.add(
+        //   Marker(
+        //     markerId: const MarkerId("selected_location"),
+        //     position: currentLocation,
+        //   ),
+        // );
+
+        await moveCamera(currentLocation);
 
         // Get address from coordinates
         await getAddressFromCoordinates(
@@ -101,7 +235,10 @@ class LocationPickerController extends GetxController {
               "✅ Got last known position: ${lastPosition.latitude}, ${lastPosition.longitude}");
           LatLng currentLocation =
               LatLng(lastPosition.latitude, lastPosition.longitude);
+
           selectedLocation.value = currentLocation;
+
+          await moveCamera(currentLocation);
 
           // Get address from coordinates
           await getAddressFromCoordinates(
@@ -119,17 +256,15 @@ class LocationPickerController extends GetxController {
     } catch (e, stackTrace) {
       print("❌ Error getting location: $e");
       print("📋 Stack trace: $stackTrace");
-      isLoadingLocation.value = false;
-      _useDefaultLocation();
-    }
-  }
 
-  void _useDefaultLocation() {
-    // Default to Riyadh, Saudi Arabia
-    LatLng defaultLocation = const LatLng(24.7136, 46.6753);
-    selectedLocation.value = defaultLocation;
-    selectedAddress.value = "Riyadh, Saudi Arabia (Default)";
-    isLoadingLocation.value = false;
+      isLoadingLocation.value = false;
+
+      Get.snackbar(
+        "Location Error",
+        "Unable to get your current location. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   Future<void> getAddressFromCoordinates(
@@ -150,9 +285,25 @@ class LocationPickerController extends GetxController {
     }
   }
 
-  Future<void> selectLocationOnMap(LatLng latLng) async {
-    selectedLocation.value = latLng;
-    await getAddressFromCoordinates(latLng.latitude, latLng.longitude);
+  // Future<void> selectLocationOnMap(LatLng latLng) async {
+  //   selectedLocation.value = latLng;
+
+  //markers.clear();
+
+  // markers.add(
+  //   Marker(
+  //     markerId: const MarkerId("selected_location"),
+  //     position: latLng,
+  //   ),
+  // );
+  //   await getAddressFromCoordinates(latLng.latitude, latLng.longitude);
+  // }
+
+  @override
+  void onClose() {
+    _debounce?.cancel();
+    searchController.dispose();
+    super.onClose();
   }
 
   void confirmLocation() {
@@ -175,5 +326,11 @@ class LocationPickerController extends GetxController {
     } else {
       errorToast('error'.tr + 'please_select_a_location'.tr);
     }
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    suggestions.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 }

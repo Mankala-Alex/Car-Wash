@@ -48,7 +48,7 @@ class LoginView extends GetView<LoginController> {
                 // ---------------- LABEL ----------------
                 Text(
                   "mobile_number".tr,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -125,7 +125,7 @@ class LoginView extends GetView<LoginController> {
                       ),
                       child: Text(
                         "continue".tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,

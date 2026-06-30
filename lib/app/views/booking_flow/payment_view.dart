@@ -10,7 +10,7 @@ class PaymentScreen extends GetView<PaymentController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("payment_details".trPluralParams()),
+        title: Text("payment_details".tr),
       ),
       backgroundColor: Colors.grey.shade100,
       body: Column(
@@ -24,7 +24,7 @@ class PaymentScreen extends GetView<PaymentController> {
                   /// Secure Header
                   Column(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 40,
                         backgroundColor: Color(0xFFE3F2FD),
                         child: Icon(
@@ -33,19 +33,19 @@ class PaymentScreen extends GetView<PaymentController> {
                           color: Color(0xFF1565C0),
                         ),
                       ),
-                      SizedBox(height: 12),
-                      Text(
+                      const SizedBox(height: 12),
+                      const Text(
                         "Secure Checkout",
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 6),
+                      const SizedBox(height: 6),
                       Text(
                         "confirm_service_details_before_payment".tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.grey,
                         ),
                       ),
@@ -244,8 +244,8 @@ class PaymentScreen extends GetView<PaymentController> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("tax".tr + " (0%)"),
-                                  Text("0.00 SAR"),
+                                  Text("${"tax".tr} (0%)"),
+                                  const Text("0.00 SAR"),
                                 ],
                               ),
 
@@ -267,7 +267,7 @@ class PaymentScreen extends GetView<PaymentController> {
                                   children: [
                                     Text(
                                       "total_amount".tr,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                       ),
                                     ),
@@ -356,7 +356,7 @@ class PaymentScreen extends GetView<PaymentController> {
                       ),
                       child: Text(
                         "pay_now".tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white,
                         ),

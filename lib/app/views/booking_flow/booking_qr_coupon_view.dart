@@ -31,7 +31,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
             return Center(
               child: Text(
                 "coupon_not_available".tr,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
             );
           }
@@ -110,7 +110,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
                   const Icon(Icons.calendar_today, size: 18),
                   const SizedBox(width: 6),
                   Text(
-                    "valid_till".tr + " ${controller.formattedExpiry}",
+                    "${"valid_till".tr} ${controller.formattedExpiry}",
                   ),
                 ],
               ),
@@ -138,7 +138,7 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
                   ),
                   child: Text(
                     "done".tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

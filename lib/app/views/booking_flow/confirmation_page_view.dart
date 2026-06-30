@@ -34,7 +34,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
               // TITLE
               Text(
                 "booking_confirmed".tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1E293B),
@@ -111,7 +111,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            "total".tr + " SAR ${controller.amount}",
+                            "${"total".tr} SAR ${controller.amount}",
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -148,7 +148,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                   ),
                   child: Text(
                     "done".tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,

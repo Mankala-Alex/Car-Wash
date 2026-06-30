@@ -22,7 +22,7 @@ class LangSelectionView extends GetView<LangSelectionController> {
         // ),
         title: Text(
           "choose_your_language".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,

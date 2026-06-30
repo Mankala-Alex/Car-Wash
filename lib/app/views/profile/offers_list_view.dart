@@ -134,7 +134,7 @@ class OffersListView extends GetView<OffersController> {
                                 ),
                                 child: Text(
                                   "view_details".tr,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,

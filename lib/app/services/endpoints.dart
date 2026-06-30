@@ -23,4 +23,8 @@ class EndPoints {
   static const apiGetcouponslist = 'coupons/list';
   static const apigetcoupondetails = 'coupons/details';
   static const apiPostLogOut = 'auth/logout';
+
+  static const apiPlaceAutocomplete = "maps/autocomplete";
+
+  static const apiPlaceDetails = "maps/place-details";
 }

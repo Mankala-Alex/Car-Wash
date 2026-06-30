@@ -40,16 +40,16 @@ class Page1View extends GetView<DashboardController> {
             //       color: AppColors.warningLight,
             //       size: 30,
             //     )),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               "aguawash".tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1E293B), // Dark text color
               ),
             ),
-            Spacer(),
+            const Spacer(),
             // IconButton(
             //     onPressed: () {
             //       Get.toNamed(Routes.notification);
@@ -191,7 +191,7 @@ class Page1View extends GetView<DashboardController> {
                                   ),
                                   child: Text(
                                     "book_now".tr,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,

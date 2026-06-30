@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 
 import 'package:car_wash_customer_app/app/controllers/booking_flow/location_picker_controller.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationPickerView extends GetView<LocationPickerController> {
   const LocationPickerView({super.key});
@@ -19,7 +18,7 @@ class LocationPickerView extends GetView<LocationPickerController> {
         backgroundColor: Colors.white,
         title: Text(
           "pick_location".tr,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -35,63 +34,157 @@ class LocationPickerView extends GetView<LocationPickerController> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            return FlutterMap(
-              mapController: controller.mapController,
-              options: MapOptions(
-                initialCenter: controller.selectedLocation.value ??
-                    const LatLng(24.7136, 46.6753), // Default to Riyadh
-                initialZoom: 15,
-                onTap: (tapPosition, latLng) async {
-                  await controller.selectLocationOnMap(latLng);
-                },
+            return GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: controller.selectedLocation.value ??
+                    const LatLng(24.7136, 46.6753),
+                zoom: 16,
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.de/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.carwash.app',
-                  minZoom: 1,
-                  maxZoom: 19,
-                  keepBuffer: 20,
-                  tileProvider: NetworkTileProvider(),
-                ),
-                Obx(() {
-                  if (controller.selectedLocation.value != null) {
-                    return MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: controller.selectedLocation.value!,
-                          width: 40,
-                          height: 40,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.secondaryLight,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 3,
-                              ),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.location_on,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }),
-              ],
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              compassEnabled: true,
+              onMapCreated: (GoogleMapController mapController) {
+                controller.googleMapController = mapController;
+
+                if (controller.selectedLocation.value != null) {
+                  mapController.animateCamera(
+                    CameraUpdate.newLatLngZoom(
+                      controller.selectedLocation.value!,
+                      17,
+                    ),
+                  );
+                }
+              },
+              onCameraMove: (CameraPosition position) {
+                controller.selectedLocation.value = position.target;
+              },
+              onCameraIdle: () async {
+                final location = controller.selectedLocation.value;
+
+                if (location != null) {
+                  await controller.getAddressFromCoordinates(
+                    location.latitude,
+                    location.longitude,
+                  );
+                }
+              },
             );
           }),
+          Positioned(
+            top: MediaQuery.of(context).padding.bottom,
+            left: 16,
+            right: 16,
+            child: Material(
+              elevation: 6,
+              borderRadius: BorderRadius.circular(14),
+              child: TextField(
+                controller: controller.searchController,
+                onChanged: controller.onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: "Search location...",
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: Obx(() {
+                    if (controller.isSearching.value) {
+                      return const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      );
+                    }
 
+                    if (controller.searchController.text.isNotEmpty) {
+                      return IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: controller.clearSearch,
+                      );
+                    }
+
+                    return const SizedBox();
+                  }),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 40,
+            left: 16,
+            right: 16,
+            child: Obx(() {
+              if (controller.suggestions.isEmpty) {
+                return const SizedBox();
+              }
+
+              return Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  constraints: const BoxConstraints(
+                    maxHeight: 250,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: controller.suggestions.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (_, index) {
+                      final item = controller.suggestions[index];
+
+                      return ListTile(
+                        leading: const Icon(
+                          Icons.location_on,
+                          color: AppColors.secondaryLight,
+                        ),
+                        title: Text(
+                          item.mainText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          item.secondaryText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+
+                          controller.selectPlace(item.placeId);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              );
+            }),
+          ),
+
+          const IgnorePointer(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 40),
+                child: Icon(
+                  Icons.location_pin,
+                  color: Colors.red,
+                  size: 55,
+                ),
+              ),
+            ),
+          ),
           // Current location button
           Positioned(
             bottom: 120,
@@ -146,7 +239,7 @@ class LocationPickerView extends GetView<LocationPickerController> {
                 children: [
                   Text(
                     "selected_location".tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -199,7 +292,7 @@ class LocationPickerView extends GetView<LocationPickerController> {
                       ),
                       child: Text(
                         "confirm_location".tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),

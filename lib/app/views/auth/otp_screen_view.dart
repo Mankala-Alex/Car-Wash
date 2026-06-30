@@ -29,7 +29,7 @@ class OtpScreenView extends GetView<OtpController> {
       appBar: AppBar(
         title: Text(
           "verify_otp".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
@@ -63,7 +63,7 @@ class OtpScreenView extends GetView<OtpController> {
                 children: [
                   Text(
                     "enter_the_otp_sent_to_your_number".tr,
-                    style: TextStyle(fontSize: 15, color: Colors.black54),
+                    style: const TextStyle(fontSize: 15, color: Colors.black54),
                     textAlign: TextAlign.center,
                   ),
 
@@ -107,7 +107,7 @@ class OtpScreenView extends GetView<OtpController> {
                       },
                       child: Text(
                         "verify".tr,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,

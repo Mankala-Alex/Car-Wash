@@ -16,7 +16,7 @@ class LangChangeView extends GetView<LangChangeController> {
         centerTitle: true,
         title: Text(
           "change_language".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,

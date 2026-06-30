@@ -18,7 +18,7 @@ class CarListView extends GetView<CarListController> {
         centerTitle: true,
         title: Text(
           "my_vehicles".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -63,7 +63,7 @@ class CarListView extends GetView<CarListController> {
           return Center(
             child: Text(
               "no_vehicles_added".tr,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           );
         }

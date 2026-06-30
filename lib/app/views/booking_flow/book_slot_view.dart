@@ -25,7 +25,7 @@ class BookSlotView extends GetView<BookSlotController> {
         ),
         title: Text(
           "confirm_car_wash".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Color(0xFF1E293B),
@@ -140,7 +140,7 @@ class BookSlotView extends GetView<BookSlotController> {
               children: [
                 Text(
                   'service_details'.tr,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textLightGrayLight,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
@@ -417,20 +417,20 @@ class BookSlotView extends GetView<BookSlotController> {
 
       if (controller.selectedDate.value == null) {
         return Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Text(
             "please_select_a_date".tr,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         );
       }
 
       if (controller.slotTimes.isEmpty) {
         return Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Text(
             "no_slots_available_for_this_date".tr,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         );
       }
@@ -820,7 +820,8 @@ class BookSlotView extends GetView<BookSlotController> {
                 children: [
                   Text(
                     'total_amount'.tr,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
                   Image.asset("assets/carwash/SAR.png", width: 18),

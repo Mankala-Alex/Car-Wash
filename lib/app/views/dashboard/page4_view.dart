@@ -21,7 +21,7 @@ class Page4View extends GetView<DashboardController> {
         backgroundColor: AppColors.bgLight,
         title: Text(
           "my_profile".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w600,
           ),

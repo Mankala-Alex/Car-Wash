@@ -16,7 +16,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
         elevation: 0,
         title: Text(
           'location_details'.tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -59,7 +59,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             // House Number Field
             Text(
               'house_number'.tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
@@ -76,7 +76,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             // Landmark Field
             Text(
               'landmark_optional'.tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
@@ -93,7 +93,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             // Save As Dropdown
             Text(
               'save_as'.tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
@@ -129,7 +129,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
             // Phone Number Field
             Text(
               'phone_number'.tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF1E293B),
@@ -161,7 +161,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
                 ),
                 child: Text(
                   'save_location'.tr,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),

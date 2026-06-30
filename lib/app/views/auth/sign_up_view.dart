@@ -53,7 +53,7 @@ class SignupView extends GetView<SignupController> {
                         ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
                             "continue".tr,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w600,
                             ),

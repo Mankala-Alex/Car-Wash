@@ -19,7 +19,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
         surfaceTintColor: Colors.white,
         title: Text(
           "in_store_locations".tr,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -60,7 +60,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "search_by_name_or_area".tr,
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: const TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
@@ -247,13 +247,14 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                   children: [
                     Text(
                       "view_reviews".tr,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 14, color: Colors.blue),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_forward,
+                        size: 14, color: Colors.blue),
                   ],
                 ),
 
@@ -306,15 +307,15 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.phone,
                                 color: AppColors.textDefaultLight,
                                 size: 20,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
                                 "call".tr,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.textDefaultLight,
                                   fontWeight: FontWeight.w700,
                                 ),

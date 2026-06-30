@@ -25,7 +25,7 @@ class OfferScreenView extends GetView<OfferScreenController> {
         centerTitle: true,
         title: Text(
           "offer_details".tr,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -131,7 +131,7 @@ class OfferScreenView extends GetView<OfferScreenController> {
                   /// TERMS TITLE
                   Text(
                     "terms_conditions".tr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                     ),
@@ -169,7 +169,7 @@ class OfferScreenView extends GetView<OfferScreenController> {
                 onPressed: () {},
                 child: Text(
                   "redeem_now".tr,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,

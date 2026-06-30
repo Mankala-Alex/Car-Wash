@@ -23,7 +23,7 @@ class Page2View extends GetView<DashboardController> {
         centerTitle: true,
         title: Text(
           "my_bookings".tr,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -50,7 +50,7 @@ class Page2View extends GetView<DashboardController> {
               // ---------------------------------------------------
               Text(
                 "current_booking".tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Colors.black,
@@ -85,7 +85,7 @@ class Page2View extends GetView<DashboardController> {
               // ---------------------------------------------------
               Text(
                 "past_bookings".tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: Colors.black,
@@ -358,11 +358,11 @@ class Page2View extends GetView<DashboardController> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.close, color: Colors.white),
-                            SizedBox(width: 7),
+                            const Icon(Icons.close, color: Colors.white),
+                            const SizedBox(width: 7),
                             Text(
                               "cancel".tr,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
@@ -537,11 +537,11 @@ class Page2View extends GetView<DashboardController> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.refresh, color: Colors.white),
-                        SizedBox(width: 8),
+                        const Icon(Icons.refresh, color: Colors.white),
+                        const SizedBox(width: 8),
                         Text(
                           "book_again".tr,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -570,7 +570,7 @@ class Page2View extends GetView<DashboardController> {
                   child: Center(
                     child: Text(
                       "view_details".tr,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: AppColors.secondaryLight,

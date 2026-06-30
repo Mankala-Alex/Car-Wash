@@ -478,7 +478,7 @@ class BookSlotController extends GetxController {
         successToast('location_saved'.tr);
       }
     } catch (e) {
-      errorToast('error_selecting_location'.tr + ' $e');
+      errorToast('${'error_selecting_location'.tr} $e');
     }
   }
 

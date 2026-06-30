@@ -16,7 +16,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
         centerTitle: true,
         title: Text(
           "help_support".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -40,7 +40,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
               ),
               child: Text(
                 "find_quick_answers_to_your_questions".tr,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black,
                 ),
@@ -162,8 +162,8 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                   children: [
                     Text(
                       "contact_support".tr,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -178,7 +178,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                     Row(
                       children: [
                         Expanded(
-                            child: _inputField("email".tr + " (optional)")),
+                            child: _inputField("${"email".tr} (optional)")),
                         const SizedBox(width: 12),
                         Expanded(child: _inputField("mobile_number".tr)),
                       ],
@@ -206,7 +206,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                         alignment: Alignment.center,
                         child: Text(
                           "send_message".tr,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                               fontSize: 16),

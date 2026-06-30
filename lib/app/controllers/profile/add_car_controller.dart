@@ -88,7 +88,7 @@ class AddCarController extends GetxController {
         errorToast(response.data["error"] ?? "unable_to_add_vehicle".tr);
       }
     } catch (e) {
-      errorToast("something_went_wrong".tr + ": $e");
+      errorToast("${"something_went_wrong".tr}: $e");
     } finally {
       isLoading.value = false;
     }

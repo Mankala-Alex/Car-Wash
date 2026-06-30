@@ -20,7 +20,7 @@ class LocationsListView extends GetView<LocationListController> {
         centerTitle: true,
         title: Text(
           "addresses".tr,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -36,10 +36,10 @@ class LocationsListView extends GetView<LocationListController> {
 
           // Saved Addresses Title
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "saved_addresses".tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: Colors.black87,
@@ -88,18 +88,18 @@ class LocationsListView extends GetView<LocationListController> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.add, color: AppColors.bgLight, size: 26),
-                    SizedBox(width: 12),
+                    const Icon(Icons.add, color: AppColors.bgLight, size: 26),
+                    const SizedBox(width: 12),
                     Text(
                       "add_new_address".tr,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         color: AppColors.bgLight,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Spacer(),
-                    Icon(Icons.arrow_forward_ios,
+                    const Spacer(),
+                    const Icon(Icons.arrow_forward_ios,
                         size: 18, color: AppColors.bgLight),
                   ],
                 ),
@@ -220,7 +220,7 @@ class LocationsListView extends GetView<LocationListController> {
               leading: const Icon(Icons.delete, color: Colors.red),
               title: Text(
                 "delete".tr,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.red),
@@ -231,8 +231,8 @@ class LocationsListView extends GetView<LocationListController> {
                 Get.dialog(
                   CustomConfirmationDialog(
                     header: "delete_address".tr,
-                    body: "are_you_sure_you_want_to_delete".tr +
-                        " ${location.label}?",
+                    body:
+                        "${"are_you_sure_you_want_to_delete".tr} ${location.label}?",
                     yesText: "delete".tr,
                     noText: "Cancel".tr,
                     onYes: () {

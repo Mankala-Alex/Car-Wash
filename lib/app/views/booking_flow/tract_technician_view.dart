@@ -88,7 +88,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                             ),
                             Text(
                               "live".tr,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.orange,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -127,7 +127,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                     Text(
                       booking.scheduledAt == null
                           ? "expected_soon".tr
-                          : "scheduled_at".tr + ": ${booking.scheduledAt}",
+                          : "${"scheduled_at".tr}: ${booking.scheduledAt}",
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

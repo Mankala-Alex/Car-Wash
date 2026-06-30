@@ -47,7 +47,7 @@ class BookingHistoryDetailsView
               children: [
                 Text(
                   "visual_proof".tr,
-                  style: TextStyle(
+                  style: const TextStyle(
                     letterSpacing: 1,
                     fontWeight: FontWeight.w600,
                   ),
@@ -109,7 +109,7 @@ class BookingHistoryDetailsView
             ),
             child: Text(
               "book_again".tr,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
