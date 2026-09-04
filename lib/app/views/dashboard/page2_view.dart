@@ -40,81 +40,85 @@ class Page2View extends GetView<DashboardController> {
           //   child: wheelloader(), // your lottie loader here
           // );
         }
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ---------------------------------------------------
-              // CURRENT BOOKING (DYNAMIC)
-              // ---------------------------------------------------
-              Text(
-                "current_booking".tr,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
+        return RefreshIndicator(
+          onRefresh: controller.fetchBookingHistory,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ---------------------------------------------------
+                // CURRENT BOOKING (DYNAMIC)
+                // ---------------------------------------------------
+                Text(
+                  "current_booking".tr,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              Obx(() {
-                if (controller.currentBookings.isEmpty) {
-                  return Image.asset(
-                    "assets/no_data/current_booking.png",
-                    height: 400,
-                    width: 400,
+                Obx(() {
+                  if (controller.currentBookings.isEmpty) {
+                    return Image.asset(
+                      "assets/no_data/current_booking.png",
+                      height: 400,
+                      width: 400,
+                    );
+                  }
+
+                  // Only 1 card? Show the first one.
+                  return Column(
+                    children: controller.currentBookings.map((b) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: _currentBookingCard(b),
+                      );
+                    }).toList(),
                   );
-                }
+                }),
 
-                // Only 1 card? Show the first one.
-                return Column(
-                  children: controller.currentBookings.map((b) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 18),
-                      child: _currentBookingCard(b),
-                    );
-                  }).toList(),
-                );
-              }),
+                const SizedBox(height: 30),
 
-              const SizedBox(height: 30),
-
-              // ---------------------------------------------------
-              // PAST BOOKINGS
-              // ---------------------------------------------------
-              Text(
-                "past_bookings".tr,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black,
+                // ---------------------------------------------------
+                // PAST BOOKINGS
+                // ---------------------------------------------------
+                Text(
+                  "past_bookings".tr,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              Obx(() {
-                if (controller.pastBookings.isEmpty) {
-                  return Image.asset("assets/no_data/past_history.png",
-                      width: 400, height: 400);
-                }
+                Obx(() {
+                  if (controller.pastBookings.isEmpty) {
+                    return Image.asset("assets/no_data/past_history.png",
+                        width: 400, height: 400);
+                  }
 
-                return Column(
-                  children:
-                      controller.pastBookings.asMap().entries.map((entry) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 18),
-                      child: _pastBookingCard(
-                        index: entry.key,
-                        booking: entry.value,
-                      ),
-                    );
-                  }).toList(),
-                );
-              }),
+                  return Column(
+                    children:
+                        controller.pastBookings.asMap().entries.map((entry) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: _pastBookingCard(
+                          index: entry.key,
+                          booking: entry.value,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }),
 
-              const SizedBox(height: 30),
-            ],
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         );
       }),
@@ -138,8 +142,8 @@ class Page2View extends GetView<DashboardController> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xff4E9AF1).withOpacity(0.9),
-            const Color(0xff1E78E6).withOpacity(0.9),
+            const Color(0xff4E9AF1).withValues(alpha: 0.9),
+            const Color(0xff1E78E6).withValues(alpha: 0.9),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -147,7 +151,7 @@ class Page2View extends GetView<DashboardController> {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.blue.withOpacity(0.25),
+            color: Colors.blue.withValues(alpha: 0.25),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -157,7 +161,7 @@ class Page2View extends GetView<DashboardController> {
         margin: const EdgeInsets.all(2),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.92),
+          color: Colors.white.withValues(alpha: 0.92),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -352,7 +356,7 @@ class Page2View extends GetView<DashboardController> {
                           horizontal: 20, vertical: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(14),
-                        color: Colors.red.withOpacity(0.9),
+                        color: Colors.red.withValues(alpha: 0.9),
                       ),
                       child: Center(
                         child: Row(

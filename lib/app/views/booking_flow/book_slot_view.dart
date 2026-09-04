@@ -56,7 +56,7 @@ class BookSlotView extends GetView<BookSlotController> {
 
                   const SizedBox(height: 16),
                   Text(
-                    "Select Date and Time",
+                    "select_date_and_time".tr,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDefaultLight,
@@ -315,7 +315,7 @@ class BookSlotView extends GetView<BookSlotController> {
           border: Border.all(color: Colors.grey[300]!, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 3),
@@ -479,26 +479,26 @@ class BookSlotView extends GetView<BookSlotController> {
   Widget _buildLocationSection(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          height: 150,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-            image: const DecorationImage(
-              image: AssetImage('assets/carwash/map.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
+        // Container(
+        //   width: double.infinity,
+        //   height: 150,
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(16),
+        //     boxShadow: [
+        //       BoxShadow(
+        //         color: Colors.black.withValues(alpha: 0.05),
+        //         spreadRadius: 1,
+        //         blurRadius: 5,
+        //         offset: const Offset(0, 3),
+        //       ),
+        //     ],
+        //     image: const DecorationImage(
+        //       image: AssetImage('assets/carwash/map.png'),
+        //       fit: BoxFit.cover,
+        //     ),
+        //   ),
+        // ),
+        // const SizedBox(height: 16),
 
         // Static Home and Work locations
         // _buildAddressCard(
@@ -565,7 +565,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: AppColors.secondaryLight.withOpacity(0.15),
+                    color: AppColors.secondaryLight.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -619,7 +619,7 @@ class BookSlotView extends GetView<BookSlotController> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 spreadRadius: 1,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -684,7 +684,9 @@ class BookSlotView extends GetView<BookSlotController> {
   }) {
     return Obx(
       () => GestureDetector(
-        onTap: () => controller.updateSelectedAddress(title),
+        onTap: () {
+          controller.updateSelectedAddress(title);
+        },
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -698,7 +700,7 @@ class BookSlotView extends GetView<BookSlotController> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 spreadRadius: 1,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -743,7 +745,9 @@ class BookSlotView extends GetView<BookSlotController> {
                 value: true,
                 groupValue: controller.selectedAddress.value == title,
                 onChanged: (v) {
-                  if (v == true) controller.updateSelectedAddress(title);
+                  if (v == true) {
+                    controller.updateSelectedAddress(title);
+                  }
                 },
                 activeColor: AppColors.secondaryLight,
               ),
@@ -853,7 +857,7 @@ class BookSlotView extends GetView<BookSlotController> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             spreadRadius: 0,
             blurRadius: 10,
             offset: const Offset(0, -5),

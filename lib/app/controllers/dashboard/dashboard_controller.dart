@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:car_wash_customer_app/app/helpers/secure_store.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,20 +11,20 @@ import 'package:car_wash_customer_app/app/services/socket_service.dart';
 
 class DashboardController extends GetxController {
   //for demo purpose only
-  Timer? _refreshTimer;
+  //Timer? _refreshTimer;
   // this is just for demo purpose for auto refreshing
-  void _startAutoRefresh() {
-    _refreshTimer?.cancel();
+  // void _startAutoRefresh() {
+  //   _refreshTimer?.cancel();
 
-    _refreshTimer = Timer.periodic(
-      const Duration(seconds: 5), // 👈 demo-friendly
-      (timer) {
-        if (customerUuid.isNotEmpty) {
-          fetchBookingHistory();
-        }
-      },
-    );
-  }
+  //   _refreshTimer = Timer.periodic(
+  //     const Duration(seconds: 5), // 👈 demo-friendly
+  //     (timer) {
+  //       if (customerUuid.isNotEmpty) {
+  //         fetchBookingHistory();
+  //       }
+  //     },
+  //   );
+  // }
   // this is just for demo purpose for auto refreshing
 
   var selectedIndex = 0.obs;
@@ -52,28 +50,28 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     _initializeController();
-    final arg = Get.arguments;
-    if (arg != null && arg is int) {
-      selectedIndex.value = arg;
-      print("🔥 Setting selectedIndex from arguments → $arg");
-    }
   }
 
-  // Initialize controller with proper async handling
   Future<void> _initializeController() async {
     try {
       isLoading.value = true;
 
       await loadCustomerInfo();
 
+      final arg = Get.arguments;
+
+      if (arg != null && arg is int) {
+        selectedIndex.value = arg;
+      }
+
       if (customerUuid.isNotEmpty) {
-        await fetchBookingHistory();
-        // Connect socket and set up listeners
-        _setupSocketConnection();
+        await _setupSocketConnection();
         _setupSocketListeners();
-        // this is just for demo purpose for auto refreshing
-        _startAutoRefresh();
-        // this is just for demo purpose for auto refreshing
+
+        // If directly opened My Bookings tab
+        if (selectedIndex.value == 1) {
+          await fetchBookingHistory();
+        }
       }
     } catch (e) {
       print("❌ Dashboard init error: $e");
@@ -81,6 +79,46 @@ class DashboardController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   _initializeController();
+  //   final arg = Get.arguments;
+  //   if (arg != null && arg is int) {
+  //     selectedIndex.value = arg;
+  //     print("🔥 Setting selectedIndex from arguments → $arg");
+  //   }
+  // }
+
+  // // Initialize controller with proper async handling
+  // Future<void> _initializeController() async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     await loadCustomerInfo();
+  //     if (customerUuid.isNotEmpty) {
+  //       // Don't fetch booking history here.
+  //       // It will be fetched only when user opens Page2 (My Bookings).
+
+  //       await _setupSocketConnection();
+  //       _setupSocketListeners();
+  //     }
+  //     // if (customerUuid.isNotEmpty) {
+  //     //   await fetchBookingHistory();
+  //     //   // Connect socket and set up listeners
+  //     //   _setupSocketConnection();
+  //     //   _setupSocketListeners();
+  //     //   // this is just for demo purpose for auto refreshing
+  //     //   _startAutoRefresh();
+  //     //   // this is just for demo purpose for auto refreshing
+  //     // }
+  //   } catch (e) {
+  //     print("❌ Dashboard init error: $e");
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   // ===== SOCKET.IO INTEGRATION =====
 
@@ -274,8 +312,13 @@ class DashboardController extends GetxController {
   // -----------------------------------------------------
   // BOTTOM NAVIGATION
   // -----------------------------------------------------
-  void updateIndex(int index) {
+  Future<void> updateIndex(int index) async {
     selectedIndex.value = index;
+
+    // Page2 = My Bookings tab
+    if (index == 1) {
+      await fetchBookingHistory();
+    }
   }
 
   // ===== WALLET (unchanged) =====
