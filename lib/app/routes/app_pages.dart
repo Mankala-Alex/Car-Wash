@@ -13,6 +13,7 @@ import 'package:car_wash_customer_app/app/bindings/dashboard/notification_bindin
 import 'package:car_wash_customer_app/app/bindings/profile/add_car_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/add_location_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/car_list_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/profile/about_us_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/coupon_details_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/help_n_support_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/lang_change_binding.dart';
@@ -21,6 +22,8 @@ import 'package:car_wash_customer_app/app/bindings/profile/location_details_bind
 import 'package:car_wash_customer_app/app/bindings/profile/my_coupons_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/offer_screen_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/offers_list_bindings.dart';
+import 'package:car_wash_customer_app/app/bindings/profile/privacy_policy_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/profile/terms_conditions_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/booking_qr_coupon_binding.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/payment_view.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/payment_binding.dart';
@@ -33,6 +36,7 @@ import 'package:car_wash_customer_app/app/views/booking_flow/tract_technician_vi
 import 'package:car_wash_customer_app/app/views/dashboard/booking_history_details_view.dart';
 import 'package:car_wash_customer_app/app/views/dashboard/dashboard_view.dart';
 import 'package:car_wash_customer_app/app/views/dashboard/notifications_view.dart';
+import 'package:car_wash_customer_app/app/views/profile/about_us_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/add_car_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/add_location_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/car_list_view.dart';
@@ -44,6 +48,8 @@ import 'package:car_wash_customer_app/app/views/profile/location_details_view.da
 import 'package:car_wash_customer_app/app/views/profile/coupons_list_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/offer_screen_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/offers_list_view.dart';
+import 'package:car_wash_customer_app/app/views/profile/privacy_policy_view.dart';
+import 'package:car_wash_customer_app/app/views/profile/terms_conditions_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/booking_qr_coupon_view.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
@@ -177,6 +183,21 @@ class AppPages {
       name: Routes.offerscreen,
       page: () => const OfferScreenView(),
       binding: OfferScreenBinding(),
+    ),
+    GetPage(
+      name: Routes.termsconditions,
+      page: () => const TermsConditionsView(),
+      binding: TermsConditionsBinding(),
+    ),
+    GetPage(
+      name: Routes.aboutus,
+      page: () => const AboutUsView(),
+      binding: AboutUsBinding(),
+    ),
+    GetPage(
+      name: Routes.privacypolicy,
+      page: () => const PrivacyPolicyView(),
+      binding: PrivacyPolicyBinding(),
     ),
     GetPage(
       name: Routes.bookingqrcouponview,

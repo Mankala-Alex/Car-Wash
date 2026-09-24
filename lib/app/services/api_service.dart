@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide Response;
@@ -34,9 +36,36 @@ class ApiService {
           if (options.extra["auth"] == true) {
             final token = await FlutterSecureStore()
                 .getSingleValue(SharedPrefsHelper.accessToken);
-            if (token != null) {
+
+            // Debug: print token presence (do NOT log tokens in production)
+            print(
+                "🔐 Auth requested. token present: ${token != null && token.isNotEmpty}");
+
+            // Only add header when token is non-null and non-empty
+            if (token != null && token.isNotEmpty) {
               options.headers["Authorization"] = "Bearer $token";
+            } else {
+              // Helpful debug info when token missing — server will likely return 401
+              print(
+                  "⚠️ Authorization header not set because token is empty or null");
             }
+
+            // Try to decode JWT payload to show claims (debugging only)
+            try {
+              if (token != null && token.split('.').length == 3) {
+                final parts = token.split('.');
+                final payload = parts[1];
+                final normalized = base64Url.normalize(payload);
+                final decoded = utf8.decode(base64Url.decode(normalized));
+                print("🔍 Token payload claims: $decoded");
+              }
+            } catch (e) {
+              print('Error decoding token payload: $e');
+            }
+
+            // Debug: print final headers for this request
+            print(
+                "➡️ Request ${options.method} ${options.path} headers: ${options.headers}");
           }
 
           return handler.next(options);
@@ -50,6 +79,24 @@ class ApiService {
               error.type == DioExceptionType.connectionError) {
             print("❌ No Response From Server → ${error.message}");
             return handler.reject(error);
+          }
+
+          // Log detailed response info for debugging 4xx/5xx
+          try {
+            final req = error.requestOptions;
+            print("❗️ DioError for ${req.method} ${req.path}");
+            print("➡️ Request uri: ${req.uri}");
+            print("➡️ Request headers: ${req.headers}");
+            if (req.data != null) print("➡️ Request body: ${req.data}");
+
+            if (error.response != null) {
+              print("⬅️ Response status: ${error.response?.statusCode}");
+              print("⬅️ Response data: ${error.response?.data}");
+            } else {
+              print("⬅️ No response received (response is null)");
+            }
+          } catch (e) {
+            print("Error while logging DioException details: $e");
           }
 
           return handler.next(error);

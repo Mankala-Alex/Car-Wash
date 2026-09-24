@@ -27,31 +27,34 @@ class AddCarView extends GetView<AddCarController> {
 
       // ---------------- BOTTOM BUTTON ----------------
       bottomNavigationBar: Obx(() {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: ElevatedButton(
-            onPressed: controller.isLoading.value
-                ? null
-                : () {
-                    controller.submitVehicle(); // API CALL
-                  },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondaryLight,
-              minimumSize: const Size(double.infinity, 55),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+        return SafeArea(
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: ElevatedButton(
+              onPressed: controller.isLoading.value
+                  ? null
+                  : () {
+                      controller.submitVehicle(); // API CALL
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondaryLight,
+                minimumSize: const Size(double.infinity, 55),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
-            ),
-            child: controller.isLoading.value
-                ? const CircularProgressIndicator(color: Colors.white)
-                : Text(
-                    "save_vehicle".tr,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+              child: controller.isLoading.value
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(
+                      "save_vehicle".tr,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
+            ),
           ),
         );
       }),

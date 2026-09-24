@@ -56,37 +56,95 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       );
   }
 
-  /// Check payment result
+  bool _checkingPayment = false;
+
   Future<void> checkPayment() async {
+    if (_checkingPayment) return;
+
+    _checkingPayment = true;
+
     try {
-      await Future.delayed(const Duration(seconds: 3));
+      // Check payment status repeatedly for up to 60 seconds.
+      for (int i = 0; i < 30; i++) {
+        if (!mounted) return;
 
-      final status = await service.checkPaymentStatus(bookingId);
+        final status = await service.checkPaymentStatus(bookingId);
 
-      print("Payment Status: $status");
+        print("Payment status attempt ${i + 1}: $status");
 
-      if (status == "PAID") {
-        errorToast(
-          "payment_successful".tr,
-        );
+        if (status == "PAID") {
+          if (!mounted) return;
 
-        Get.offAllNamed(
-          Routes.confirmationpageview,
-          arguments: Get.arguments,
-        );
+          successToast("payment_successful".tr);
+
+          Get.offAllNamed(
+            Routes.confirmationpageview,
+            arguments: Get.arguments,
+          );
+          return;
+        }
+
+        if (status == "FAILED") {
+          if (!mounted) return;
+
+          errorToast("payment_failed".tr);
+          Get.back();
+          return;
+        }
+
+        // Still INITIATED or pending: try again.
+        await Future.delayed(const Duration(seconds: 2));
       }
 
-      if (status == "FAILED") {
+      if (mounted) {
         errorToast(
-          "payment_failed".tr,
+          "Payment is still processing. Please check your booking status.",
         );
-
-        Get.back();
       }
     } catch (e) {
       print("Status check error: $e");
+
+      if (mounted) {
+        errorToast(
+          "Could not verify payment status. Please check your booking.",
+        );
+      }
+    } finally {
+      _checkingPayment = false;
     }
   }
+
+  /// Check payment result
+  // Future<void> checkPayment() async {
+  //   try {
+  //     await Future.delayed(const Duration(seconds: 3));
+
+  //     final status = await service.checkPaymentStatus(bookingId);
+
+  //     print("Payment Status: $status");
+
+  //     if (status == "PAID") {
+  //       errorToast(
+  //         "payment_successful".tr,
+  //       );
+
+  //       Get.offAllNamed(
+  //         Routes.confirmationpageview,
+  //         arguments: Get.arguments,
+  //       );
+  //     }
+
+  //     if (status == "FAILED") {
+  //       errorToast(
+  //         "payment_failed".tr,
+  //       );
+
+  //       Get.back();
+  //     }
+  //   } catch (e) {
+  //     print("Status check error: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

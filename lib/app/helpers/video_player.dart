@@ -82,8 +82,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.0),
-                        Colors.black.withOpacity(0.8),
+                        Colors.black.withValues(alpha: 0.0),
+                        Colors.black.withValues(alpha: 0.8),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

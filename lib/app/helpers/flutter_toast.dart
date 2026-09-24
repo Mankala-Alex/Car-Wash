@@ -9,22 +9,22 @@ import '../config/constants.dart';
 successToast(msg) {
   return Fluttertoast.showToast(
     msg: msg,
-    backgroundColor: Colors.grey[300]!.withOpacity(0.8),
+    backgroundColor: Colors.grey[300]!.withValues(alpha: 0.8),
     textColor: Colors.grey[800],
     toastLength: Toast.LENGTH_LONG,
     gravity: ToastGravity.BOTTOM,
-    timeInSecForIosWeb: 2,
+    timeInSecForIosWeb: 1,
   );
 }
 
 errorToast(msg) {
   return Fluttertoast.showToast(
     msg: msg,
-    backgroundColor: Colors.grey[300]!.withOpacity(0.8),
+    backgroundColor: Colors.grey[300]!.withValues(alpha: 0.8),
     textColor: Colors.red[800],
     toastLength: Toast.LENGTH_LONG,
     gravity: ToastGravity.BOTTOM,
-    timeInSecForIosWeb: 2,
+    timeInSecForIosWeb: 1,
   );
 }
 

@@ -2,7 +2,7 @@ class EndPoints {
   //booking slot
   static const apiGetAllServices = "services";
   static const apiGetfetchoffers = "offers";
-  static const apiGetinstoreservices = "partners";
+  static const apiGetPublicPartners = "partners/public";
   //auth
   static const apiPostrequstotp = 'auth/request-otp'; //login
   static const apiPostverifyotp = 'auth/verify-otp'; //sign up
@@ -27,4 +27,6 @@ class EndPoints {
   static const apiPlaceAutocomplete = "maps/autocomplete";
 
   static const apiPlaceDetails = "maps/place-details";
+
+  static const apigetadvertisements = "advertisements";
 }

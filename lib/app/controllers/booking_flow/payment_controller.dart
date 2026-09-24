@@ -41,6 +41,19 @@ class PaymentController extends GetxController {
     bookingCode = args["booking_code"] ?? "";
   }
 
+  // Future<void> payNow() async {
+  //   Get.offAllNamed(
+  //     Routes.confirmationpageview,
+  //     arguments: {
+  //       "service_name": serviceName,
+  //       "scheduled_at": scheduledAt,
+  //       "amount": amount,
+  //       "image": image,
+  //       "booking_code": bookingCode,
+  //     },
+  //   );
+  // }
+
   /// Pay Now
   Future<void> payNow() async {
     try {

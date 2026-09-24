@@ -29,8 +29,8 @@ class BookSlotRepository {
 
   Future<Response> apigetvehicles(String customerId) async {
     return await ApiService.get(
-      "${EndPoints.apiGetvehicles}?customer_id=$customerId",
-      requireAuthToken: true, // ✅ ADD THIS
+      "customer-vehicles/me",
+      requireAuthToken: true,
     );
   }
 

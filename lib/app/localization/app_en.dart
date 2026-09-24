@@ -18,7 +18,7 @@ const Map<String, String> enUS = {
   "invalid_customer_id": "Invalid customer ID",
   "otp_verification_failed": "OTP verification failed",
   "my_bookings": "My Bookings",
-  "aguawash": "AGUAWASH",
+  "aguawash": "WashGate4CarWash",
   "no_services_available": "No services available",
   "book_now": "Book Now",
   "doorstep_car_wash": "Doorstep Car Wash",
@@ -49,7 +49,8 @@ const Map<String, String> enUS = {
   "view_details": "View Details",
   "my_profile": "My Profile",
   "no_email": "No Email",
-  "my_cars": "My Cars",
+  "view"
+      "my_cars": "My Cars",
   "my_locations": "My Locations",
   "language_selection": "Language Selection",
   "my_coupons": "My Coupons",
@@ -125,6 +126,7 @@ const Map<String, String> enUS = {
   "after": "After",
   "book_again": "Book Again",
   "date_time": "Date & Time",
+  "View_all": "View all",
   "service": "Service",
   "payment": "Payment",
   "no_images_available": "No images available",
@@ -185,4 +187,6 @@ const Map<String, String> enUS = {
   "expected_soon": "Expected soon",
   "scheduled_at": "Scheduled at",
   "technician_assigned": "Technician Assigned",
+  "Partner_location": "Partner Location",
+  "save": "Save",
 };

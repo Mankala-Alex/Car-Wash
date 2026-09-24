@@ -53,7 +53,7 @@ class OtpScreenView extends GetView<OtpController> {
                 borderRadius: BorderRadius.circular(22),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.10),
+                    color: Colors.black.withValues(alpha: 0.10),
                     blurRadius: 18,
                     offset: const Offset(0, 7),
                   ),

@@ -24,6 +24,9 @@ abstract class Routes {
   static const scratchcard = '/scratchcard';
   static const offers = '/offers';
   static const offerscreen = '/offer_screen';
+  static const termsconditions = '/terms_conditions';
+  static const aboutus = '/about_us';
+  static const privacypolicy = '/privacy_policy';
   static const bookingqrcouponview = '/qr_coupon_view';
   static const coupondetailsview = '/coupon_details_view';
   static const bookinghistorydetailsview = '/booking_history_view';

@@ -5,6 +5,6 @@ class Constants {
 
   static Color bgBackDropColor = Colors.transparent;
 
-  //static const imageBaseUrl = "https://www.aguawash.com";
-  static const imageBaseUrl = "http://10.0.2.2:3000";
+  static const imageBaseUrl = "https://washgate4carwash.com";
+  //static const imageBaseUrl = "http://10.0.2.2:3000";
 }

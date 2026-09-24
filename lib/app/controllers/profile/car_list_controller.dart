@@ -16,7 +16,7 @@ class CarListController extends GetxController {
 
   // Load customerId from SharedPrefs
   Future<void> loadCustomerId() async {
-    customerId = await SharedPrefsHelper.getString("customerUuid") ?? "";
+    customerId = await SharedPrefsHelper.getString("customerUuid");
 
     if (customerId.isEmpty) {
       print("❌ No customerId found");
@@ -26,22 +26,34 @@ class CarListController extends GetxController {
     fetchVehicles(); // ← Fetch after ID is ready
   }
 
+  List<dynamic> _normalizeVehicleList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      final list = data['data'];
+      if (list is List) return list;
+      if (data['vehicles'] is List) return data['vehicles'];
+      if (data['customerVehicles'] is List) return data['customerVehicles'];
+    }
+    return [];
+  }
+
   Future<void> fetchVehicles() async {
     try {
-      isLoading.value = true; // 🔥 START LOADING
+      isLoading.value = true;
 
       final response = await ApiService.get(
-        "customer-vehicles?customer_id=$customerId",
+        "customer-vehicles/me",
         requireAuthToken: true,
       );
 
       if (response.statusCode == 200) {
-        customerVehicles.value = response.data;
+        customerVehicles.value = _normalizeVehicleList(response.data);
       }
     } catch (e) {
       print("Vehicle fetch failed: $e");
+      customerVehicles.clear();
     } finally {
-      isLoading.value = false; // 🔥 STOP LOADING (THIS FIXES EVERYTHING)
+      isLoading.value = false;
     }
   }
 }

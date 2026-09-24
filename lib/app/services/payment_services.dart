@@ -4,7 +4,8 @@ class PaymentService {
   final Dio _dio = Dio();
 
   // Change base URL if needed
-  final String baseUrl = "https://www.aguawash.com/api";
+  //final String baseUrl = "https://www.washgate4carwash.com/api";
+  final String baseUrl = "https://riches-keenness-chewy.ngrok-free.dev/api";
 
   /// Create Payment
   Future<Map<String, dynamic>> createPayment({
@@ -24,13 +25,30 @@ class PaymentService {
   }
 
   /// Check Payment Status
-  Future<String> checkPaymentStatus(String bookingId) async {
+  // Future<String> checkPaymentStatus(String bookingId) async {
+  //   try {
+  //     final response = await _dio.get(
+  //       "$baseUrl/payment/status/$bookingId",
+  //     );
+
+  //     return response.data["payment_status"];
+  //   } catch (e) {
+  //     throw Exception("Payment status failed: $e");
+  //   }
+  // }
+  Future<String?> checkPaymentStatus(String bookingId) async {
     try {
       final response = await _dio.get(
         "$baseUrl/payment/status/$bookingId",
       );
 
-      return response.data["payment_status"];
+      final data = response.data;
+
+      if (data is Map<String, dynamic>) {
+        return data["payment_status"]?.toString();
+      }
+
+      return null;
     } catch (e) {
       throw Exception("Payment status failed: $e");
     }

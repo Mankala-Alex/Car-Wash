@@ -45,11 +45,12 @@ dependencies:
   geocoding: ^4.0.0
   flutter_map: ^8.2.2
   latlong2: ^0.9.1
-  # google_maps_flutter: ^2.10.1
+  google_maps_flutter: ^2.17.1
   # geolocator: ^14.0.1
   # location: ^8.0.0
   # device_info_plus: ^11.3.3
   webview_flutter: ^4.13.1
+  http: ^1.6.0
 
 
   #push notifications
@@ -81,3 +82,6 @@ flutter_launcher_icons:
   ios: false
   image_path: "assets/app_icon/app_icon.png"
   remove_alpha_ios: true
+
+dependency_overrides:
+  google_maps_flutter_android: 2.18.4

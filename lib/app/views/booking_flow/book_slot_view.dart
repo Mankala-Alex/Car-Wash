@@ -913,7 +913,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 elevation: 0,
               ),
               child: Text(
-                "Confirm Book",
+                "confirm_book".tr,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: AppColors.textWhiteLight,
                       fontWeight: FontWeight.w600,

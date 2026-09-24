@@ -32,6 +32,15 @@ class Data {
     required this.createdAt,
     required this.updatedAt,
     required this.slotId,
+
+    // NEW FIELDS
+    required this.latitude,
+    required this.longitude,
+    required this.formattedAddress,
+    required this.address,
+    required this.houseNumber,
+    required this.landmark,
+    required this.addressLabel,
   });
 
   final String id;
@@ -49,6 +58,14 @@ class Data {
   final DateTime? createdAt;
   final dynamic updatedAt;
   final int slotId;
+  final double? latitude;
+  final double? longitude;
+
+  final String? formattedAddress;
+  final String? address;
+  final String? houseNumber;
+  final String? addressLabel;
+  final String? landmark;
 
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
@@ -67,6 +84,17 @@ class Data {
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: json["updated_at"],
       slotId: json["slot_id"] ?? 0,
+      latitude: json["latitude"] != null
+          ? (json["latitude"] as num).toDouble()
+          : null,
+      longitude: json["longitude"] != null
+          ? (json["longitude"] as num).toDouble()
+          : null,
+      formattedAddress: json["formatted_address"],
+      address: json["address"],
+      houseNumber: json["house_number"],
+      landmark: json["landmark"],
+      addressLabel: json["address_label"],
     );
   }
 }

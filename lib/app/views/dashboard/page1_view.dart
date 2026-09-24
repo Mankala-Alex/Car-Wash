@@ -1,3 +1,4 @@
+import 'package:car_wash_customer_app/app/models/advertisement/advertisement_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'; // Ensure this import is correct
 import 'package:get/get.dart';
@@ -5,7 +6,6 @@ import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
-import 'package:car_wash_customer_app/app/custome_widgets/skeleton_corousel.dart';
 import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -20,356 +20,877 @@ class Page1View extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      //extendBodyBehindAppBar: true,
-      backgroundColor: AppColors.bgLight, // Light grey background
-      appBar: AppBar(
-        backgroundColor: AppColors.bgLight,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.white,
-        automaticallyImplyLeading: false, // Make app bar transparent
-        title: Row(
-          children: [
-            // IconButton(
-            //     onPressed: () {
-            //       Get.toNamed("page4");
-            //     },
-            //     icon: Icon(
-            //       Icons.notifications,
-            //       color: AppColors.warningLight,
-            //       size: 30,
-            //     )),
-            const SizedBox(width: 10),
-            Text(
-              "aguawash".tr,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B), // Dark text color
-              ),
-            ),
-            const Spacer(),
-            // IconButton(
-            //     onPressed: () {
-            //       Get.toNamed(Routes.notification);
-            //     },
-            //     icon: const Icon(
-            //       Icons.notifications_outlined,
-            //       color: AppColors.bgBlackLight,
-            //       size: 30,
-            //     ))
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // --- Top Carousel Section ---
-            Obx(() {
-              if (featuresController.isLoading.value) {
-                return const SkeletonCarousel(
-                  height: 150,
-                  itemCount: 3,
-                );
-              }
-
-              if (featuresController.services.isEmpty) {
-                return SizedBox(
-                  height: 180,
-                  child: Center(child: Text("no_services_available".tr)),
-                );
-              }
-
-              return FlutterCarousel(
-                options: FlutterCarouselOptions(
-                  height: 150,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  viewportFraction: 0.85,
-                  autoPlayInterval: const Duration(seconds: 3),
-                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  enableInfiniteScroll: true,
-                  showIndicator: true,
-                  slideIndicator: CircularSlideIndicator(
-                    slideIndicatorOptions: const SlideIndicatorOptions(
-                      currentIndicatorColor: Colors.black,
-                      indicatorBackgroundColor: Colors.white,
-                      indicatorRadius: 3,
-                      itemSpacing: 15,
-                    ),
-                  ),
-                ),
-
-                // 🔥 LIST FROM API
-                items:
-                    List.generate(featuresController.services.length, (index) {
-                  final service = featuresController.services[index];
-                  final imageUrl = Constants.imageBaseUrl + service.imageUrl;
-                  final title = service.name;
-
-                  return Builder(
-                    builder: (context) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
+    return SafeArea(
+      child: Scaffold(
+        //extendBodyBehindAppBar: true,
+        backgroundColor: AppColors.bgLight, // Light grey background
+        // appBar: AppBar(
+        //   backgroundColor: AppColors.bgLight,
+        //   elevation: 0,
+        //   scrolledUnderElevation: 0,
+        //   surfaceTintColor: Colors.white,
+        //   automaticallyImplyLeading: false, // Make app bar transparent
+        //   title: Row(
+        //     children: [
+        //       // IconButton(
+        //       //     onPressed: () {
+        //       //       Get.toNamed("page4");
+        //       //     },
+        //       //     icon: Icon(
+        //       //       Icons.notifications,
+        //       //       color: AppColors.warningLight,
+        //       //       size: 30,
+        //       //     )),
+        //       //const SizedBox(width: 10),
+        //       // Text(
+        //       //   "aguawash".tr,
+        //       //   style: const TextStyle(
+        //       //     fontSize: 20,
+        //       //     fontWeight: FontWeight.bold,
+        //       //     color: Color(0xFF1E293B), // Dark text color
+        //       //   ),
+        //       // ),
+        //       //const Spacer(),
+        //       // IconButton(
+        //       //     onPressed: () {
+        //       //       Get.toNamed(Routes.notification);
+        //       //     },
+        //       //     icon: const Icon(
+        //       //       Icons.notifications_outlined,
+        //       //       color: AppColors.bgBlackLight,
+        //       //       size: 30,
+        //       //     ))
+        //     ],
+        //   ),
+        // ),
+        body: RefreshIndicator(
+          onRefresh: controller.refreshHomeData,
+          color: AppColors.primaryLight,
+          backgroundColor: Colors.white,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- Advertisement Carousel ---
+                // --- Advertisement Carousel ---
+                Obx(() {
+                  if (controller.isAdvertisementsLoading.value) {
+                    return SizedBox(
+                      height: 150,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(18),
-                          image: DecorationImage(
-                            image: NetworkImage(imageUrl),
-                            fit: BoxFit.cover,
-                          ),
                         ),
-                        child: Stack(
-                          children: [
-                            // 🔥 Gradient overlay
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18),
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.black.withOpacity(0.6),
-                                      Colors.transparent,
-                                      Colors.black.withOpacity(0.6),
-                                    ],
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
+                      ),
+                    );
+                  }
+
+                  if (controller.advertisements.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return FlutterCarousel(
+                    options: FlutterCarouselOptions(
+                      height: 150,
+                      autoPlay: controller.advertisements.length > 1,
+                      enlargeCenterPage: true,
+                      viewportFraction: 0.95,
+                      autoPlayInterval: const Duration(seconds: 3),
+                      autoPlayAnimationDuration:
+                          const Duration(milliseconds: 800),
+                      enableInfiniteScroll:
+                          controller.advertisements.length > 1,
+                    ),
+                    items: controller.advertisements.map((advertisement) {
+                      return _advertisementCard(advertisement);
+                    }).toList(),
+                  );
+                }),
+                // --- Top Carousel Section ---
+                // Obx(() {
+                //   if (featuresController.isLoading.value) {
+                //     return const SkeletonCarousel(
+                //       height: 180,
+                //       itemCount: 3,
+                //     );
+                //   }
+
+                //   if (featuresController.services.isEmpty) {
+                //     return SizedBox(
+                //       height: 180,
+                //       child: Center(child: Text("no_services_available".tr)),
+                //     );
+                //   }
+
+                //   return FlutterCarousel(
+                //     options: FlutterCarouselOptions(
+                //       height: 180,
+                //       autoPlay: true,
+                //       enlargeCenterPage: true,
+                //       viewportFraction: 1.0,
+                //       autoPlayInterval: const Duration(seconds: 3),
+                //       autoPlayAnimationDuration:
+                //           const Duration(milliseconds: 800),
+                //       enableInfiniteScroll: true,
+                //       showIndicator: true,
+                //       slideIndicator: CircularSlideIndicator(
+                //         slideIndicatorOptions: const SlideIndicatorOptions(
+                //           currentIndicatorColor: Colors.black,
+                //           indicatorBackgroundColor: Colors.white,
+                //           indicatorRadius: 3,
+                //           itemSpacing: 15,
+                //         ),
+                //       ),
+                //     ),
+
+                //     // 🔥 LIST FROM API
+                //     items: List.generate(featuresController.services.length,
+                //         (index) {
+                //       final service = featuresController.services[index];
+                //       final imageUrl =
+                //           Constants.imageBaseUrl + service.imageUrl;
+                //       final title = service.name;
+
+                //       return Builder(
+                //         builder: (context) {
+                //           return Container(
+                //             margin: const EdgeInsets.symmetric(horizontal: 6),
+                //             decoration: BoxDecoration(
+                //               borderRadius: const BorderRadius.only(
+                //                 bottomLeft: Radius.circular(18),
+                //                 bottomRight: Radius.circular(18),
+                //               ),
+                //               image: DecorationImage(
+                //                 image: NetworkImage(imageUrl),
+                //                 fit: BoxFit.cover,
+                //               ),
+                //             ),
+                //             child: Stack(
+                //               children: [
+                //                 // 🔥 Gradient overlay
+                //                 Positioned.fill(
+                //                   child: Container(
+                //                     decoration: const BoxDecoration(
+                //                       borderRadius: BorderRadius.only(
+                //                         bottomLeft: Radius.circular(18),
+                //                         bottomRight: Radius.circular(18),
+                //                       ),
+                //                       gradient: LinearGradient(
+                //                         colors: [
+                //                           Colors.transparent,
+                //                           Colors.black54,
+                //                         ],
+                //                         begin: Alignment.topCenter,
+                //                         end: Alignment.bottomCenter,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ),
+
+                //                 // 🔥 Bottom-left service title
+                //                 Positioned(
+                //                   left: 16,
+                //                   bottom: 16,
+                //                   child: Text(
+                //                     title,
+                //                     style: const TextStyle(
+                //                       color: Colors.white,
+                //                       fontSize: 16,
+                //                       fontWeight: FontWeight.w500,
+                //                     ),
+                //                   ),
+                //                 ),
+
+                //                 // 🔥 Bottom-right Book Now button
+                //                 Positioned(
+                //                   right: 16,
+                //                   bottom: 12,
+                //                   child: GestureDetector(
+                //                     onTap: () {
+                //                       Get.toNamed(
+                //                         Routes.bookslot,
+                //                         arguments: {
+                //                           "image": imageUrl,
+                //                           "name": service.name,
+                //                           "description": service.description,
+                //                           "price": service.price.toString(),
+                //                           "features": service.features,
+                //                         },
+                //                       );
+                //                     },
+                //                     child: Container(
+                //                       padding: const EdgeInsets.symmetric(
+                //                           horizontal: 18, vertical: 10),
+                //                       decoration: BoxDecoration(
+                //                         color: Colors.white
+                //                             .withValues(alpha: 0.18),
+                //                         borderRadius: BorderRadius.circular(14),
+                //                         border: Border.all(
+                //                           color: Colors.white
+                //                               .withValues(alpha: 0.35),
+                //                           width: 1.2,
+                //                         ),
+                //                         boxShadow: [
+                //                           BoxShadow(
+                //                             color: Colors.white
+                //                                 .withValues(alpha: 0.25),
+                //                             blurRadius: 6,
+                //                             offset: const Offset(0, 2),
+                //                           ),
+                //                         ],
+                //                       ),
+                //                       child: Text(
+                //                         "book_now".tr,
+                //                         style: const TextStyle(
+                //                           color: Colors.white,
+                //                           fontSize: 14,
+                //                           fontWeight: FontWeight.w600,
+                //                         ),
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ],
+                //             ),
+                //           );
+                //         },
+                //       );
+                //     }),
+                //   );
+                // }),
+
+                const SizedBox(height: 25),
+
+                // --- Doorstep & In-Store Wash Buttons ---
+                Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ---------------- SERVICES SECTION ----------------
+                      Obx(() {
+                        if (featuresController.isLoading.value) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(
+                                  left: 2,
+                                  right: 2,
+                                  bottom: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    SkeletonBox(
+                                      width: 100,
+                                      height: 24,
+                                      radius: 8,
+                                    ),
+                                    Spacer(),
+                                    SkeletonBox(
+                                      width: 80,
+                                      height: 32,
+                                      radius: 18,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.width * 0.52,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: 3,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(width: 14),
+                                  itemBuilder: (context, index) => SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.52,
+                                    child: const SkeletonBox(
+                                      width: double.infinity,
+                                      height: 180,
+                                      radius: 18,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
+                          );
+                        }
 
-                            // 🔥 Bottom-left service title
-                            Positioned(
-                              left: 16,
-                              bottom: 16,
-                              child: Text(
-                                title,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                        if (featuresController.services.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final services = featuresController.services;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // -------- SECTION HEADER --------
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 2,
+                                right: 2,
+                                bottom: 12,
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "services".tr,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF1E293B),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.toNamed(Routes.featureslist);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.secondaryLight,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "View_all".tr,
+                                            style: const TextStyle(
+                                              color: AppColors.textWhiteLight,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          const Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
 
-                            // 🔥 Bottom-right Book Now button
-                            Positioned(
-                              right: 16,
-                              bottom: 12,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Get.toNamed(
-                                    Routes.bookslot,
-                                    arguments: {
-                                      "image": imageUrl,
-                                      "name": service.name,
-                                      "description": service.description,
-                                      "price": service.price.toString(),
-                                      "features": service.features,
+                            // -------- HORIZONTAL SERVICES --------
+                            SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.52,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: services.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(width: 14),
+                                itemBuilder: (context, index) {
+                                  final service = services[index];
+
+                                  final imageUrl =
+                                      Constants.imageBaseUrl + service.imageUrl;
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      _showServiceDetails(
+                                        name: service.name,
+                                        description: service.description,
+                                        price: service.price,
+                                      );
                                     },
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.52,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(18),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black
+                                                .withValues(alpha: 0.08),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // -------- SERVICE IMAGE --------
+                                          ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                              topLeft: Radius.circular(18),
+                                              topRight: Radius.circular(18),
+                                            ),
+                                            child: Image.network(
+                                              imageUrl,
+                                              width: double.infinity,
+                                              height: 120,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Container(
+                                                  height: 120,
+                                                  color: Colors.grey.shade200,
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.local_car_wash,
+                                                      size: 40,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+
+                                          // -------- SERVICE DETAILS --------
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(12),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  // Service Name
+                                                  Text(
+                                                    service.name,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Color(0xFF1E293B),
+                                                    ),
+                                                  ),
+
+                                                  const Spacer(),
+
+                                                  // Price + Book Now
+                                                  Row(
+                                                    children: [
+                                                      // Price
+                                                      Expanded(
+                                                        child: Text(
+                                                          "SAR ${service.price}",
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Color(
+                                                                0xFF1E293B),
+                                                          ),
+                                                        ),
+                                                      ),
+
+                                                      // Book Now
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          Get.toNamed(
+                                                            Routes.bookslot,
+                                                            arguments: {
+                                                              "image": imageUrl,
+                                                              "name":
+                                                                  service.name,
+                                                              "description":
+                                                                  service
+                                                                      .description,
+                                                              "price": service
+                                                                  .price
+                                                                  .toString(),
+                                                              "service_id":
+                                                                  service.id,
+                                                              "features":
+                                                                  service
+                                                                      .features,
+                                                            },
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 8,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: AppColors
+                                                                .secondaryLight,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                          child: Text(
+                                                            "book_now".tr,
+                                                            style:
+                                                                const TextStyle(
+                                                              color: AppColors
+                                                                  .textWhiteLight,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   );
                                 },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 18, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.18),
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.35),
-                                      width: 1.2,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.white.withOpacity(0.25),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    "book_now".tr,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
                           ],
-                        ),
-                      );
-                    },
-                  );
-                }),
-              );
-            }),
+                        );
+                      }),
+                      // --- SERVICE CARDS USING THE SAME WIDGET ---
+                      // ServiceCard(
+                      //   title: "doorstep_car_wash".tr,
+                      //   subtitle: "convenience_at_your_home".tr,
+                      //   buttonText: "book_now".tr,
+                      //   imagePath: "assets/carwash/door_step.png",
+                      //   onTap: () {
+                      //     Get.toNamed(Routes.featureslist);
+                      //   },
+                      // ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      ServiceCard(
+                        title: "in_store_car_wash".tr,
+                        subtitle: "visit_us_for_a_premium_clean".tr,
+                        buttonText: "Partner_location".tr,
+                        imagePath: "assets/carwash/in_store.png",
+                        discountText: "off_50".tr,
+                        onTap: () {
+                          Get.toNamed(Routes.instorewash);
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      Obx(() {
+                        if (controller.trackingBooking.value == null) {
+                          return const SizedBox.shrink();
+                        }
 
-            const SizedBox(height: 25),
+                        final b = controller.trackingBooking.value!;
 
-            // --- Doorstep & In-Store Wash Buttons ---
-            Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- SERVICE CARDS USING THE SAME WIDGET ---
-                  ServiceCard(
-                    title: "doorstep_car_wash".tr,
-                    subtitle: "convenience_at_your_home".tr,
-                    buttonText: "book_now".tr,
-                    imagePath: "assets/carwash/door_step.png",
-                    onTap: () {
-                      Get.toNamed(Routes.featureslist);
-                    },
-                  ),
+                        return _trackingCard(b);
+                      }),
+                      const SizedBox(height: 20),
+                      // ---------------- PROMO BANNERS AFTER WALLET ----------------
+                      Obx(() {
+                        final list = offersController.offers;
 
-                  ServiceCard(
-                    title: "in_store_car_wash".tr,
-                    subtitle: "visit_us_for_a_premium_clean".tr,
-                    buttonText: "book_now".tr,
-                    imagePath: "assets/carwash/in_store.png",
-                    discountText: "off_50".tr,
-                    onTap: () {
-                      Get.toNamed(Routes.instorewash);
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  Obx(() {
-                    if (controller.trackingBooking.value == null) {
-                      return const SizedBox.shrink();
-                    }
+                        if (list.isEmpty) {
+                          return Container(
+                            height: 180,
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(top: 10),
+                            child: const SkeletonBox(
+                              width: double.infinity,
+                              height: 180,
+                              radius: 18,
+                            ),
+                          );
+                        }
 
-                    final b = controller.trackingBooking.value!;
-
-                    return _trackingCard(b);
-                  }),
-                  const SizedBox(height: 20),
-// ---------------- PROMO BANNER AFTER WALLET ----------------
-                  Obx(() {
-                    final list = offersController.offers;
-
-                    if (list.isEmpty) {
-                      return Container(
-                        height: 180,
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(top: 10),
-                        child: const SkeletonBox(
-                          width: double.infinity,
+                        return SizedBox(
                           height: 180,
-                          radius: 18,
-                        ),
-                      );
-                    }
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            itemCount: list.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 12),
+                            itemBuilder: (context, index) {
+                              final offer = list[index];
 
-                    // Pick a specific offer (by code OR first item)
-                    const homeOfferCode = "aa";
-                    final offer = list.firstWhere(
-                      (o) => o.offerCode == homeOfferCode,
-                      orElse: () => list.first,
-                    );
+                              final discountTitle =
+                                  offer.discountType == "percentage"
+                                      ? "${offer.discountValue}% OFF"
+                                      : "SAR ${offer.discountValue} OFF";
 
-                    // Discount title
-                    final discountTitle = offer.discountType == "percentage"
-                        ? "${offer.discountValue}% OFF"
-                        : "SAR ${offer.discountValue} OFF";
+                              return Container(
+                                width: MediaQuery.of(context).size.width - 40,
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  color: const Color(0xFFFFF4E5),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(18),
+                                  child: Stack(
+                                    children: [
+                                      // -------- BACKGROUND CIRCLES --------
+                                      Positioned(
+                                        top: -20,
+                                        right: -20,
+                                        child: Container(
+                                          height: 120,
+                                          width: 120,
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFFFFE7C5),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
 
-                    return Container(
-                      height: 180,
-                      width: double.infinity,
-                      //     padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18),
-                        color: const Color(0xFFFFF4E5), // soft beige background
+                                      Positioned(
+                                        bottom: -30,
+                                        left: -30,
+                                        child: Container(
+                                          height: 140,
+                                          width: 140,
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFFFFE7C5),
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // -------- OFFER CONTENT --------
+                                      Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    discountTitle,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 28,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 6),
+                                                  Text(
+                                                    offer.title,
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  Text(
+                                                    "${"expires_in".tr} ${offer.expiryDays} days",
+                                                    style: const TextStyle(
+                                                      color: Colors.black87,
+                                                      fontSize: 13,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.toNamed(Routes.mycoupons);
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.75),
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black
+                                                          .withValues(
+                                                              alpha: 0.06),
+                                                      blurRadius: 8,
+                                                      offset:
+                                                          const Offset(0, 3),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Icon(
+                                                  Icons.card_giftcard_rounded,
+                                                  color:
+                                                      AppColors.secondaryLight,
+                                                  size: 50,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
+                      // ---------------- PROMO BANNER AFTER WALLET ----------------
+                      // Obx(() {
+                      //   final list = offersController.offers;
+
+                      //   if (list.isEmpty) {
+                      //     return Container(
+                      //       height: 180,
+                      //       width: double.infinity,
+                      //       margin: const EdgeInsets.only(top: 10),
+                      //       child: const SkeletonBox(
+                      //         width: double.infinity,
+                      //         height: 180,
+                      //         radius: 18,
+                      //       ),
+                      //     );
+                      //   }
+
+                      //   // Pick a specific offer (by code OR first item)
+                      //   const homeOfferCode = "aa";
+                      //   final offer = list.firstWhere(
+                      //     (o) => o.offerCode == homeOfferCode,
+                      //     orElse: () => list.first,
+                      //   );
+
+                      //   // Discount title
+                      //   final discountTitle = offer.discountType == "percentage"
+                      //       ? "${offer.discountValue}% OFF"
+                      //       : "SAR ${offer.discountValue} OFF";
+
+                      //   return Container(
+                      //     height: 180,
+                      //     width: double.infinity,
+                      //     //     padding: const EdgeInsets.all(16),
+                      //     decoration: BoxDecoration(
+                      //       borderRadius: BorderRadius.circular(18),
+                      //       color: const Color(
+                      //           0xFFFFF4E5), // soft beige background
+                      //     ),
+                      //     child: Stack(
+                      //       children: [
+                      //         // --- Soft Circles Background ---
+                      //         Positioned(
+                      //           top: -20,
+                      //           right: -20,
+                      //           child: Container(
+                      //             height: 120,
+                      //             width: 120,
+                      //             decoration: const BoxDecoration(
+                      //               color: Color(0xFFFFE7C5),
+                      //               shape: BoxShape.circle,
+                      //             ),
+                      //           ),
+                      //         ),
+                      //         Positioned(
+                      //           bottom: -30,
+                      //           left: -30,
+                      //           child: Container(
+                      //             height: 140,
+                      //             width: 140,
+                      //             decoration: const BoxDecoration(
+                      //               color: Color(0xFFFFE7C5),
+                      //               shape: BoxShape.circle,
+                      //             ),
+                      //           ),
+                      //         ),
+
+                      //         // ---- OFFER TEXT CONTENT ----
+                      //         Padding(
+                      //           padding: const EdgeInsets.all(10),
+                      //           child: Column(
+                      //             crossAxisAlignment: CrossAxisAlignment.start,
+                      //             children: [
+                      //               // Discount
+                      //               Text(
+                      //                 discountTitle,
+                      //                 style: const TextStyle(
+                      //                   color: Colors.black,
+                      //                   fontSize: 28,
+                      //                   fontWeight: FontWeight.w900,
+                      //                 ),
+                      //               ),
+
+                      //               const SizedBox(height: 6),
+
+                      //               // Title
+                      //               Text(
+                      //                 offer.title,
+                      //                 maxLines: 2,
+                      //                 overflow: TextOverflow.ellipsis,
+                      //                 style: const TextStyle(
+                      //                   color: Colors.black,
+                      //                   fontSize: 14,
+                      //                   fontWeight: FontWeight.w500,
+                      //                 ),
+                      //               ),
+
+                      //               const Spacer(),
+
+                      //               // Expiry
+                      //               Text(
+                      //                 "${"expires_in".tr} ${offer.expiryDays} days",
+                      //                 style: const TextStyle(
+                      //                   color: Colors.black87,
+                      //                   fontSize: 13,
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   );
+                      // }),
+
+                      const SizedBox(
+                        height: 20,
                       ),
-                      child: Stack(
-                        children: [
-                          // --- Soft Circles Background ---
-                          Positioned(
-                            top: -20,
-                            right: -20,
-                            child: Container(
-                              height: 120,
-                              width: 120,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFE7C5),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: -30,
-                            left: -30,
-                            child: Container(
-                              height: 140,
-                              width: 140,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFE7C5),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-
-                          // ---- OFFER TEXT CONTENT ----
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Discount
-                                Text(
-                                  discountTitle,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 6),
-
-                                // Title
-                                Text(
-                                  offer.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-
-                                const Spacer(),
-
-                                // Expiry
-                                Text(
-                                  "expires_in.tr ${offer.expiryDays} days",
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-
-                  const SizedBox(
-                    height: 20,
+                    ],
                   ),
-                ],
-              ),
+                ),
+                //const SizedBox(height: 30), // Padding at the bottom
+              ],
             ),
-            //const SizedBox(height: 30), // Padding at the bottom
-          ],
+          ),
         ),
       ),
     );
@@ -441,14 +962,142 @@ Widget _trackingCard(Datum b) {
   );
 }
 
+void _showServiceDetails({
+  required String name,
+  required String description,
+  required double price,
+}) {
+  Get.dialog(
+    Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with close icon
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Description
+              // const Text(
+              //   "Description",
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                description.isNotEmpty
+                    ? description
+                    : "No description available for this service.",
+                style: const TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: Colors.black87,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Price
+              // Text(
+              //   "SAR ${price.toStringAsFixed(2)}",
+              //   style: const TextStyle(
+              //     fontSize: 18,
+              //     fontWeight: FontWeight.bold,
+              //     color: AppColors.secondaryLight,
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    barrierDismissible: true,
+  );
+}
+
+Widget _advertisementCard(AdvertisementModel advertisement) {
+  final imageUrl = Constants.imageBaseUrl + advertisement.imageUrl;
+
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 6),
+    clipBehavior: Clip.antiAlias,
+    decoration: const BoxDecoration(
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(18),
+        bottomRight: Radius.circular(18),
+      ),
+    ),
+    child: Image.network(
+      imageUrl,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: double.infinity,
+          color: Colors.grey.shade200,
+          child: const Center(
+            child: Icon(
+              Icons.image_not_supported_outlined,
+              size: 40,
+              color: Colors.grey,
+            ),
+          ),
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) {
+          return child;
+        }
+
+        return Container(
+          width: double.infinity,
+          color: Colors.grey.shade200,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
+    ),
+  );
+}
+
 Widget _trackingTimeline(String status) {
   bool assigned =
       status == "ASSIGNED" || status == "ARRIVED" || status == "IN_PROGRESS";
   bool arrived = status == "ARRIVED" || status == "IN_PROGRESS";
   bool inProgress = status == "IN_PROGRESS";
-
-  Color active = Colors.orange;
-  Color inactive = Colors.grey.shade400;
 
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,

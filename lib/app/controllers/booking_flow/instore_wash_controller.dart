@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:car_wash_customer_app/app/models/instores_model.dart';
@@ -22,12 +23,16 @@ class InstoreWashController extends GetxController {
       isLoading.value = true;
 
       final response = await repository.getInStoreWashStores();
-      List data = response.data;
+      final data = response.data is Map && response.data['data'] != null
+          ? response.data['data'] as List
+          : <dynamic>[];
 
       stores.value = data.map((e) => InstoresModel.fromJson(e)).toList();
-      filteredStores.value = stores;
+      filteredStores.value = List<InstoresModel>.from(stores);
     } catch (e) {
-      print("Error fetching stores: $e");
+      debugPrint("Error fetching stores: $e");
+      stores.clear();
+      filteredStores.clear();
     } finally {
       isLoading.value = false;
     }
@@ -57,7 +62,27 @@ class InstoreWashController extends GetxController {
     try {
       await launchUrl(launchUri);
     } catch (e) {
-      print('Phone call error: $e');
+      debugPrint('Phone call error: $e');
+    }
+  }
+
+  // ===== OPEN GOOGLE MAPS WITH NAVIGATION =====
+  Future<void> openLocationInGoogleMaps(double lat, double lng) async {
+    if (lat == 0 && lng == 0) {
+      debugPrint('Location coordinates are missing');
+      return;
+    }
+
+    final Uri googleMapsUrl = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving',
+    );
+
+    try {
+      if (await canLaunchUrl(googleMapsUrl)) {
+        await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Google Maps launch error: $e');
     }
   }
 }

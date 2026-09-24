@@ -123,7 +123,7 @@ class NotificationsView extends GetView<NotificationController> {
             height: 42,
             width: 42,
             decoration: BoxDecoration(
-              color: iconBg.withOpacity(0.15),
+              color: iconBg.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: iconBg, size: 20),

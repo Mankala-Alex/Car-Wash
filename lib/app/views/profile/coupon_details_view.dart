@@ -40,7 +40,7 @@ class CouponDetailsView extends GetView<CouponDetailsController> {
                   borderRadius: BorderRadius.circular(26),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black12.withOpacity(0.08),
+                      color: Colors.black12.withValues(alpha: 0.08),
                       blurRadius: 12,
                     ),
                   ],
@@ -52,7 +52,7 @@ class CouponDetailsView extends GetView<CouponDetailsController> {
                       height: 70,
                       width: 70,
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.1),
+                        color: Colors.orange.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -141,8 +141,8 @@ class CouponDetailsView extends GetView<CouponDetailsController> {
                           ),
                           decoration: BoxDecoration(
                             color: controller.isActive
-                                ? Colors.green.withOpacity(0.15)
-                                : Colors.orange.withOpacity(0.15),
+                                ? Colors.green.withValues(alpha: 0.15)
+                                : Colors.orange.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(

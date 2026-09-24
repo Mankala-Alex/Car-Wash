@@ -27,9 +27,7 @@ class BookSlotController extends GetxController {
 
   // Location variables
   final savedLocations = <SavedLocation>[].obs;
-  RxString selectedLocationAddress = "Home".obs;
-  RxDouble selectedLocationLatitude = 0.0.obs;
-  RxDouble selectedLocationLongitude = 0.0.obs;
+  final Rx<SavedLocation?> selectedSavedLocation = Rx<SavedLocation?>(null);
 
   int? selectedDateId;
   final selectedSlotId = 0.obs;
@@ -82,8 +80,7 @@ class BookSlotController extends GetxController {
     name = data["name"] ?? "";
     description = data["description"] ?? "";
     price = data["price"].toString();
-    serviceId = data["service_id"]?.toString() ?? "";
-    // ✔️ Correct field
+    serviceId = (data["service_id"] ?? data["id"] ?? "").toString();
     features = List<String>.from(data["features"] ?? []);
 
     initData();
@@ -100,9 +97,9 @@ class BookSlotController extends GetxController {
   // LOAD SAVED USER DATA
   //-----------------------
   Future<void> loadCustomerInfo() async {
-    customerUuid = await SharedPrefsHelper.getString("customerUuid") ?? "";
-    customerName = await SharedPrefsHelper.getString("customerName") ?? "";
-    customerPhone = await SharedPrefsHelper.getString("customerPhone") ?? "";
+    customerUuid = await SharedPrefsHelper.getString("customerUuid");
+    customerName = await SharedPrefsHelper.getString("customerName");
+    customerPhone = await SharedPrefsHelper.getString("customerPhone");
 
     print("UUID Loaded: $customerUuid");
   }
@@ -143,6 +140,17 @@ class BookSlotController extends GetxController {
   //-----------------------
   // FETCH VEHICLES
   //-----------------------
+  List<dynamic> _normalizeVehicleList(dynamic data) {
+    if (data is List) return data;
+    if (data is Map) {
+      final list = data['data'];
+      if (list is List) return list;
+      if (data['vehicles'] is List) return data['vehicles'];
+      if (data['customerVehicles'] is List) return data['customerVehicles'];
+    }
+    return [];
+  }
+
   Future<void> fetchCustomerVehicles() async {
     try {
       if (customerUuid.isEmpty) {
@@ -153,14 +161,14 @@ class BookSlotController extends GetxController {
       print("📌 Fetching vehicles for: $customerUuid");
 
       final resp = await ApiService.get(
-        "customer-vehicles?customer_id=$customerUuid",
-        requireAuthToken: true, // ✅ REQUIRED
+        "customer-vehicles/me",
+        requireAuthToken: true,
       );
 
       if (resp.statusCode == 200) {
         print("📥 VEHICLES RESPONSE: ${resp.data}");
 
-        customerVehicles.value = List.from(resp.data);
+        customerVehicles.value = _normalizeVehicleList(resp.data);
 
         if (customerVehicles.isEmpty) {
           print("🚫 No vehicles found for this customer.");
@@ -241,7 +249,10 @@ class BookSlotController extends GetxController {
       errorToast("please_select_a_time_slot".tr);
       return;
     }
-
+    if (selectedSavedLocation.value == null) {
+      errorToast("Please select a location");
+      return;
+    }
     if (selectedSlotId.value == 0) {
       print("❌ FAILED: Slot ID = 0 (invalid)");
       errorToast("invalid_slot_selected".tr);
@@ -285,6 +296,8 @@ class BookSlotController extends GetxController {
 
     final double priceNumber = double.tryParse(price) ?? 0.0;
 
+    final location = selectedSavedLocation.value;
+
     final body = {
       "customer_id": customerUuid,
       "customer_name": customerName,
@@ -295,6 +308,13 @@ class BookSlotController extends GetxController {
       "scheduled_at": buildScheduledAt(),
       "amount": priceNumber,
       "status": "PENDING",
+      "latitude": location?.latitude,
+      "longitude": location?.longitude,
+      "formatted_address": location?.address,
+      "address": location?.address,
+      "house_number": location?.houseNo,
+      "landmark": location?.landmark,
+      "address_label": location?.label,
     };
 
     print("📤 FINAL BOOKING BODY → $body");
@@ -305,7 +325,7 @@ class BookSlotController extends GetxController {
       print("📥 BOOKING RESPONSE: ${resp.data}");
 
       if (resp.data["success"] == true) {
-        successToast("Booking Created!");
+        //successToast("Booking Created!");
 
         final bookingId = resp.data["data"]["id"];
 
@@ -340,6 +360,14 @@ class BookSlotController extends GetxController {
   //-----------------------
   void updateSelectedAddress(String title) {
     selectedAddress.value = title;
+
+    final location = savedLocations.firstWhereOrNull(
+      (e) => e.label == title,
+    );
+
+    if (location != null) {
+      selectedSavedLocation.value = location;
+    }
   }
 
   String buildScheduledAt() {
@@ -395,9 +423,7 @@ class BookSlotController extends GetxController {
 
     // Select the newly added location
     selectedAddress.value = location.label;
-    selectedLocationAddress.value = location.address;
-    selectedLocationLatitude.value = location.latitude;
-    selectedLocationLongitude.value = location.longitude;
+    selectedSavedLocation.value = location;
 
     // Persist to storage
     _saveSavedLocations();
@@ -417,9 +443,7 @@ class BookSlotController extends GetxController {
 
       // Select the updated location
       selectedAddress.value = newLocation.label;
-      selectedLocationAddress.value = newLocation.address;
-      selectedLocationLatitude.value = newLocation.latitude;
-      selectedLocationLongitude.value = newLocation.longitude;
+      selectedSavedLocation.value = newLocation;
 
       // Persist to storage
       _saveSavedLocations();
@@ -439,6 +463,10 @@ class BookSlotController extends GetxController {
         savedLocations.value = jsonList
             .map((json) => SavedLocation.fromJson(json as Map<String, dynamic>))
             .toList();
+        if (savedLocations.isNotEmpty) {
+          selectedSavedLocation.value = savedLocations.first;
+          selectedAddress.value = savedLocations.first.label;
+        }
         print(
             '📍 Loaded ${savedLocations.length} saved locations from storage');
       }
@@ -500,29 +528,24 @@ class BookSlotController extends GetxController {
   /// Update selected location
   void updateSelectedLocation(
       String address, double latitude, double longitude) {
-    selectedLocationAddress.value = address;
-    selectedLocationLatitude.value = latitude;
-    selectedLocationLongitude.value = longitude;
-    selectedAddress.value = address;
+    selectedSavedLocation.value = SavedLocation(
+      id: "",
+      label: "",
+      address: address,
+      latitude: latitude,
+      longitude: longitude,
+      houseNo: "",
+      phoneNumber: "",
+    );
 
+    selectedAddress.value = address;
     print('📍 Selected location: $address ($latitude, $longitude)');
   }
 
   /// Get saved locations for display
   List<Map<String, dynamic>> getDisplayLocations() {
     // Default locations
-    List<Map<String, dynamic>> locations = [
-      {
-        'title': 'home'.tr,
-        'address': '123 Market St, San Francisco',
-        'icon': 'home',
-      },
-      {
-        'title': 'work'.tr,
-        'address': '456 Tech Ave, Silicon Valley',
-        'icon': 'work',
-      },
-    ];
+    List<Map<String, dynamic>> locations = [];
 
     // Add saved locations
     locations.addAll(savedLocations

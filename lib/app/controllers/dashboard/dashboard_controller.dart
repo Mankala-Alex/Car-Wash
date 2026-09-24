@@ -1,4 +1,8 @@
+import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/secure_store.dart';
+import 'package:car_wash_customer_app/app/models/advertisement/advertisement_model.dart';
+import 'package:car_wash_customer_app/app/repositories/advertisment/advertisement_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
@@ -26,6 +30,72 @@ class DashboardController extends GetxController {
   //   );
   // }
   // this is just for demo purpose for auto refreshing
+  final OffersController offersController = Get.find<OffersController>();
+  final FeaturesListController featuresController =
+      Get.find<FeaturesListController>();
+
+  final AdvertisementRepository advertisementRepository =
+      AdvertisementRepository();
+
+  RxList<AdvertisementModel> advertisements = <AdvertisementModel>[].obs;
+
+  RxBool isAdvertisementsLoading = false.obs;
+
+  Future<void> refreshHomeData() async {
+    try {
+      await Future.wait([
+        featuresController.getAllServices(),
+        offersController.fetchOffers(),
+        fetchBookingHistory(),
+        fetchAdvertisements(),
+      ]);
+
+      print("✅ Home page refreshed successfully");
+    } catch (e) {
+      print("❌ Error refreshing home page: $e");
+    }
+  }
+
+  Future<void> fetchAdvertisements() async {
+    try {
+      isAdvertisementsLoading.value = true;
+
+      final response = await advertisementRepository.getAdvertisements();
+
+      final data = response.data;
+
+      if (data is List) {
+        final List<AdvertisementModel> loadedAdvertisements = data
+            .map(
+              (item) => AdvertisementModel.fromJson(
+                Map<String, dynamic>.from(item),
+              ),
+            )
+            .where((ad) => ad.status.toLowerCase() == 'active')
+            .toList();
+
+        loadedAdvertisements.sort(
+          (a, b) => a.displayOrder.compareTo(b.displayOrder),
+        );
+
+        advertisements.assignAll(loadedAdvertisements);
+
+        print(
+          "✅ Advertisements loaded: ${advertisements.length}",
+        );
+      } else {
+        advertisements.clear();
+
+        print("⚠️ Advertisement API returned unexpected data");
+      }
+    } catch (e) {
+      advertisements.clear();
+
+      print("❌ Advertisement error: $e");
+    } finally {
+      isAdvertisementsLoading.value = false;
+    }
+  }
 
   var selectedIndex = 0.obs;
   final repo = BookSlotRepository();
@@ -57,6 +127,8 @@ class DashboardController extends GetxController {
       isLoading.value = true;
 
       await loadCustomerInfo();
+
+      await fetchAdvertisements();
 
       final arg = Get.arguments;
 

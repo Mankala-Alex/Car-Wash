@@ -94,15 +94,18 @@ class InstoreWashListView extends GetView<InstoreWashController> {
 
                 return Column(
                   children: controller.filteredStores.map((store) {
+                    final isApproved = store.status.toUpperCase() == "APPROVED";
                     return locationCard(
-                      image: store.imageUrl, // static placeholder
+                      image: store.imageUrl,
                       title: store.companyName,
-                      rating: "0.0",
-                      reviews: "no_reviews_yet".tr,
+                      //rating: "0.0",
+                      //reviews: "no_reviews_yet".tr,
                       address: "${store.streetName}, ${store.city}",
-                      statusText: store.status == "Active" ? "Closed" : "Open",
-                      statusColor:
-                          store.status == "Active" ? Colors.red : Colors.green,
+                      statusText: isApproved ? "Open" : "Closed",
+                      statusColor: isApproved ? Colors.green : Colors.red,
+                      phoneNumber: store.phoneNumber,
+                      latitude: store.location?.lat ?? 0.0,
+                      longitude: store.location?.lng ?? 0.0,
                     );
                   }).toList(),
                 );
@@ -123,11 +126,14 @@ class InstoreWashListView extends GetView<InstoreWashController> {
   Widget locationCard({
     required String image,
     required String title,
-    required String rating,
-    required String reviews,
+    //required String rating,
+    //required String reviews,
     required String address,
     required String statusText,
     required Color statusColor,
+    required String phoneNumber,
+    required double latitude,
+    required double longitude,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 22),
@@ -190,22 +196,22 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                 const SizedBox(height: 6),
 
                 // Rating Row
-                Row(
+                const Row(
                   children: [
-                    const Icon(Icons.star, size: 16, color: Colors.orange),
-                    const SizedBox(width: 4),
-                    Text(
-                      rating,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      "($reviews)",
-                      style: const TextStyle(color: Colors.grey),
-                    ),
+                    Icon(Icons.star, size: 16, color: Colors.orange),
+                    SizedBox(width: 4),
+                    // Text(
+                    //   rating,
+                    //   style: const TextStyle(
+                    //     fontSize: 14,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
+                    // const SizedBox(width: 4),
+                    // Text(
+                    //   "($reviews)",
+                    //   style: const TextStyle(color: Colors.grey),
+                    // ),
                   ],
                 ),
 
@@ -265,29 +271,35 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                   children: [
                     // Location Button
                     Expanded(
-                      child: Container(
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryLight,
-                          borderRadius: BorderRadius.circular(12),
+                      child: GestureDetector(
+                        onTap: () => controller.openLocationInGoogleMaps(
+                          latitude,
+                          longitude,
                         ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              color: AppColors.textDefaultLight,
-                              size: 20,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              "Location",
-                              style: TextStyle(
+                        child: Container(
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryLight,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.location_on,
                                 color: AppColors.textDefaultLight,
-                                fontWeight: FontWeight.w700,
+                                size: 20,
                               ),
-                            ),
-                          ],
+                              SizedBox(width: 8),
+                              Text(
+                                "Location",
+                                style: TextStyle(
+                                  color: AppColors.textDefaultLight,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -297,7 +309,9 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                     // Call Button
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => controller.makePhoneCall("9999999999"),
+                        onTap: () => controller.makePhoneCall(
+                          phoneNumber.isNotEmpty ? phoneNumber : "9999999999",
+                        ),
                         child: Container(
                           height: 42,
                           decoration: BoxDecoration(
@@ -347,7 +361,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
         ),
       ),
       child: const Column(

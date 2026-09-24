@@ -138,6 +138,21 @@ class Page4View extends GetView<DashboardController> {
                       title: "offers".tr,
                       onTap: () => Get.toNamed(Routes.offers),
                     ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "Terms & Conditions",
+                      onTap: () => Get.toNamed(Routes.termsconditions),
+                    ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "About Us",
+                      onTap: () => Get.toNamed(Routes.aboutus),
+                    ),
+                    const SizedBox(height: 10),
+                    _simpleMenuTile(
+                      title: "Privacy Policy",
+                      onTap: () => Get.toNamed(Routes.privacypolicy),
+                    ),
                   ],
                 ),
 

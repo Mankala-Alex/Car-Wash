@@ -5,6 +5,7 @@ class InstoresModel {
     required this.companyName,
     required this.ownerName,
     required this.crNumber,
+    required this.phoneNumber,
     required this.streetName,
     required this.district,
     required this.city,
@@ -23,6 +24,7 @@ class InstoresModel {
   final String companyName;
   final String ownerName;
   final String crNumber;
+  final String phoneNumber;
   final String streetName;
   final String district;
   final String city;
@@ -36,24 +38,29 @@ class InstoresModel {
   final String imageUrl;
 
   factory InstoresModel.fromJson(Map<String, dynamic> json) {
+    final locationJson = json["location"] is Map
+        ? json["location"] as Map<String, dynamic>
+        : null;
+    final imageValue = json["image_url"] ?? json["company_image"] ?? "";
+
     return InstoresModel(
       id: json["id"] ?? "",
       partnerCode: json["partner_code"] ?? "",
       companyName: json["company_name"] ?? "",
       ownerName: json["owner_name"] ?? "",
       crNumber: json["cr_number"] ?? "",
+      phoneNumber: json["phone_number"] ?? "",
       streetName: json["street_name"] ?? "",
       district: json["district"] ?? "",
       city: json["city"] ?? "",
       country: json["country"] ?? "",
-      zip: json["zip"] ?? "",
-      documents: json["documents"],
-      location:
-          json["location"] == null ? null : Location.fromJson(json["location"]),
-      status: json["status"] ?? "",
+      zip: json["zip"] ?? json["zip_code"] ?? "",
+      documents: json["documents"] ?? [],
+      location: locationJson == null ? null : Location.fromJson(locationJson),
+      status: (json["status"] ?? "").toString(),
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
       updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
-      imageUrl: json["image_url"] ?? "",
+      imageUrl: imageValue.toString(),
     );
   }
 
@@ -63,6 +70,7 @@ class InstoresModel {
         "company_name": companyName,
         "owner_name": ownerName,
         "cr_number": crNumber,
+        "phone_number": phoneNumber,
         "street_name": streetName,
         "district": district,
         "city": city,
@@ -83,13 +91,13 @@ class Location {
     required this.lng,
   });
 
-  final int lat;
-  final int lng;
+  final double lat;
+  final double lng;
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-      lat: json["lat"] ?? 0,
-      lng: json["lng"] ?? 0,
+      lat: (json["lat"] as num?)?.toDouble() ?? 0.0,
+      lng: (json["lng"] as num?)?.toDouble() ?? 0.0,
     );
   }
 
