@@ -10,8 +10,6 @@ class BookSlotView extends GetView<BookSlotController> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
@@ -71,6 +69,8 @@ class BookSlotView extends GetView<BookSlotController> {
                   const SizedBox(height: 30),
 
                   _buildLocationSection(context),
+                  const SizedBox(height: 8),
+                  _buildServiceabilityStatus(context),
                   const SizedBox(height: 20),
                   _buildPriceDetails(context),
 
@@ -476,6 +476,56 @@ class BookSlotView extends GetView<BookSlotController> {
 
   // ---------------- LOCATION ----------------
 
+  Widget _buildServiceabilityStatus(BuildContext context) {
+    return Obx(() {
+      if (controller.selectedSavedLocation.value == null) {
+        return const SizedBox.shrink();
+      }
+
+      final isChecking = controller.isCheckingServiceability.value;
+      final isServiceable = controller.isServiceable.value;
+      final message = controller.serviceabilityMessage.value;
+
+      final color = isChecking
+          ? Colors.orange
+          : isServiceable
+              ? Colors.green
+              : Colors.red;
+
+      final icon = isChecking
+          ? Icons.autorenew
+          : isServiceable
+              ? Icons.check_circle
+              : Icons.info_outline;
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message.isEmpty ? 'Checking service availability...' : message,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   Widget _buildLocationSection(BuildContext context) {
     return Column(
       children: [
@@ -594,82 +644,6 @@ class BookSlotView extends GetView<BookSlotController> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildAddressCard(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String address,
-  }) {
-    return Obx(
-      () => GestureDetector(
-        onTap: () => controller.updateSelectedAddress(title),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: controller.selectedAddress.value == title
-                  ? AppColors.primaryLight
-                  : Colors.grey[300]!,
-              width: controller.selectedAddress.value == title ? 2 : 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.secondaryLight,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, size: 24, color: AppColors.bgLight),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1E293B),
-                          ),
-                    ),
-                    Text(
-                      address,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: AppColors.textLightGrayLight),
-                    ),
-                  ],
-                ),
-              ),
-              Radio<bool>(
-                value: true,
-                groupValue: controller.selectedAddress.value == title,
-                onChanged: (v) {
-                  if (v == true) controller.updateSelectedAddress(title);
-                },
-                activeColor: AppColors.secondaryLight,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -898,26 +872,42 @@ class BookSlotView extends GetView<BookSlotController> {
                 ),
               ],
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await controller.bookSlot();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryLight,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+            Obx(
+              () => ElevatedButton(
+                onPressed: controller.canConfirmBooking
+                    ? () async {
+                        await controller.bookSlot();
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: controller.canConfirmBooking
+                      ? AppColors.secondaryLight
+                      : Colors.grey,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 0,
                 ),
-                elevation: 0,
-              ),
-              child: Text(
-                "confirm_book".tr,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.textWhiteLight,
-                      fontWeight: FontWeight.w600,
-                    ),
+                child: controller.isCheckingServiceability.value
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        ),
+                      )
+                    : Text(
+                        "confirm_book".tr,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: AppColors.textWhiteLight,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                      ),
               ),
             ),
           ],

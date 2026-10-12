@@ -7,6 +7,14 @@ class ProfileRepository {
     return await ApiService.get(EndPoints.apiGetfetchoffers);
   }
 
+  Future<Response> getTermsAndConditions() async {
+    return await ApiService.get(EndPoints.apiGetTermsAndConditions);
+  }
+
+  Future<Response> getPrivacyPolicy() async {
+    return await ApiService.get(EndPoints.apiGetPrivacyPolicy);
+  }
+
   Future<Response> getCustomerCoupon(String bookingCode) async {
     return await ApiService.get(
       "${EndPoints.apiGetcoupons}?booking_code=$bookingCode",

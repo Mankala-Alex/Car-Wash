@@ -27,11 +27,69 @@ class BookingQrCouponView extends GetView<BookingQrCouponController> {
           }
 
           // ❌ No coupon
-          if (controller.coupon.value == null) {
+          // ❌ Coupon loading/generation error
+          if (controller.hasError.value) {
             return Center(
-              child: Text(
-                "coupon_not_available".tr,
-                style: const TextStyle(fontSize: 16),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.confirmation_number_outlined,
+                      size: 70,
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Coupon unavailable",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "Your booking was completed successfully, "
+                      "but the coupon could not be loaded right now.",
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.offAllNamed(
+                            Routes.dashboard,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondaryLight,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          "Go to Dashboard",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }

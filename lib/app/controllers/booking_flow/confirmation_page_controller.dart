@@ -27,6 +27,11 @@ class ConfirmationPageController extends GetxController {
     amount = args["amount"]?.toString() ?? "";
 
     image = args["image"] ?? "";
-    bookingCode = args["booking_code"] ?? "";
+    //bookingCode = args["booking_code"] ?? "";
+    bookingCode = (args["booking_code"] ??
+            args["booking_reference"] ??
+            args["bookingId"] ??
+            "")
+        .toString();
   }
 }

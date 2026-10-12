@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/secure_store.dart';
@@ -10,8 +11,10 @@ import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/booking_history_model.dart';
 import 'package:car_wash_customer_app/app/repositories/auth/auth_repository.dart';
 import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
+import 'package:car_wash_customer_app/app/repositories/customers/customer_repository.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/services/socket_service.dart';
+import 'package:car_wash_customer_app/app/models/reviews/review_model.dart';
 
 class DashboardController extends GetxController {
   //for demo purpose only
@@ -108,6 +111,7 @@ class DashboardController extends GetxController {
 
   RxString customerName = ''.obs;
   RxString customerEmail = ''.obs;
+  RxString customerPhone = ''.obs;
 
   // BOOKINGS
   RxList<Datum> currentBookings = <Datum>[].obs;
@@ -127,6 +131,11 @@ class DashboardController extends GetxController {
       isLoading.value = true;
 
       await loadCustomerInfo();
+
+      // Always try to refresh customer details from server when UUID present
+      if (customerUuid.isNotEmpty) {
+        await fetchCustomerDetails();
+      }
 
       await fetchAdvertisements();
 
@@ -326,8 +335,47 @@ class DashboardController extends GetxController {
         await SharedPrefsHelper.getString("customerName") ?? "";
     customerEmail.value =
         await SharedPrefsHelper.getString("customerEmail") ?? "";
+    customerPhone.value =
+        await SharedPrefsHelper.getString("customerPhone") ?? "";
 
     print("UUID = $customerUuid");
+  }
+
+  final CustomerRepository _customerRepo = CustomerRepository();
+
+  Future<void> fetchCustomerDetails() async {
+    if (customerUuid.isEmpty) return;
+
+    try {
+      isLoading.value = true;
+
+      final resp = await _customerRepo.getCustomer(customerUuid);
+
+      final data = resp.data;
+
+      if (data != null && data is Map<String, dynamic>) {
+        final first = (data['firstName'] ?? '') as String;
+        final last = (data['lastName'] ?? '') as String;
+        final fullName = ("${first.trim()} ${last.trim()}".trim());
+
+        if (fullName.isNotEmpty) customerName.value = fullName;
+        if ((data['email'] ?? '').toString().isNotEmpty) {
+          customerEmail.value = data['email'];
+        }
+        if ((data['mobile'] ?? '').toString().isNotEmpty) {
+          customerPhone.value = data['mobile'];
+        }
+
+        // Persist for later launches
+        await SharedPrefsHelper.setString("customerName", customerName.value);
+        await SharedPrefsHelper.setString("customerEmail", customerEmail.value);
+        await SharedPrefsHelper.setString("customerPhone", customerPhone.value);
+      }
+    } catch (e) {
+      print("❌ fetchCustomerDetails error: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   // -----------------------------------------------------
@@ -344,6 +392,7 @@ class DashboardController extends GetxController {
 
       final model = Bookinghistorymodel.fromJson(resp.data);
       splitBookings(model.bookings);
+      await loadReviewsForCompletedBookings();
     } catch (e) {
       print("❌ History error: $e");
     } finally {
@@ -377,6 +426,13 @@ class DashboardController extends GetxController {
     // PAST BOOKINGS
     pastBookings.value =
         allBookings.where((b) => b.status == "COMPLETED").toList();
+
+    for (final booking in pastBookings) {
+      if (booking.id.isNotEmpty &&
+          !reviewsByBookingId.containsKey(booking.id)) {
+        reviewsByBookingId.remove(booking.id);
+      }
+    }
 
     print("trackingBooking = ${trackingBooking.value?.status}");
   }
@@ -431,12 +487,131 @@ class DashboardController extends GetxController {
     selectedAmount.value = double.tryParse(v) ?? 0;
   }
 
-  // Ratings
-  var ratingMap = <int, int>{}.obs;
+  // Reviews keyed by booking ID; this is the source of truth after the API has been checked.
+  final RxMap<String, ReviewModel?> reviewsByBookingId =
+      <String, ReviewModel?>{}.obs;
 
-  void setRating(int bookingIndex, int rating) {
-    ratingMap[bookingIndex] = rating;
-    update(); // Trigger GetBuilder rebuild
+  bool isBookingReviewed(String bookingId) {
+    final review = reviewsByBookingId[bookingId];
+    return review != null && review.id.isNotEmpty;
+  }
+
+  double getBookingReviewRating(String bookingId) {
+    final review = reviewsByBookingId[bookingId];
+    return review?.rating.toDouble() ?? 0.0;
+  }
+
+  Future<void> loadReviewForBooking(String bookingId) async {
+    if (bookingId.trim().isEmpty) return;
+
+    try {
+      final response = await repo.getReviewByBooking(bookingId);
+      final data = response.data;
+      final review = ReviewModel.fromResponse(data);
+
+      if (review != null && review.id.isNotEmpty) {
+        reviewsByBookingId[bookingId] = review;
+      } else {
+        reviewsByBookingId.remove(bookingId);
+      }
+    } on DioException catch (e) {
+      final code = e.response?.statusCode;
+      if (code == 404 || code == 400) {
+        reviewsByBookingId.remove(bookingId);
+        return;
+      }
+
+      if (code == 401 || code == 403) {
+        reviewsByBookingId.remove(bookingId);
+        errorToast('Please login again to continue');
+        return;
+      }
+
+      reviewsByBookingId.remove(bookingId);
+    } catch (e) {
+      reviewsByBookingId.remove(bookingId);
+    }
+  }
+
+  Future<void> loadReviewsForCompletedBookings() async {
+    if (pastBookings.isEmpty) return;
+
+    for (final booking in pastBookings) {
+      if (booking.id.trim().isNotEmpty) {
+        await loadReviewForBooking(booking.id);
+      }
+    }
+  }
+
+  Future<void> submitReview({
+    required String bookingId,
+    required int rating,
+    required String comment,
+  }) async {
+    if (bookingId.trim().isEmpty) {
+      errorToast('Invalid booking');
+      return;
+    }
+
+    if (rating < 1 || rating > 5) {
+      errorToast('Please select a rating between 1 and 5 stars');
+      return;
+    }
+
+    try {
+      final response = await repo.createReview({
+        'booking_id': bookingId,
+        'rating': rating,
+        'comment': comment,
+      });
+
+      final review = ReviewModel.fromResponse(response.data);
+      if (review != null) {
+        reviewsByBookingId[bookingId] = review;
+        successToast('Review submitted successfully');
+        await fetchBookingHistory();
+        await loadReviewForBooking(bookingId);
+        update();
+        return;
+      }
+
+      errorToast('Review could not be submitted');
+    } on DioException catch (e) {
+      final errorMessage = _extractReviewErrorMessage(e);
+      if (errorMessage.isNotEmpty) {
+        errorToast(errorMessage);
+      } else {
+        errorToast('Unable to submit review right now');
+      }
+    } catch (e) {
+      errorToast('Unable to submit review right now');
+    }
+  }
+
+  String _extractReviewErrorMessage(DioException error) {
+    final responseData = error.response?.data;
+    if (responseData is Map) {
+      final message = responseData['message'] ?? responseData['error'];
+      if (message != null && message.toString().isNotEmpty) {
+        return message.toString();
+      }
+    }
+
+    if (responseData is String && responseData.isNotEmpty) {
+      return responseData;
+    }
+
+    if (error.response?.statusCode == 401 ||
+        error.response?.statusCode == 403) {
+      return 'Please login again to continue';
+    }
+
+    if (error.type == DioExceptionType.connectionError ||
+        error.type == DioExceptionType.unknown) {
+      return 'Network error. Please try again';
+    }
+
+    return '';
   }
 
   Future<void> cancelBooking(String bookingCode) async {

@@ -1,6 +1,7 @@
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/models/google_places/place_details_model.dart';
 import 'package:car_wash_customer_app/app/models/google_places/place_prediction_model.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:car_wash_customer_app/app/repositories/google_places/google_places_repository.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_map/flutter_map.dart';
@@ -16,6 +17,8 @@ class LocationPickerController extends GetxController {
   GoogleMapController? googleMapController;
   final GooglePlacesRepository _googlePlacesRepository =
       GooglePlacesRepository();
+
+  final BookSlotRepository _bookSlotRepository = BookSlotRepository();
 
   Timer? _debounce;
 
@@ -34,6 +37,10 @@ class LocationPickerController extends GetxController {
 
   Rx<LatLng?> selectedLocation = Rx<LatLng?>(null);
   RxString selectedAddress = "Select location on map".obs;
+  RxString selectedPincode = ''.obs;
+  RxBool isCheckingServiceability = false.obs;
+  RxBool isServiceable = false.obs;
+  RxString serviceabilityMessage = ''.obs;
   RxBool isLoadingLocation = false.obs;
   final RxList<PlacePredictionModel> suggestions = <PlacePredictionModel>[].obs;
 
@@ -97,11 +104,12 @@ class LocationPickerController extends GetxController {
           place.longitude,
         );
 
-        selectedLocation.value = location; // <-- ADD THIS
-
+        selectedLocation.value = location;
         selectedAddress.value = place.address;
+        selectedPincode.value = '';
 
         await moveCamera(location);
+        await getAddressFromCoordinates(location.latitude, location.longitude);
 
         searchController.text = place.address;
 
@@ -111,6 +119,48 @@ class LocationPickerController extends GetxController {
       }
     } catch (e) {
       print("Place details error : $e");
+    }
+  }
+
+  Future<void> checkServiceabilityForPincode(String pincode) async {
+    final normalizedPincode = pincode.trim();
+
+    if (!RegExp(r'^\d{6}$').hasMatch(normalizedPincode)) {
+      isServiceable.value = false;
+      serviceabilityMessage.value =
+          'Unable to determine service area for this location.';
+      return;
+    }
+
+    try {
+      isCheckingServiceability.value = true;
+
+      final response = await _bookSlotRepository.checkCustomerServiceability(
+        normalizedPincode,
+      );
+
+      final data = response.data;
+
+      if (response.statusCode == 200 &&
+          data is Map &&
+          data['success'] == true &&
+          data['serviceable'] == true) {
+        isServiceable.value = true;
+        serviceabilityMessage.value = '';
+      } else {
+        isServiceable.value = false;
+        serviceabilityMessage.value = data is Map && data['message'] != null
+            ? data['message'].toString()
+            : 'This pincode is not currently serviced';
+      }
+    } catch (e) {
+      isServiceable.value = false;
+      serviceabilityMessage.value =
+          'Unable to verify service availability. Please try again.';
+
+      print('Serviceability check error: $e');
+    } finally {
+      isCheckingServiceability.value = false;
     }
   }
 
@@ -277,10 +327,28 @@ class LocationPickerController extends GetxController {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
+        final postalCode = place.postalCode?.trim();
+        selectedPincode.value = postalCode ?? '';
+
         selectedAddress.value =
             "${place.street ?? ''}, ${place.locality ?? ''}, ${place.administrativeArea ?? ''}";
+
+// Check serviceability for the fetched pincode
+        if (selectedPincode.value.isNotEmpty) {
+          await checkServiceabilityForPincode(
+            selectedPincode.value,
+          );
+        } else {
+          isServiceable.value = false;
+          serviceabilityMessage.value =
+              'Unable to determine service area for this location.';
+        }
       }
     } catch (e) {
+      selectedPincode.value = '';
+      isServiceable.value = false;
+      serviceabilityMessage.value =
+          'Unable to determine service area for this location.';
       print("Error getting address: $e");
     }
   }
@@ -320,6 +388,7 @@ class LocationPickerController extends GetxController {
           'latitude': selectedLocation.value!.latitude,
           'longitude': selectedLocation.value!.longitude,
           'address': selectedAddress.value,
+          'pincode': selectedPincode.value,
           'editingLocation': isEditing ? editingLocation : null,
         },
       );

@@ -404,8 +404,9 @@ class Page1View extends GetView<DashboardController> {
                                   return GestureDetector(
                                     onTap: () {
                                       _showServiceDetails(
-                                        name: service.name,
-                                        description: service.description,
+                                        name: service.getLocalizedName(),
+                                        description:
+                                            service.getLocalizedDescription(),
                                         price: service.price,
                                       );
                                     },
@@ -467,7 +468,7 @@ class Page1View extends GetView<DashboardController> {
                                                 children: [
                                                   // Service Name
                                                   Text(
-                                                    service.name,
+                                                    service.getLocalizedName(),
                                                     maxLines: 1,
                                                     overflow:
                                                         TextOverflow.ellipsis,
@@ -509,8 +510,8 @@ class Page1View extends GetView<DashboardController> {
                                                             Routes.bookslot,
                                                             arguments: {
                                                               "image": imageUrl,
-                                                              "name":
-                                                                  service.name,
+                                                              "name": service
+                                                                  .getLocalizedName(),
                                                               "description":
                                                                   service
                                                                       .description,
@@ -748,7 +749,7 @@ class Page1View extends GetView<DashboardController> {
                                                     ),
                                                   ],
                                                 ),
-                                                child: Icon(
+                                                child: const Icon(
                                                   Icons.card_giftcard_rounded,
                                                   color:
                                                       AppColors.secondaryLight,
@@ -941,15 +942,15 @@ Widget _trackingCard(Datum b) {
                 ],
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Get.toNamed(
-                  Routes.tracttechnicianview,
-                  arguments: b, // 👈 pass Datum
-                );
-              },
-              child: const Text("Track"),
-            )
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Get.toNamed(
+            //       Routes.tracttechnicianview,
+            //       arguments: b, // 👈 pass Datum
+            //     );
+            //   },
+            //   child: const Text("Track"),
+            // )
           ],
         ),
 

@@ -87,7 +87,7 @@ class BookingHistoryDetailsView
             const SizedBox(height: 24),
 
             // ================= REVIEW =================
-            //_reviewCard(),
+            _buildReviewSection(),
 
             const SizedBox(height: 90),
           ],
@@ -95,28 +95,179 @@ class BookingHistoryDetailsView
       ),
 
       // ================= BOOK AGAIN =================
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          height: 56,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondaryLight,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondaryLight,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-            ),
-            child: Text(
-              "book_again".tr,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              child: Text(
+                "book_again".tr,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildReviewSection() {
+    return Obx(() {
+      // ============================
+      // REVIEW LOADING
+      // ============================
+      if (controller.isReviewLoading.value) {
+        return _reviewSkeleton();
+      }
+
+      // ============================
+      // NO REVIEW
+      // ============================
+      final review = controller.review.value;
+
+      if (review == null) {
+        return const SizedBox.shrink();
+      }
+
+      // ============================
+      // REVIEW AVAILABLE
+      // ============================
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: Colors.grey.shade200,
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ============================
+            // TITLE
+            // ============================
+            const Text(
+              "Your Review",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Colors.black,
+              ),
+            ),
+
+            const SizedBox(height: 14),
+
+            // ============================
+            // STARS
+            // ============================
+            Row(
+              children: [
+                ...List.generate(
+                  5,
+                  (index) {
+                    final isFilled = index < review.rating;
+
+                    return Icon(
+                      isFilled ? Icons.star_rounded : Icons.star_border_rounded,
+                      size: 28,
+                      color: isFilled ? Colors.orange : Colors.grey.shade400,
+                    );
+                  },
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  "${review.rating}/5",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+
+            // ============================
+            // COMMENT
+            // ============================
+            if (review.comment.trim().isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  review.comment,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _reviewSkeleton() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: Colors.grey.shade200,
+        ),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonBox(
+            width: 130,
+            height: 22,
+            radius: 6,
+          ),
+          SizedBox(height: 16),
+          SkeletonBox(
+            width: 190,
+            height: 30,
+            radius: 6,
+          ),
+          SizedBox(height: 16),
+          SkeletonBox(
+            width: double.infinity,
+            height: 65,
+            radius: 12,
+          ),
+        ],
       ),
     );
   }

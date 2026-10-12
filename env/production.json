@@ -1,5 +1,5 @@
 {
-    "APP_NAME":"My APP",
-    "IS_PRODUCTION":true,
-    "API_BASE_URL": "https://placeholder-api.com"
+    "APP_NAME": "My APP",
+    "IS_PRODUCTION": false,
+    "API_BASE_URL": "https://www.aguawash.com/api/"
 }

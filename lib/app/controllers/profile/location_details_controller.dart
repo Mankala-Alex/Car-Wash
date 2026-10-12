@@ -17,6 +17,7 @@ class LocationDetailsController extends GetxController {
   late double latitude;
   late double longitude;
   late String address;
+  String? pincode;
   SavedLocation? editingLocation;
 
   @override
@@ -29,7 +30,12 @@ class LocationDetailsController extends GetxController {
       latitude = Get.arguments['latitude'] ?? 0.0;
       longitude = Get.arguments['longitude'] ?? 0.0;
       address = Get.arguments['address'] ?? '';
+      pincode = Get.arguments['pincode']?.toString();
       editingLocation = Get.arguments['editingLocation'];
+    }
+
+    if (editingLocation != null && (pincode == null || pincode!.isEmpty)) {
+      pincode = editingLocation!.pincode;
     }
 
     _initializeControllers();
@@ -83,6 +89,7 @@ class LocationDetailsController extends GetxController {
         landmark:
             landmarkController.text.isEmpty ? null : landmarkController.text,
         phoneNumber: phoneController.text,
+        pincode: pincode ?? editingLocation!.pincode,
       );
 
       bookSlotController.updateSavedLocation(
@@ -103,6 +110,7 @@ class LocationDetailsController extends GetxController {
         landmark:
             landmarkController.text.isEmpty ? null : landmarkController.text,
         phoneNumber: phoneController.text,
+        pincode: pincode,
       );
 
       bookSlotController.addSavedLocation(savedLocation);

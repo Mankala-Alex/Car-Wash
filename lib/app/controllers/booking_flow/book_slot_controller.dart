@@ -8,6 +8,7 @@ import 'package:car_wash_customer_app/app/models/booking slot/saved_location_mod
 import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/services/api_service.dart';
+import 'package:geocoding/geocoding.dart';
 
 class BookSlotController extends GetxController {
   final BookSlotRepository repository = BookSlotRepository();
@@ -37,6 +38,10 @@ class BookSlotController extends GetxController {
 
   final isLoadingDates = false.obs;
   final isLoadingTimes = false.obs;
+  final isCheckingServiceability = false.obs;
+  final isServiceable = false.obs;
+  final serviceabilityMessage = ''.obs;
+  final selectedPincode = ''.obs;
 
   //-----------------------
   // CUSTOMER INFO
@@ -57,6 +62,15 @@ class BookSlotController extends GetxController {
 
   bool isSameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
+  bool get canConfirmBooking {
+    return (selectedVehicle.value ?? '').isNotEmpty &&
+        (selectedTimeSlot.value ?? '').isNotEmpty &&
+        selectedSlotId.value != 0 &&
+        selectedSavedLocation.value != null &&
+        isServiceable.value &&
+        !isCheckingServiceability.value;
+  }
 
   @override
   void onInit() {
@@ -253,6 +267,14 @@ class BookSlotController extends GetxController {
       errorToast("Please select a location");
       return;
     }
+    if (isCheckingServiceability.value) {
+      errorToast("Checking service availability. Please wait.");
+      return;
+    }
+    if (!isServiceable.value) {
+      errorToast("Service is not available in this area.");
+      return;
+    }
     if (selectedSlotId.value == 0) {
       print("❌ FAILED: Slot ID = 0 (invalid)");
       errorToast("invalid_slot_selected".tr);
@@ -318,41 +340,93 @@ class BookSlotController extends GetxController {
     };
 
     print("📤 FINAL BOOKING BODY → $body");
+    print("📤 PAYMENT DATA → $body");
 
-    try {
-      final resp = await repository.postBookSlot(body);
+    Get.toNamed(
+      Routes.payment,
+      arguments: {
+        "customer_id": customerUuid,
+        "customer_name": customerName,
+        "vehicle": selectedVehicle.value,
+        "service_id": serviceId,
+        "service_name": name,
+        "slot_id": selectedSlotId.value,
+        "scheduled_at": buildScheduledAt(),
+        "amount": totalAmount,
+        "latitude": location?.latitude,
+        "longitude": location?.longitude,
+        "formatted_address": location?.address,
+        "address": location?.address,
+        "house_number": location?.houseNo,
+        "landmark": location?.landmark,
+        "address_label": location?.label,
+        "pincode": selectedPincode.value,
+        "image": image,
+      },
+    );
+    // try {
+    //   final resp = await repository.postBookSlot(body);
 
-      print("📥 BOOKING RESPONSE: ${resp.data}");
+    //   print("📥 BOOKING RESPONSE: ${resp.data}");
 
-      if (resp.data["success"] == true) {
-        //successToast("Booking Created!");
+    //   if (resp.data["success"] == true) {
+    //     //successToast("Booking Created!");
 
-        final bookingId = resp.data["data"]["id"];
+    //     final bookingId = resp.data["data"]["id"];
 
-        final bookingCode = resp.data["data"]["booking_code"];
+    //     final bookingCode = resp.data["data"]["booking_code"];
+    //     print("📤 PAYMENT DATA → $body");
 
-        /// Navigate to payment
-        Get.toNamed(
-          Routes.payment,
-          arguments: {
-            "bookingId": bookingId,
-            "amount": totalAmount,
+    //     Get.toNamed(
+    //       Routes.payment,
+    //       arguments: {
+    //         // Backend/payment data
+    //         "customer_id": customerUuid,
+    //         "customer_name": customerName,
+    //         "vehicle": selectedVehicle.value,
+    //         "service_id": serviceId,
+    //         "service_name": name,
+    //         "slot_id": selectedSlotId.value,
+    //         "scheduled_at": buildScheduledAt(),
+    //         "amount": totalAmount,
 
-            /// Needed for confirmation page
-            "service_name": name,
-            "scheduled_at": buildScheduledAt(),
-            "image": image,
-            "booking_code": bookingCode,
-          },
-        );
-      } else {
-        print("❌ BOOKING FAILED FROM API");
-        errorToast(resp.data["error"] ?? "booking_failed".tr);
-      }
-    } catch (e) {
-      print("🔥 EXCEPTION IN API: $e");
-      errorToast("booking_failed_try_again".tr);
-    }
+    //         // Location
+    //         "latitude": location?.latitude,
+    //         "longitude": location?.longitude,
+    //         "formatted_address": location?.address,
+    //         "address": location?.address,
+    //         "house_number": location?.houseNo,
+    //         "landmark": location?.landmark,
+    //         "address_label": location?.label,
+
+    //         // UI
+    //         "image": image,
+    //       },
+    //     );
+
+    //     /// Navigate to payment
+    //     ///
+    //     // Get.toNamed(
+    //     //   Routes.payment,
+    //     //   arguments: {
+    //     //     "bookingId": bookingId,
+    //     //     "amount": totalAmount,
+
+    //     //     /// Needed for confirmation page
+    //     //     "service_name": name,
+    //     //     "scheduled_at": buildScheduledAt(),
+    //     //     "image": image,
+    //     //     "booking_code": bookingCode,
+    //     //   },
+    //     // );
+    //   } else {
+    //     print("❌ BOOKING FAILED FROM API");
+    //     errorToast(resp.data["error"] ?? "booking_failed".tr);
+    //   }
+    // } catch (e) {
+    //   print("🔥 EXCEPTION IN API: $e");
+    //   errorToast("booking_failed_try_again".tr);
+    // }
   }
 
   //-----------------------
@@ -367,7 +441,109 @@ class BookSlotController extends GetxController {
 
     if (location != null) {
       selectedSavedLocation.value = location;
+      refreshServiceabilityForSelectedLocation();
     }
+  }
+
+  Future<String?> _resolvePincodeForLocation(SavedLocation location) async {
+    final existingPincode = (location.pincode ?? '').trim();
+    if (existingPincode.isNotEmpty) {
+      return existingPincode;
+    }
+
+    try {
+      final placemarks = await placemarkFromCoordinates(
+        location.latitude,
+        location.longitude,
+      );
+
+      if (placemarks.isEmpty) {
+        return null;
+      }
+
+      final resolvedPincode = placemarks.first.postalCode?.trim();
+      if (resolvedPincode == null || resolvedPincode.isEmpty) {
+        return null;
+      }
+
+      final updatedLocation = location.copyWith(pincode: resolvedPincode);
+      final index = savedLocations.indexWhere((item) => item.id == location.id);
+      if (index != -1) {
+        savedLocations[index] = updatedLocation;
+        _saveSavedLocations();
+      }
+      selectedSavedLocation.value = updatedLocation;
+      return resolvedPincode;
+    } catch (e) {
+      print('Error resolving pincode for selected location: $e');
+      return null;
+    }
+  }
+
+  Future<void> checkServiceability(String pincode) async {
+    final normalized = pincode.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (!RegExp(r'^\d{5}$').hasMatch(normalized)) {
+      selectedPincode.value = '';
+      isServiceable.value = false;
+      isCheckingServiceability.value = false;
+      serviceabilityMessage.value =
+          'Unable to determine the postal code for this location.';
+      return;
+    }
+
+    selectedPincode.value = normalized;
+    isCheckingServiceability.value = true;
+    isServiceable.value = false;
+    serviceabilityMessage.value = 'Checking service availability...';
+
+    try {
+      final response = await repository.checkCustomerServiceability(normalized);
+      final data = response.data is Map
+          ? Map<String, dynamic>.from(response.data)
+          : <String, dynamic>{};
+
+      if (data['success'] == true && data['serviceable'] == true) {
+        isServiceable.value = true;
+        final responsePincode = (data['pincode'] ?? normalized).toString();
+        selectedPincode.value = responsePincode;
+        serviceabilityMessage.value = 'Service is available in this area';
+        return;
+      }
+
+      isServiceable.value = false;
+      serviceabilityMessage.value = data['message']?.toString() ??
+          'Service is not available in this area.';
+    } catch (e) {
+      isServiceable.value = false;
+      serviceabilityMessage.value = 'Unable to verify service availability.';
+      print('Serviceability check failed: $e');
+    } finally {
+      isCheckingServiceability.value = false;
+    }
+  }
+
+  Future<void> refreshServiceabilityForSelectedLocation() async {
+    final location = selectedSavedLocation.value;
+    if (location == null) {
+      selectedPincode.value = '';
+      isServiceable.value = false;
+      isCheckingServiceability.value = false;
+      serviceabilityMessage.value = 'Please select a location.';
+      return;
+    }
+
+    final resolved = await _resolvePincodeForLocation(location);
+    if (resolved == null || resolved.isEmpty) {
+      selectedPincode.value = '';
+      isServiceable.value = false;
+      isCheckingServiceability.value = false;
+      serviceabilityMessage.value =
+          'Unable to determine the postal code for this location.';
+      return;
+    }
+
+    await checkServiceability(resolved);
   }
 
   String buildScheduledAt() {
@@ -424,6 +600,7 @@ class BookSlotController extends GetxController {
     // Select the newly added location
     selectedAddress.value = location.label;
     selectedSavedLocation.value = location;
+    refreshServiceabilityForSelectedLocation();
 
     // Persist to storage
     _saveSavedLocations();
@@ -444,6 +621,7 @@ class BookSlotController extends GetxController {
       // Select the updated location
       selectedAddress.value = newLocation.label;
       selectedSavedLocation.value = newLocation;
+      refreshServiceabilityForSelectedLocation();
 
       // Persist to storage
       _saveSavedLocations();
@@ -466,6 +644,7 @@ class BookSlotController extends GetxController {
         if (savedLocations.isNotEmpty) {
           selectedSavedLocation.value = savedLocations.first;
           selectedAddress.value = savedLocations.first.label;
+          refreshServiceabilityForSelectedLocation();
         }
         print(
             '📍 Loaded ${savedLocations.length} saved locations from storage');
@@ -511,7 +690,8 @@ class BookSlotController extends GetxController {
   }
 
   /// Add a new location to saved locations
-  void addLocation(String address, double latitude, double longitude) {
+  void addLocation(String address, double latitude, double longitude,
+      {String? pincode}) {
     final location = SavedLocation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       label: 'other'.tr,
@@ -520,6 +700,7 @@ class BookSlotController extends GetxController {
       longitude: longitude,
       houseNo: '',
       phoneNumber: '',
+      pincode: pincode,
     );
 
     addSavedLocation(location);
@@ -528,7 +709,7 @@ class BookSlotController extends GetxController {
   /// Update selected location
   void updateSelectedLocation(
       String address, double latitude, double longitude) {
-    selectedSavedLocation.value = SavedLocation(
+    final location = SavedLocation(
       id: "",
       label: "",
       address: address,
@@ -538,7 +719,9 @@ class BookSlotController extends GetxController {
       phoneNumber: "",
     );
 
+    selectedSavedLocation.value = location;
     selectedAddress.value = address;
+    refreshServiceabilityForSelectedLocation();
     print('📍 Selected location: $address ($latitude, $longitude)');
   }
 

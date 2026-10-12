@@ -5,7 +5,7 @@ import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 
 class CustomFeedbackDialog extends StatelessWidget {
   final int initialRating;
-  final Function(int rating, String comments) onSubmit;
+  final Future<void> Function(int rating, String comments) onSubmit;
 
   const CustomFeedbackDialog({
     super.key,
@@ -118,20 +118,21 @@ class CustomFeedbackDialog extends StatelessWidget {
 
             // SUBMIT BUTTON
             GestureDetector(
-              onTap: () {
+              onTap: () async {
                 if (rating.value > 0) {
-                  onSubmit(rating.value, commentsController.text);
-                  successToast(
-                    "Review submitted",
-                  );
-                  Get.back();
+                  try {
+                    await onSubmit(
+                      rating.value,
+                      commentsController.text.trim(),
+                    );
+                    if (Get.isDialogOpen == true) {
+                      Get.back();
+                    }
+                  } catch (_) {
+                    // Parent controller handles all user-facing errors.
+                  }
                 } else {
                   errorToast("Rating Required, Please select a rating");
-                  // Get.snackbar(
-                  //   'Rating Required',
-                  //   'Please select a rating',
-                  //   snackPosition: SnackPosition.BOTTOM,
-                  // );
                 }
               },
               child: Container(

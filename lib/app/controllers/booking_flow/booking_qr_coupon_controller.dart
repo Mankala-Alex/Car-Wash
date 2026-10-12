@@ -9,6 +9,7 @@ class BookingQrCouponController extends GetxController {
   final isLoading = true.obs;
   final coupon = Rxn<CouponData>();
   final showQrFade = false.obs;
+  final hasError = false.obs;
 
   late String bookingCode;
 
@@ -29,20 +30,51 @@ class BookingQrCouponController extends GetxController {
     fetchCoupon();
   }
 
+  // Future<void> fetchCoupon() async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     final resp = await repository.getCustomerCoupon(bookingCode);
+  //     final model = CouponModel.fromJson(resp.data);
+
+  //     if (model.success && model.data != null) {
+  //       coupon.value = model.data;
+  //       // Trigger fade-in animation after a short delay
+  //       Future.delayed(const Duration(milliseconds: 100), () {
+  //         showQrFade.value = true;
+  //       });
+  //     }
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
   Future<void> fetchCoupon() async {
     try {
       isLoading.value = true;
+      hasError.value = false;
 
-      final resp = await repository.getCustomerCoupon(bookingCode);
+      final resp = await repository.getCustomerCoupon(
+        bookingCode,
+      );
+
       final model = CouponModel.fromJson(resp.data);
 
       if (model.success && model.data != null) {
         coupon.value = model.data;
-        // Trigger fade-in animation after a short delay
-        Future.delayed(const Duration(milliseconds: 100), () {
-          showQrFade.value = true;
-        });
+
+        Future.delayed(
+          const Duration(milliseconds: 100),
+          () {
+            showQrFade.value = true;
+          },
+        );
+      } else {
+        hasError.value = true;
       }
+    } catch (e) {
+      print("❌ Coupon fetch error: $e");
+
+      hasError.value = true;
     } finally {
       isLoading.value = false;
     }

@@ -52,6 +52,14 @@ class BookSlotRepository {
         requireAuthToken: true);
   }
 
+  Future<Response> checkCustomerServiceability(String pincode) async {
+    return await ApiService.get(
+      EndPoints.apiCheckCustomerServiceability,
+      params: {'pincode': pincode},
+      requireAuthToken: true,
+    );
+  }
+
   Future<Response> cancelBooking(String bookingCode) async {
     return await ApiService.delete(
       "/bookings/$bookingCode",
@@ -64,6 +72,28 @@ class BookSlotRepository {
     return await ApiService.put(
       "/bookings/$bookingCode",
       body,
+      requireAuthToken: true,
+    );
+  }
+
+  Future<Response> createReview(Map<String, dynamic> requestBody) async {
+    return await ApiService.post(
+      EndPoints.apiCreateReview,
+      requestBody,
+      requireAuthToken: true,
+    );
+  }
+
+  Future<Response> getReviewByBooking(String bookingId) async {
+    return await ApiService.get(
+      "${EndPoints.apiGetReviewByBooking}/$bookingId",
+      requireAuthToken: true,
+    );
+  }
+
+  Future<Response> getMyReviews() async {
+    return await ApiService.get(
+      EndPoints.apiGetMyReviews,
       requireAuthToken: true,
     );
   }

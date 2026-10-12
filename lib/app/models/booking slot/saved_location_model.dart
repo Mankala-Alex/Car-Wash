@@ -7,6 +7,7 @@ class SavedLocation {
   final String houseNo;
   final String? landmark; // Optional
   final String phoneNumber;
+  final String? pincode;
 
   SavedLocation({
     required this.id,
@@ -17,6 +18,7 @@ class SavedLocation {
     required this.houseNo,
     this.landmark,
     required this.phoneNumber,
+    this.pincode,
   });
 
   // Convert to JSON for storage
@@ -30,6 +32,7 @@ class SavedLocation {
       'houseNo': houseNo,
       'landmark': landmark,
       'phoneNumber': phoneNumber,
+      'pincode': pincode,
     };
   }
 
@@ -44,6 +47,7 @@ class SavedLocation {
       houseNo: json['houseNo'] ?? '',
       landmark: json['landmark'],
       phoneNumber: json['phoneNumber'] ?? '',
+      pincode: json['pincode']?.toString(),
     );
   }
 
@@ -57,6 +61,7 @@ class SavedLocation {
     String? houseNo,
     String? landmark,
     String? phoneNumber,
+    String? pincode,
   }) {
     return SavedLocation(
       id: id ?? this.id,
@@ -67,6 +72,7 @@ class SavedLocation {
       houseNo: houseNo ?? this.houseNo,
       landmark: landmark ?? this.landmark,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      pincode: pincode ?? this.pincode,
     );
   }
 }

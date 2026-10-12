@@ -98,7 +98,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                       children: [
                         Expanded(
                           child: Text(
-                            service.name,
+                            service.getLocalizedName(),
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -127,7 +127,7 @@ class FeaturesListView extends GetView<FeaturesListController> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                     child: Text(
-                      service.description,
+                      service.getLocalizedDescription(),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.black,
                           ),
@@ -186,8 +186,8 @@ class FeaturesListView extends GetView<FeaturesListController> {
                               // Service the user selected now
                               "image":
                                   Constants.imageBaseUrl + service.imageUrl,
-                              "name": service.name,
-                              "description": service.description,
+                              "name": service.getLocalizedName(),
+                              "description": service.getLocalizedDescription(),
                               "price": service.price.toString(),
                               "service_id": service.id,
                               "features": service.features,
