@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/confirmation_page_controller.dart';
+import 'package:car_wash_customer_app/app/helpers/amount_formatter.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -19,13 +19,18 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
             children: [
               const SizedBox(height: 40),
 
-              SizedBox(
-                width: 240, // control size here
-                height: 240,
-                child: Lottie.asset(
-                  'assets/carwash/animations/success.json',
-                  repeat: false,
-                  fit: BoxFit.contain,
+              // Static green success logo (replaces the Lottie animation)
+              Container(
+                width: 130,
+                height: 130,
+                decoration: const BoxDecoration(
+                  color: AppColors.textGreenLight,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: Colors.white,
+                  size: 76,
                 ),
               ),
 
@@ -111,7 +116,7 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            "${"total".tr} SAR ${controller.amount}",
+                            "${"total".tr} SAR ${formatAmount(controller.amount)}",
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -131,12 +136,10 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.toNamed(
-                      Routes.bookingqrcouponview,
-                      arguments: {
-                        "booking_code": controller.bookingCode,
-                      },
-                    );
+                    // Coupons are stored under My Coupons and are awarded by the
+                    // backend once the booking is COMPLETED, so the confirmation
+                    // screen never looks a coupon up right after payment.
+                    Get.offAllNamed(Routes.dashboard);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.secondaryLight,

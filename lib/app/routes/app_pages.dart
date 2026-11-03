@@ -23,10 +23,20 @@ import 'package:car_wash_customer_app/app/bindings/profile/my_coupons_binding.da
 import 'package:car_wash_customer_app/app/bindings/profile/offer_screen_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/offers_list_bindings.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/privacy_policy_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/profile/delete_account_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/profile/terms_conditions_binding.dart';
-import 'package:car_wash_customer_app/app/bindings/booking_flow/booking_qr_coupon_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/support/booking_help_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/support/faq_chat_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/support/help_center_binding.dart';
+import 'package:car_wash_customer_app/app/bindings/support/support_chat_binding.dart';
+import 'package:car_wash_customer_app/app/views/support/booking_help_view.dart';
+import 'package:car_wash_customer_app/app/views/support/faq_chat_view.dart';
+import 'package:car_wash_customer_app/app/views/support/help_center_view.dart';
+import 'package:car_wash_customer_app/app/views/support/support_chat_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/payment_view.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/payment_binding.dart';
+import 'package:car_wash_customer_app/app/views/booking_flow/payment_method_view.dart';
+import 'package:car_wash_customer_app/app/bindings/booking_flow/payment_method_binding.dart';
 import 'package:car_wash_customer_app/app/views/auth/sign_up_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/confirmation_page_view.dart';
@@ -49,8 +59,8 @@ import 'package:car_wash_customer_app/app/views/profile/coupons_list_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/offer_screen_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/offers_list_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/privacy_policy_view.dart';
+import 'package:car_wash_customer_app/app/views/profile/delete_account_view.dart';
 import 'package:car_wash_customer_app/app/views/profile/terms_conditions_view.dart';
-import 'package:car_wash_customer_app/app/views/booking_flow/booking_qr_coupon_view.dart';
 
 import '../bindings/auth/lang_selection_binding.dart';
 import '../bindings/auth/login_binding.dart';
@@ -200,9 +210,9 @@ class AppPages {
       binding: PrivacyPolicyBinding(),
     ),
     GetPage(
-      name: Routes.bookingqrcouponview,
-      page: () => const BookingQrCouponView(),
-      binding: BookingQrCouponBinding(),
+      name: Routes.deleteAccount,
+      page: () => const DeleteAccountView(),
+      binding: DeleteAccountBinding(),
     ),
     GetPage(
       name: Routes.coupondetailsview,
@@ -225,8 +235,30 @@ class AppPages {
       binding: PaymentBinding(),
     ),
     GetPage(
-      name: "/payment_webview",
-      page: () => const PaymentWebView(),
+      name: Routes.paymentMethod,
+      page: () => const PaymentMethodView(),
+      binding: PaymentMethodBinding(),
+    ),
+    GetPage(name: "/payment_webview", page: () => const PaymentWebView()),
+    GetPage(
+      name: Routes.helpCenter,
+      page: () => const HelpCenterView(),
+      binding: HelpCenterBinding(),
+    ),
+    GetPage(
+      name: Routes.faqChat,
+      page: () => const FaqChatView(),
+      binding: FaqChatBinding(),
+    ),
+    GetPage(
+      name: Routes.bookingHelp,
+      page: () => const BookingHelpView(),
+      binding: BookingHelpBinding(),
+    ),
+    GetPage(
+      name: Routes.supportChat,
+      page: () => const SupportChatView(),
+      binding: SupportChatBinding(),
     ),
   ];
 }

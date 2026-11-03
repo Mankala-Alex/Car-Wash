@@ -4,33 +4,29 @@ class HelpNSupportController extends GetxController {
   // which FAQ is expanded
   RxInt expandedFaq = (-1).obs;
 
-  // FAQ content
-  final faqs = [
-    {
-      "id": 1,
-      "question": "How do I cancel or reschedule a booking?",
-      "answer".tr:
-          "You can cancel or reschedule your booking from the 'My Bookings' section. Charges may apply based on policy."
-    },
-    {
-      "id": 2,
-      "question": "What payment methods are accepted?",
-      "answer".tr:
-          "We accept UPI, debit/credit cards, net banking, and wallet payments."
-    },
-    {
-      "id": 3,
-      "question": "How do I apply promo codes or coupons?",
-      "answer".tr:
-          "Promo codes can be applied during the checkout process on the payment page."
-    },
-    {
-      "id": 4,
-      "question": "I forgot my password. What should I do?",
-      "answer".tr:
-          "You can reset your password using the 'Forgot Password' option on the login page."
-    },
-  ];
+  // FAQ content (localized)
+  List<Map<String, dynamic>> get faqs => [
+        {
+          "id": 1,
+          "question": "faq_q1".tr,
+          "answer": "faq_a1".tr,
+        },
+        {
+          "id": 2,
+          "question": "faq_q2".tr,
+          "answer": "faq_a2".tr,
+        },
+        {
+          "id": 3,
+          "question": "faq_q3".tr,
+          "answer": "faq_a3".tr,
+        },
+        {
+          "id": 4,
+          "question": "faq_q4".tr,
+          "answer": "faq_a4".tr,
+        },
+      ];
 
   void toggleFAQ(int id) {
     expandedFaq.value = expandedFaq.value == id ? -1 : id;

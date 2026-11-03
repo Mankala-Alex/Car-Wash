@@ -11,7 +11,11 @@ class ConfirmationPageController extends GetxController {
   String get formattedDate {
     final dt = DateTime.tryParse(scheduledAt);
     if (dt == null) return "";
-    return DateFormat('EEE, dd MMM • hh:mm a').format(dt.toLocal());
+    // `scheduled_at` is already the wall-clock slot time (built with
+    // DateTime.utc in buildScheduledAt and stored the same way by the backend),
+    // so do NOT call toLocal() — that would apply the device timezone offset a
+    // second time and shift the displayed time.
+    return DateFormat('EEE, dd MMM • hh:mm a').format(dt);
   }
 
   @override

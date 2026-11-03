@@ -33,8 +33,8 @@ class TermsConditionsView extends GetView<TermsConditionsController> {
 
         final htmlContent = controller.documentContent;
         if (htmlContent.isEmpty) {
-          return const Center(
-            child: Text('No terms and conditions available.'),
+          return Center(
+            child: Text('no_terms_available'.tr),
           );
         }
 

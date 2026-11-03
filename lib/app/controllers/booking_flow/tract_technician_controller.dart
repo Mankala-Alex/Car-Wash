@@ -24,6 +24,7 @@ class TrackTechnicianController extends GetxController {
         scheduledAt: null,
         washerId: null,
         washerName: null,
+        washerPhone: null,
         status: "",
         amount: "",
         slotId: 0,

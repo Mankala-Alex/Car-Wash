@@ -31,7 +31,7 @@ class LangChangeView extends GetView<LangChangeController> {
           // ---------------- ENGLISH CARD ----------------
           Obx(() {
             return _languageCard(
-              label: "English",
+              label: "english".tr,
               value: "en",
               isSelected: controller.selectedValue.value == "en",
               onTap: () => controller.selectedValue.value = "en",

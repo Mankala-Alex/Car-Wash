@@ -120,7 +120,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
                                 ? Padding(
                                     padding: const EdgeInsets.only(top: 12),
                                     child: Text(
-                                      faq["answer".tr] as String,
+                                      faq["answer"] as String,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         height: 1.4,
@@ -177,8 +177,7 @@ class HelpNSupportView extends GetView<HelpNSupportController> {
 
                     Row(
                       children: [
-                        Expanded(
-                            child: _inputField("${"email".tr} (optional)")),
+                        Expanded(child: _inputField("email_optional".tr)),
                         const SizedBox(width: 12),
                         Expanded(child: _inputField("mobile_number".tr)),
                       ],

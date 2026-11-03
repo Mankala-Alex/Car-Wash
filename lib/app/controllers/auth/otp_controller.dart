@@ -2,11 +2,13 @@ import 'package:car_wash_customer_app/app/services/api_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import '../../repositories/auth/auth_repository.dart';
+import '../../helpers/api_error_helper.dart';
 import '../../helpers/flutter_toast.dart';
 import '../../helpers/shared_preferences.dart';
 import '../../helpers/secure_store.dart';
 import '../../models/auth/otp_model.dart';
 import '../../routes/app_routes.dart';
+import 'dart:io';
 
 class OtpController extends GetxController {
   final AuthRepository repository = AuthRepository();
@@ -58,11 +60,10 @@ class OtpController extends GetxController {
         "otp": otp.value,
       });
 
-      loadingPopUp(false);
-
       final data = Otpmodel.fromJson(resp.data);
 
       if (!data.success || !data.verified) {
+        loadingPopUp(false);
         errorToast(data.message);
         return;
       }
@@ -100,20 +101,73 @@ class OtpController extends GetxController {
         customer?.mobile ?? "",
       );
 
-      successToast("OTP Verified");
+      /// commented for ios run
+      // String? fcmToken = await FirebaseMessaging.instance.getToken();
 
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      // print("REAL FCM TOKEN: $fcmToken");
 
-      print("REAL FCM TOKEN: $fcmToken");
+      // if (fcmToken != null) {
+      //   await sendFcmTokenToBackend(fcmToken);
 
-      if (fcmToken != null) {
-        await sendFcmTokenToBackend(fcmToken);
+      //   /// SUBSCRIBE USER TO ALL USERS TOPIC
+      //   await FirebaseMessaging.instance.subscribeToTopic("all_users");
 
-        /// SUBSCRIBE USER TO ALL USERS TOPIC
-        await FirebaseMessaging.instance.subscribeToTopic("all_users");
+      //   print("Subscribed to all_users topic");
+      // }
 
-        print("Subscribed to all_users topic");
+      ///added for ios run
+      /// Register FCM token without blocking OTP verification
+      try {
+        final messaging = FirebaseMessaging.instance;
+        String? fcmToken;
+
+        if (Platform.isIOS) {
+          // APNs must be available before requesting the FCM token on iOS.
+          String? apnsToken;
+
+          for (int i = 0; i < 10; i++) {
+            apnsToken = await messaging.getAPNSToken();
+
+            if (apnsToken != null && apnsToken.isNotEmpty) {
+              break;
+            }
+
+            await Future.delayed(const Duration(seconds: 1));
+          }
+
+          if (apnsToken == null || apnsToken.isEmpty) {
+            print(
+              'APNs token unavailable. '
+              'Skipping FCM registration for now.',
+            );
+          } else {
+            fcmToken = await messaging.getToken();
+          }
+        } else {
+          fcmToken = await messaging.getToken();
+        }
+
+        if (fcmToken != null && fcmToken.isNotEmpty) {
+          print('REAL FCM TOKEN: $fcmToken');
+
+          await sendFcmTokenToBackend(fcmToken);
+
+          try {
+            await messaging.subscribeToTopic('all_users');
+            print('Subscribed to all_users topic');
+          } catch (e) {
+            print('Topic subscription failed: $e');
+          }
+        }
+      } catch (e, stackTrace) {
+        // Push notification registration must not prevent successful login.
+        print('FCM registration failed: $e');
+        print(stackTrace);
       }
+      successToast("otp_verified".tr);
+
+      loadingPopUp(false);
+
       Get.offAllNamed(
         Routes.dashboard,
       );
@@ -123,7 +177,7 @@ class OtpController extends GetxController {
       print("Verify OTP Error: $e");
 
       errorToast(
-        "otp_verification_failed".tr,
+        apiErrorMessage(e, "otp_verification_failed".tr),
       );
     }
   }

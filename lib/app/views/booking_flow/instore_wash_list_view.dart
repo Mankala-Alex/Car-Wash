@@ -101,7 +101,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                       //rating: "0.0",
                       //reviews: "no_reviews_yet".tr,
                       address: "${store.streetName}, ${store.city}",
-                      statusText: isApproved ? "Open" : "Closed",
+                      statusText: isApproved ? "open".tr : "closed".tr,
                       statusColor: isApproved ? Colors.green : Colors.red,
                       phoneNumber: store.phoneNumber,
                       latitude: store.location?.lat ?? 0.0,
@@ -282,18 +282,18 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                             color: AppColors.primaryLight,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.location_on,
                                 color: AppColors.textDefaultLight,
                                 size: 20,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
-                                "Location",
-                                style: TextStyle(
+                                "location".tr,
+                                style: const TextStyle(
                                   color: AppColors.textDefaultLight,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -364,22 +364,23 @@ class InstoreWashListView extends GetView<InstoreWashController> {
           color: Colors.black.withValues(alpha: 0.05),
         ),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(Icons.visibility_off_outlined, size: 40, color: Colors.grey),
-          SizedBox(height: 10),
+          const Icon(Icons.visibility_off_outlined,
+              size: 40, color: Colors.grey),
+          const SizedBox(height: 10),
           Text(
-            "No Locations Found",
-            style: TextStyle(
+            "no_locations_found".tr,
+            style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            "We couldn't find any partner locations.\nTry again later.",
+            "no_partner_locations_body".tr,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey),
           ),
         ],
       ),

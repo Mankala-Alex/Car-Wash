@@ -29,11 +29,11 @@ class LoginView extends GetView<LoginController> {
                 Row(
                   children: [
                     Expanded(child: Divider(color: Colors.grey.shade400)),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        "Login or Sign up",
-                        style: TextStyle(
+                        "login_or_sign_up".tr,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -67,9 +67,9 @@ class LoginView extends GetView<LoginController> {
                   child: TextField(
                     controller: controller.emailController,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      prefixIcon: Padding(
+                      prefixIcon: const Padding(
                         padding: EdgeInsets.only(left: 12, right: 6),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -91,12 +91,12 @@ class LoginView extends GetView<LoginController> {
                           ],
                         ),
                       ),
-                      prefixIconConstraints: BoxConstraints(
+                      prefixIconConstraints: const BoxConstraints(
                         minWidth: 0,
                         minHeight: 0,
                       ),
-                      hintText: "Enter your Mobile number",
-                      contentPadding: EdgeInsets.symmetric(
+                      hintText: "enter_your_mobile_number".tr,
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 14,
                       ),

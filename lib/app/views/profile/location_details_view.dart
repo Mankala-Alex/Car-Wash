@@ -4,6 +4,20 @@ import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/location_details_controller.dart';
 
+/// Localizes the stored English label (Home / Work / Other) for display.
+String _localizedLocationLabel(String value) {
+  switch (value) {
+    case 'Home':
+      return 'home'.tr;
+    case 'Work':
+      return 'work'.tr;
+    case 'Other':
+      return 'other'.tr;
+    default:
+      return value;
+  }
+}
+
 class LocationDetailsView extends GetView<LocationDetailsController> {
   const LocationDetailsView({super.key});
 
@@ -116,7 +130,7 @@ class LocationDetailsView extends GetView<LocationDetailsController> {
                       .map(
                         (e) => DropdownMenuItem(
                           value: e,
-                          child: Text(e),
+                          child: Text(_localizedLocationLabel(e)),
                         ),
                       )
                       .toList(),

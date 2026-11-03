@@ -122,13 +122,24 @@ class LocationPickerController extends GetxController {
     }
   }
 
-  Future<void> checkServiceabilityForPincode(String pincode) async {
-    final normalizedPincode = pincode.trim();
+  /// Asks the backend whether the selected point is covered by an active
+  /// service area.
+  ///
+  /// Saudi postal codes are exactly 5 digits, and a missing/wrong postal code
+  /// must not block the check while the map pin is known — the backend
+  /// reverse-geocodes the coordinates itself.
+  Future<void> checkServiceabilityForPincode(
+    String pincode, {
+    double? latitude,
+    double? longitude,
+  }) async {
+    final normalizedPincode = pincode.replaceAll(RegExp(r'[^0-9]'), '');
+    final hasValidPincode = RegExp(r'^\d{5}$').hasMatch(normalizedPincode);
+    final hasCoordinates = latitude != null && longitude != null;
 
-    if (!RegExp(r'^\d{6}$').hasMatch(normalizedPincode)) {
+    if (!hasValidPincode && !hasCoordinates) {
       isServiceable.value = false;
-      serviceabilityMessage.value =
-          'Unable to determine service area for this location.';
+      serviceabilityMessage.value = 'unable_to_determine_service_area'.tr;
       return;
     }
 
@@ -136,7 +147,9 @@ class LocationPickerController extends GetxController {
       isCheckingServiceability.value = true;
 
       final response = await _bookSlotRepository.checkCustomerServiceability(
-        normalizedPincode,
+        hasValidPincode ? normalizedPincode : null,
+        latitude: latitude,
+        longitude: longitude,
       );
 
       final data = response.data;
@@ -145,13 +158,26 @@ class LocationPickerController extends GetxController {
           data is Map &&
           data['success'] == true &&
           data['serviceable'] == true) {
+        final resolvedPincode = (data['pincode'] ?? '').toString().trim();
+        if (resolvedPincode.isNotEmpty) {
+          selectedPincode.value = resolvedPincode;
+        } else if (hasValidPincode) {
+          selectedPincode.value = normalizedPincode;
+        }
+
+        print(
+            '✅ Serviceable → match: ${data['match']}, source: ${data['pincode_source']}, pincode: ${data['pincode']}, city: ${data['city']}');
+
         isServiceable.value = true;
         serviceabilityMessage.value = '';
       } else {
         isServiceable.value = false;
         serviceabilityMessage.value = data is Map && data['message'] != null
             ? data['message'].toString()
-            : 'This pincode is not currently serviced';
+            : 'pincode_not_serviced'.tr;
+
+        print(
+            '❌ Not serviceable → match: ${data is Map ? data['match'] : null}, pincode: ${data is Map ? data['pincode'] : null}');
       }
     } catch (e) {
       isServiceable.value = false;
@@ -177,10 +203,10 @@ class LocationPickerController extends GetxController {
         isLoadingLocation.value = false;
 
         Get.defaultDialog(
-          title: "Location Required",
-          middleText: "Please enable your device location to continue.",
-          textConfirm: "Settings",
-          textCancel: "Cancel",
+          title: "location_required".tr,
+          middleText: "please_enable_device_location".tr,
+          textConfirm: "settings".tr,
+          textCancel: "cancel".tr,
           confirmTextColor: Colors.white,
           onConfirm: () async {
             Get.back();
@@ -205,10 +231,10 @@ class LocationPickerController extends GetxController {
         isLoadingLocation.value = false;
 
         Get.defaultDialog(
-          title: "Permission Required",
-          middleText: "Please allow location permission from App Settings.",
-          textConfirm: "Open Settings",
-          textCancel: "Cancel",
+          title: "permission_required".tr,
+          middleText: "please_allow_location_permission".tr,
+          textConfirm: "open_settings".tr,
+          textCancel: "cancel".tr,
           confirmTextColor: Colors.white,
           onConfirm: () async {
             Get.back();
@@ -224,8 +250,8 @@ class LocationPickerController extends GetxController {
         isLoadingLocation.value = false;
 
         Get.snackbar(
-          "Location Permission",
-          "Location permission is required.",
+          "location_permission".tr,
+          "location_permission_required".tr,
           snackPosition: SnackPosition.BOTTOM,
         );
 
@@ -310,8 +336,8 @@ class LocationPickerController extends GetxController {
       isLoadingLocation.value = false;
 
       Get.snackbar(
-        "Location Error",
-        "Unable to get your current location. Please try again.",
+        "location_error".tr,
+        "unable_to_get_location".tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -327,30 +353,34 @@ class LocationPickerController extends GetxController {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        final postalCode = place.postalCode?.trim();
-        selectedPincode.value = postalCode ?? '';
+        selectedPincode.value = place.postalCode?.trim() ?? '';
+
+        final parts = <String>[
+          place.street ?? '',
+          place.subLocality ?? '',
+          place.locality ?? '',
+          place.administrativeArea ?? '',
+        ].map((part) => part.trim()).where((part) => part.isNotEmpty).toList();
 
         selectedAddress.value =
-            "${place.street ?? ''}, ${place.locality ?? ''}, ${place.administrativeArea ?? ''}";
-
-// Check serviceability for the fetched pincode
-        if (selectedPincode.value.isNotEmpty) {
-          await checkServiceabilityForPincode(
-            selectedPincode.value,
-          );
-        } else {
-          isServiceable.value = false;
-          serviceabilityMessage.value =
-              'Unable to determine service area for this location.';
-        }
+            parts.isEmpty ? 'Selected location' : parts.join(', ');
+      } else {
+        selectedPincode.value = '';
+        selectedAddress.value = 'Selected location';
       }
     } catch (e) {
       selectedPincode.value = '';
-      isServiceable.value = false;
-      serviceabilityMessage.value =
-          'Unable to determine service area for this location.';
+      selectedAddress.value = 'Selected location';
       print("Error getting address: $e");
     }
+
+    // Always verify with the map pin, even when the geocoder returned no
+    // postal code — the backend reverse-geocodes the coordinates itself.
+    await checkServiceabilityForPincode(
+      selectedPincode.value,
+      latitude: latitude,
+      longitude: longitude,
+    );
   }
 
   // Future<void> selectLocationOnMap(LatLng latLng) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../helpers/api_error_helper.dart';
 import '../../helpers/flutter_toast.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../routes/app_routes.dart';
@@ -44,7 +45,9 @@ class SignupController extends GetxController {
       isLoading(false);
 
       if (resp.data["success"] != true) {
-        errorToast(resp.data["message"]);
+        errorToast(
+          resp.data["message"]?.toString() ?? "signup_failed".tr,
+        );
         return;
       }
 
@@ -62,7 +65,11 @@ class SignupController extends GetxController {
 
       print("Signup Error: $e");
 
-      errorToast("signup_failed".tr);
+      // Non-2xx (400/409/422...) responses are thrown by Dio, so the real
+      // backend message is inside the exception, not in a Response object.
+      errorToast(
+        apiErrorMessage(e, "signup_failed".tr),
+      );
     }
   }
 }

@@ -6,6 +6,20 @@ import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_d
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
+/// Localizes the stored English label (Home / Work / Other) for display.
+String _localizedLocationLabel(String value) {
+  switch (value) {
+    case 'Home':
+      return 'home'.tr;
+    case 'Work':
+      return 'work'.tr;
+    case 'Other':
+      return 'other'.tr;
+    default:
+      return value;
+  }
+}
+
 class LocationsListView extends GetView<LocationListController> {
   const LocationsListView({super.key});
 
@@ -132,7 +146,8 @@ class LocationsListView extends GetView<LocationListController> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  location.label, // Home / Work / Other
+                  _localizedLocationLabel(
+                      location.label), // Home / Work / Other
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -180,7 +195,7 @@ class LocationsListView extends GetView<LocationListController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                location.label,
+                _localizedLocationLabel(location.label),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -201,9 +216,10 @@ class LocationsListView extends GetView<LocationListController> {
               // ---- Edit Button ----
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.black87),
-                title: const Text(
-                  "Edit",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                title: Text(
+                  "edit".tr,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 onTap: () {
                   Get.back(); // Close bottom sheet
@@ -239,7 +255,7 @@ class LocationsListView extends GetView<LocationListController> {
                       body:
                           "${"are_you_sure_you_want_to_delete".tr} ${location.label}?",
                       yesText: "delete".tr,
-                      noText: "Cancel".tr,
+                      noText: "cancel".tr,
                       onYes: () {
                         controller.deleteLocation(location);
                         Get.back();

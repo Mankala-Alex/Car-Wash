@@ -199,10 +199,10 @@ class AddLocationView extends GetView<AddLocationController> {
                       color: AppColors.secondaryLight,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
-                        "Confirm & proceed",
-                        style: TextStyle(
+                        "confirm_proceed".tr,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.w600,

@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "827818532249",
+    "project_id": "custcarappnotifications-f4e9b",
+    "storage_bucket": "custcarappnotifications-f4e9b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827818532249:android:3590226beb75084a940708",
+        "android_client_info": {
+          "package_name": "com.example.my_new_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLBKMggSUpNKNukkmGpeFw5Ede6s1d9qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827818532249:android:0c75e0ef37909163940708",
+        "android_client_info": {
+          "package_name": "com.washgate4.carwash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLBKMggSUpNKNukkmGpeFw5Ede6s1d9qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827818532249:android:f26998d87b700729940708",
+        "android_client_info": {
+          "package_name": "com.washgate4.technician"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLBKMggSUpNKNukkmGpeFw5Ede6s1d9qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

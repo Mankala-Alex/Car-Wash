@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Push Notifications capability. Without this entitlement iOS refuses to
+	     register the app with APNs, so Firebase never gets an APNs token and
+	     `FirebaseMessaging.getToken()` returns null. `development` is correct
+	     for debug/profile builds; App Store builds need `production` (Xcode
+	     switches it automatically for release signing). -->
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
+</plist>

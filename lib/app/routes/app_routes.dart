@@ -19,6 +19,10 @@ abstract class Routes {
   static const locationDetails = '/location_details';
   static const notification = '/notification_view';
   static const help = '/help_n_support';
+  static const helpCenter = '/help_center';
+  static const faqChat = '/faq_chat';
+  static const bookingHelp = '/booking_help';
+  static const supportChat = '/support_chat';
   static const langchange = '/lang_change';
   static const mycoupons = '/my_coupons';
   static const scratchcard = '/scratchcard';
@@ -27,9 +31,10 @@ abstract class Routes {
   static const termsconditions = '/terms_conditions';
   static const aboutus = '/about_us';
   static const privacypolicy = '/privacy_policy';
-  static const bookingqrcouponview = '/qr_coupon_view';
+  static const deleteAccount = '/delete_account';
   static const coupondetailsview = '/coupon_details_view';
   static const bookinghistorydetailsview = '/booking_history_view';
   static const tracttechnicianview = '/tract_technician_view';
   static const payment = '/payment_screen';
+  static const paymentMethod = '/payment_method';
 }

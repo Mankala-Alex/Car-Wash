@@ -164,8 +164,8 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
                   }
                 } else {
                   Get.snackbar(
-                    "No Internet",
-                    "Please check your connection",
+                    "internet_not_available".tr,
+                    "cons_check_internet".tr,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 }

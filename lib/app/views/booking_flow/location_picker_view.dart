@@ -84,7 +84,7 @@ class LocationPickerView extends GetView<LocationPickerController> {
                   controller: controller.searchController,
                   onChanged: controller.onSearchChanged,
                   decoration: InputDecoration(
-                    hintText: "Search location...",
+                    hintText: "search_location_hint".tr,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: Obx(() {
                       if (controller.isSearching.value) {
@@ -292,20 +292,20 @@ class LocationPickerView extends GetView<LocationPickerController> {
                               color: Colors.orange.shade200,
                             ),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 width: 18,
                                 height: 18,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Checking service availability...',
-                                  style: TextStyle(
+                                  'checking_service_availability_short'.tr,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black87,
                                   ),

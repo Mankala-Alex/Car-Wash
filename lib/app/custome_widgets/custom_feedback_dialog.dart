@@ -30,9 +30,9 @@ class CustomFeedbackDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // TITLE
-            const Text(
-              "How was the service?",
-              style: TextStyle(
+            Text(
+              "how_was_the_service".tr,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: Colors.black,
@@ -43,9 +43,9 @@ class CustomFeedbackDialog extends StatelessWidget {
             const SizedBox(height: 12),
 
             // SUBTITLE
-            const Text(
-              "Your feedback helps us improve the partner community experience.",
-              style: TextStyle(
+            Text(
+              "feedback_subtitle".tr,
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.blue,
                 height: 1.4,
@@ -81,11 +81,11 @@ class CustomFeedbackDialog extends StatelessWidget {
             const SizedBox(height: 28),
 
             // COMMENTS LABEL
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Add comments (optional)",
-                style: TextStyle(
+                "add_comments_optional".tr,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
@@ -105,11 +105,11 @@ class CustomFeedbackDialog extends StatelessWidget {
               child: TextField(
                 controller: commentsController,
                 maxLines: 5,
-                decoration: const InputDecoration(
-                  hintText: "Write your feedback...",
-                  hintStyle: TextStyle(color: Colors.grey),
+                decoration: InputDecoration(
+                  hintText: "write_your_feedback".tr,
+                  hintStyle: const TextStyle(color: Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(14),
+                  contentPadding: const EdgeInsets.all(14),
                 ),
               ),
             ),
@@ -132,7 +132,7 @@ class CustomFeedbackDialog extends StatelessWidget {
                     // Parent controller handles all user-facing errors.
                   }
                 } else {
-                  errorToast("Rating Required, Please select a rating");
+                  errorToast("rating_required".tr);
                 }
               },
               child: Container(
@@ -142,10 +142,10 @@ class CustomFeedbackDialog extends StatelessWidget {
                   color: AppColors.secondaryLight,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    "Submit Review",
-                    style: TextStyle(
+                    "submit_review".tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -160,9 +160,9 @@ class CustomFeedbackDialog extends StatelessWidget {
             // NOT NOW BUTTON
             GestureDetector(
               onTap: () => Get.back(),
-              child: const Text(
-                "Not Now",
-                style: TextStyle(
+              child: Text(
+                "not_now".tr,
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
                   fontWeight: FontWeight.w600,

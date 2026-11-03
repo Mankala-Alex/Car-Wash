@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:car_wash_customer_app/app/controllers/booking_flow/book_slot_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/services/payment_services.dart';
@@ -22,6 +23,11 @@ class _PaymentWebViewState extends State<PaymentWebView> {
   late String paymentUrl;
   late String paymentAttemptId;
 
+  /// A 3-D Secure step for a saved card may never reach a Paymob "post pay"
+  /// URL, so polling starts as soon as the page loads instead of waiting for a
+  /// redirect that will not come.
+  bool autoCheck = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +37,8 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     paymentUrl = args["url"]?.toString() ?? "";
 
     paymentAttemptId = args["paymentAttemptId"]?.toString() ?? "";
+
+    autoCheck = args["autoCheck"] == true;
 
     print("========================================");
     print("💳 PAYMENT WEBVIEW");
@@ -43,7 +51,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          errorToast("Payment initialization failed");
+          errorToast("payment_init_failed".tr);
           Get.back();
         }
       });
@@ -52,9 +60,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     }
 
     controller = WebViewController()
-      ..setJavaScriptMode(
-        JavaScriptMode.unrestricted,
-      );
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
 
     final uri = Uri.tryParse(paymentUrl);
 
@@ -64,7 +70,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          errorToast("Invalid payment URL");
+          errorToast("invalid_payment_url".tr);
           Get.back();
         }
       });
@@ -77,9 +83,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         onNavigationRequest: (request) {
           print("🌐 Redirect URL: ${request.url}");
 
-          if (request.url.contains(
-                "ksa.paymob.com/api/acceptance/post_pay",
-              ) ||
+          if (request.url.contains("ksa.paymob.com/api/acceptance/post_pay") ||
               request.url.contains(
                 "/api/payment/callback",
                 //"washgate4carwash.com/api/payment/callback",
@@ -106,17 +110,44 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             "(code: ${error.errorCode})",
           );
 
-          errorToast(
-            "Could not load payment page.",
-          );
+          // errorToast(
+          //   "Could not load payment page.",
+          // );
         },
       ),
     );
 
     controller.loadRequest(uri);
+
+    if (autoCheck) {
+      // The bank challenge can take minutes (OTP, banking-app approval), so poll
+      // for 5 minutes instead of the 60 s window used for the normal checkout.
+      _maxAttempts = 150;
+      checkPayment();
+    }
   }
 
+  /// Status polls before giving up (2 s apart).
+  int _maxAttempts = 30;
+
   bool _checkingPayment = false;
+
+  /// Leaves the payment flow, refreshes the slot list and clears the previous
+  /// selection when that time is no longer bookable.
+  void _returnToSlots() {
+    try {
+      final bookSlot = Get.find<BookSlotController>();
+      bookSlot.refreshSelectedDateSlots();
+    } catch (e) {
+      print("⚠️ Could not refresh slots: $e");
+    }
+
+    // Pops back to the slot picker (or stops at the first route if the flow was
+    // opened from somewhere unexpected).
+    Get.until(
+      (route) => route.settings.name == Routes.bookslot || route.isFirst,
+    );
+  }
 
   Future<void> checkPayment() async {
     if (_checkingPayment) return;
@@ -131,7 +162,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
       // Check payment status repeatedly
       // for up to 60 seconds.
-      for (int i = 0; i < 30; i++) {
+      for (int i = 0; i < _maxAttempts; i++) {
         if (!mounted) return;
 
         final result = await service.checkPaymentStatusByAttempt(
@@ -149,13 +180,9 @@ class _PaymentWebViewState extends State<PaymentWebView> {
           "$status",
         );
 
-        print(
-          "Booking ID: $bookingId",
-        );
+        print("Booking ID: $bookingId");
 
-        print(
-          "Booking Reference: $bookingReference",
-        );
+        print("Booking Reference: $bookingReference");
 
         // ========================================
         // PAYMENT SUCCESS
@@ -170,22 +197,55 @@ class _PaymentWebViewState extends State<PaymentWebView> {
           print("Booking Reference: $bookingReference");
           print("========================================");
 
-          successToast(
-            "payment_successful".tr,
-          );
+          successToast("payment_successful".tr);
 
-          final currentArgs = Map<String, dynamic>.from(
-            Get.arguments ?? {},
-          );
+          final currentArgs = Map<String, dynamic>.from(Get.arguments ?? {});
 
           // Add backend-created booking information
           currentArgs["bookingId"] = bookingId;
           currentArgs["booking_reference"] = bookingReference;
 
-          Get.offAllNamed(
-            Routes.confirmationpageview,
-            arguments: currentArgs,
+          Get.offAllNamed(Routes.confirmationpageview, arguments: currentArgs);
+
+          return;
+        }
+
+        // ========================================
+        // SLOT TAKEN WHILE PAYING
+        // ========================================
+        // The backend reserved the seat for 10 minutes, but the hold can expire
+        // (or another customer can finish first). The backend then refunds /
+        // voids the payment automatically — stop polling and send the customer
+        // back to a refreshed slot list instead of spinning forever.
+        if (status == "SLOT_UNAVAILABLE") {
+          if (!mounted) return;
+
+          final refundStatus = result["refund_status"]?.toString() ?? "";
+
+          print("⚠️ SLOT_UNAVAILABLE — refund: $refundStatus");
+
+          errorToast(
+            refundStatus == "REFUNDED" || refundStatus == "VOIDED"
+                ? "slot_taken_payment_refunded".tr
+                : "slot_no_longer_available".tr,
           );
+
+          _returnToSlots();
+
+          return;
+        }
+
+        // ========================================
+        // HOLD EXPIRED — payment was never completed
+        // ========================================
+        if (status == "EXPIRED") {
+          if (!mounted) return;
+
+          print("⌛ Reservation expired before payment");
+
+          errorToast("slot_hold_expired".tr);
+
+          _returnToSlots();
 
           return;
         }
@@ -199,9 +259,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
           print("❌ PAYMENT FAILED");
 
-          errorToast(
-            "payment_failed".tr,
-          );
+          errorToast("payment_failed".tr);
 
           Get.back();
 
@@ -209,9 +267,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         }
 
         // Still INITIATED / PENDING
-        await Future.delayed(
-          const Duration(seconds: 2),
-        );
+        await Future.delayed(const Duration(seconds: 2));
       }
 
       // ========================================
@@ -219,21 +275,13 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       // ========================================
 
       if (mounted) {
-        errorToast(
-          "Payment is still processing. "
-          "Please check your booking status.",
-        );
+        errorToast("payment_processing".tr);
       }
     } catch (e) {
-      print(
-        "❌ Status check error: $e",
-      );
+      print("❌ Status check error: $e");
 
       if (mounted) {
-        errorToast(
-          "Could not verify payment status. "
-          "Please check your booking.",
-        );
+        errorToast("payment_verify_failed".tr);
       }
     } finally {
       _checkingPayment = false;
@@ -243,211 +291,205 @@ class _PaymentWebViewState extends State<PaymentWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "payment".tr,
-        ),
-      ),
-      body: WebViewWidget(
-        controller: controller,
-      ),
+      appBar: AppBar(title: Text("payment".tr)),
+      body: WebViewWidget(controller: controller),
     );
   }
 } // import 'dart:async';
 
-  // import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
-  // import 'package:car_wash_customer_app/app/routes/app_routes.dart';
-  // import 'package:car_wash_customer_app/app/services/payment_services.dart';
-  // import 'package:flutter/material.dart';
-  // import 'package:get/get.dart';
-  // import 'package:webview_flutter/webview_flutter.dart';
+// import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+// import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+// import 'package:car_wash_customer_app/app/services/payment_services.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
 
-  // class PaymentWebView extends StatefulWidget {
-  //   const PaymentWebView({super.key});
+// class PaymentWebView extends StatefulWidget {
+//   const PaymentWebView({super.key});
 
-  //   @override
-  //   State<PaymentWebView> createState() => _PaymentWebViewState();
-  // }
+//   @override
+//   State<PaymentWebView> createState() => _PaymentWebViewState();
+// }
 
-  // class _PaymentWebViewState extends State<PaymentWebView> {
-  //   late WebViewController controller;
+// class _PaymentWebViewState extends State<PaymentWebView> {
+//   late WebViewController controller;
 
-  //   final PaymentService service = PaymentService();
+//   final PaymentService service = PaymentService();
 
-  //   late String paymentUrl;
-  //   late String bookingId;
+//   late String paymentUrl;
+//   late String bookingId;
 
-  //   @override
-  //   void initState() {
-  //     super.initState();
+//   @override
+//   void initState() {
+//     super.initState();
 
-  //     final args = Get.arguments;
+//     final args = Get.arguments;
 
-  //     paymentUrl = args["url"];
-  //     bookingId = args["bookingId"];
+//     paymentUrl = args["url"];
+//     bookingId = args["bookingId"];
 
-  //     controller = WebViewController()
-  //       ..setJavaScriptMode(JavaScriptMode.unrestricted);
+//     controller = WebViewController()
+//       ..setJavaScriptMode(JavaScriptMode.unrestricted);
 
-  //     // Validate URL before loading
-  //     final uri = Uri.tryParse(paymentUrl ?? "");
-  //     if (uri == null ||
-  //         !(uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https'))) {
-  //       print("Invalid payment URL: $paymentUrl");
-  //       errorToast("Invalid payment URL");
-  //       // go back to previous screen
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         if (mounted) Get.back();
-  //       });
-  //       return;
-  //     }
+//     // Validate URL before loading
+//     final uri = Uri.tryParse(paymentUrl ?? "");
+//     if (uri == null ||
+//         !(uri.isAbsolute && (uri.scheme == 'http' || uri.scheme == 'https'))) {
+//       print("Invalid payment URL: $paymentUrl");
+//       errorToast("Invalid payment URL");
+//       // go back to previous screen
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) Get.back();
+//       });
+//       return;
+//     }
 
-  //     controller.setNavigationDelegate(
-  //       NavigationDelegate(
-  //         onNavigationRequest: (request) {
-  //           print("Redirect URL: ${request.url}");
+//     controller.setNavigationDelegate(
+//       NavigationDelegate(
+//         onNavigationRequest: (request) {
+//           print("Redirect URL: ${request.url}");
 
-  //           if (request.url.contains(
-  //                 "ksa.paymob.com/api/acceptance/post_pay",
-  //               ) ||
-  //               request.url.contains(
-  //                 "washgate4carwash.com/api/payment/callback",
-  //               )) {
-  //             print("✅ Paymob payment redirect detected");
+//           if (request.url.contains(
+//                 "ksa.paymob.com/api/acceptance/post_pay",
+//               ) ||
+//               request.url.contains(
+//                 "washgate4carwash.com/api/payment/callback",
+//               )) {
+//             print("✅ Paymob payment redirect detected");
 
-  //             checkPayment();
+//             checkPayment();
 
-  //             return NavigationDecision.prevent;
-  //           }
-  //           // Detect callback URL
-  //           // if (request.url.contains("payment/callback")) {
-  //           //   print("Payment callback detected");
+//             return NavigationDecision.prevent;
+//           }
+//           // Detect callback URL
+//           // if (request.url.contains("payment/callback")) {
+//           //   print("Payment callback detected");
 
-  //           //   checkPayment();
+//           //   checkPayment();
 
-  //           //   return NavigationDecision.prevent;
-  //           // }
+//           //   return NavigationDecision.prevent;
+//           // }
 
-  //           return NavigationDecision.navigate;
-  //         },
-  //         onPageStarted: (url) {
-  //           print('WebView page started: $url');
-  //         },
-  //         onPageFinished: (url) {
-  //           print('WebView page finished: $url');
-  //         },
-  //         onWebResourceError: (error) {
-  //           print(
-  //               'WebView error: ${error.description} (code: ${error.errorCode})');
-  //           errorToast('Could not load payment page.');
-  //         },
-  //       ),
-  //     );
+//           return NavigationDecision.navigate;
+//         },
+//         onPageStarted: (url) {
+//           print('WebView page started: $url');
+//         },
+//         onPageFinished: (url) {
+//           print('WebView page finished: $url');
+//         },
+//         onWebResourceError: (error) {
+//           print(
+//               'WebView error: ${error.description} (code: ${error.errorCode})');
+//           errorToast('Could not load payment page.');
+//         },
+//       ),
+//     );
 
-  //     controller.loadRequest(uri);
-  //   }
+//     controller.loadRequest(uri);
+//   }
 
-  //   bool _checkingPayment = false;
+//   bool _checkingPayment = false;
 
-  //   Future<void> checkPayment() async {
-  //     if (_checkingPayment) return;
+//   Future<void> checkPayment() async {
+//     if (_checkingPayment) return;
 
-  //     _checkingPayment = true;
+//     _checkingPayment = true;
 
-  //     try {
-  //       // Check payment status repeatedly for up to 60 seconds.
-  //       for (int i = 0; i < 30; i++) {
-  //         if (!mounted) return;
+//     try {
+//       // Check payment status repeatedly for up to 60 seconds.
+//       for (int i = 0; i < 30; i++) {
+//         if (!mounted) return;
 
-  //         final status = await service.checkPaymentStatus(bookingId);
+//         final status = await service.checkPaymentStatus(bookingId);
 
-  //         print("Payment status attempt ${i + 1}: $status");
+//         print("Payment status attempt ${i + 1}: $status");
 
-  //         if (status == "PAID") {
-  //           if (!mounted) return;
+//         if (status == "PAID") {
+//           if (!mounted) return;
 
-  //           successToast("payment_successful".tr);
+//           successToast("payment_successful".tr);
 
-  //           Get.offAllNamed(
-  //             Routes.confirmationpageview,
-  //             arguments: Get.arguments,
-  //           );
-  //           return;
-  //         }
+//           Get.offAllNamed(
+//             Routes.confirmationpageview,
+//             arguments: Get.arguments,
+//           );
+//           return;
+//         }
 
-  //         if (status == "FAILED") {
-  //           if (!mounted) return;
+//         if (status == "FAILED") {
+//           if (!mounted) return;
 
-  //           errorToast("payment_failed".tr);
-  //           Get.back();
-  //           return;
-  //         }
+//           errorToast("payment_failed".tr);
+//           Get.back();
+//           return;
+//         }
 
-  //         // Still INITIATED or pending: try again.
-  //         await Future.delayed(const Duration(seconds: 2));
-  //       }
+//         // Still INITIATED or pending: try again.
+//         await Future.delayed(const Duration(seconds: 2));
+//       }
 
-  //       if (mounted) {
-  //         errorToast(
-  //           "Payment is still processing. Please check your booking status.",
-  //         );
-  //       }
-  //     } catch (e) {
-  //       print("Status check error: $e");
+//       if (mounted) {
+//         errorToast(
+//           "Payment is still processing. Please check your booking status.",
+//         );
+//       }
+//     } catch (e) {
+//       print("Status check error: $e");
 
-  //       if (mounted) {
-  //         errorToast(
-  //           "Could not verify payment status. Please check your booking.",
-  //         );
-  //       }
-  //     } finally {
-  //       _checkingPayment = false;
-  //     }
-  //   }
+//       if (mounted) {
+//         errorToast(
+//           "Could not verify payment status. Please check your booking.",
+//         );
+//       }
+//     } finally {
+//       _checkingPayment = false;
+//     }
+//   }
 
-  //   /// Check payment result
-  //   // Future<void> checkPayment() async {
-  //   //   try {
-  //   //     await Future.delayed(const Duration(seconds: 3));
+//   /// Check payment result
+//   // Future<void> checkPayment() async {
+//   //   try {
+//   //     await Future.delayed(const Duration(seconds: 3));
 
-  //   //     final status = await service.checkPaymentStatus(bookingId);
+//   //     final status = await service.checkPaymentStatus(bookingId);
 
-  //   //     print("Payment Status: $status");
+//   //     print("Payment Status: $status");
 
-  //   //     if (status == "PAID") {
-  //   //       errorToast(
-  //   //         "payment_successful".tr,
-  //   //       );
+//   //     if (status == "PAID") {
+//   //       errorToast(
+//   //         "payment_successful".tr,
+//   //       );
 
-  //   //       Get.offAllNamed(
-  //   //         Routes.confirmationpageview,
-  //   //         arguments: Get.arguments,
-  //   //       );
-  //   //     }
+//   //       Get.offAllNamed(
+//   //         Routes.confirmationpageview,
+//   //         arguments: Get.arguments,
+//   //       );
+//   //     }
 
-  //   //     if (status == "FAILED") {
-  //   //       errorToast(
-  //   //         "payment_failed".tr,
-  //   //       );
+//   //     if (status == "FAILED") {
+//   //       errorToast(
+//   //         "payment_failed".tr,
+//   //       );
 
-  //   //       Get.back();
-  //   //     }
-  //   //   } catch (e) {
-  //   //     print("Status check error: $e");
-  //   //   }
-  //   // }
+//   //       Get.back();
+//   //     }
+//   //   } catch (e) {
+//   //     print("Status check error: $e");
+//   //   }
+//   // }
 
-  //   @override
-  //   Widget build(BuildContext context) {
-  //     return Scaffold(
-  //       appBar: AppBar(
-  //         title: Text(
-  //           "payment".tr,
-  //         ),
-  //       ),
-  //       body: WebViewWidget(
-  //         controller: controller,
-  //       ),
-  //     );
-  //   }
-  // }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(
+//           "payment".tr,
+//         ),
+//       ),
+//       body: WebViewWidget(
+//         controller: controller,
+//       ),
+//     );
+//   }
+// }

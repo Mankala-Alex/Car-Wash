@@ -1,8 +1,11 @@
 {
     "version": "0.2.0",
     "configurations": [
+        // ─────────────────────────────────────────────────────────────
+        // ANDROID EMULATOR (10.0.2.2 = host machine as seen from emulator)
+        // ─────────────────────────────────────────────────────────────
         {
-            "name": "Development",
+            "name": "Development (Android emulator)",
             "request": "launch",
             "type": "dart",
             "program": "lib/main.dart",
@@ -10,6 +13,39 @@
                 "--dart-define-from-file=env/development.json"
             ]
         },
+        // ─────────────────────────────────────────────────────────────
+        // iOS SIMULATOR (shares the Mac network -> use localhost / 127.0.0.1)
+        // ─────────────────────────────────────────────────────────────
+        {
+            "name": "iOS - Local backend (localhost:3000)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env/ios_development.json"
+            ]
+        },
+        {
+            "name": "iOS - Local backend (127.0.0.1:80)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env/production.json"
+            ]
+        },
+        {
+            "name": "iOS - Remote / Staging server",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--dart-define-from-file=env/staging.json"
+            ]
+        },
+        // ─────────────────────────────────────────────────────────────
+        // ENVIRONMENT SWITCHING (works on whatever device is selected)
+        // ─────────────────────────────────────────────────────────────
         {
             "name": "Staging",
             "request": "launch",

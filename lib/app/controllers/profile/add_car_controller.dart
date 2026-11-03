@@ -27,13 +27,13 @@ class AddCarController extends GetxController {
     print("LOADED customerUuid = $customerId");
 
     if (customerId.isEmpty) {
-      errorToast("Customer UUID not found");
+      errorToast("customer_uuid_not_found".tr);
     }
   }
 
   Future<void> submitVehicle() async {
     if (customerId.isEmpty) {
-      errorToast("Customer UUID not found");
+      errorToast("customer_uuid_not_found".tr);
       return;
     }
 
@@ -59,7 +59,7 @@ class AddCarController extends GetxController {
           vehicleNumberController.text.toLowerCase().trim());
 
       if (alreadyExists) {
-        errorToast("This vehicle number already exists");
+        errorToast("this_vehicle_number_already_exists".tr);
         isLoading.value = false;
         return;
       }

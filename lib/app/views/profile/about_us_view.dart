@@ -14,9 +14,9 @@ class AboutUsView extends GetView<AboutUsController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'About Us',
-          style: TextStyle(
+        title: Text(
+          'about_us'.tr,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -42,21 +42,21 @@ class AboutUsView extends GetView<AboutUsController> {
                   ),
                 ],
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Car Wash Customer App',
-                    style: TextStyle(
+                    'about_app_title'.tr,
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
-                    'We are dedicated to delivering easy, convenient, and premium car care services right to your doorstep or at our partner locations. Our goal is to save time while delivering exceptional quality and a smooth customer experience.',
-                    style: TextStyle(
+                    'about_app_body'.tr,
+                    style: const TextStyle(
                       fontSize: 14,
                       height: 1.7,
                       color: Colors.black87,
@@ -67,21 +67,18 @@ class AboutUsView extends GetView<AboutUsController> {
             ),
             const SizedBox(height: 18),
             _infoCard(
-              title: 'Our mission',
-              body:
-                  'To make professional car washing simple, reliable, and accessible for every customer through technology and trusted service providers.',
+              title: 'our_mission'.tr,
+              body: 'our_mission_body'.tr,
             ),
             const SizedBox(height: 14),
             _infoCard(
-              title: 'Our values',
-              body:
-                  'We value transparency, quality service, punctuality, customer convenience, and consistent support from booking to completion.',
+              title: 'our_values'.tr,
+              body: 'our_values_body'.tr,
             ),
             const SizedBox(height: 14),
             _infoCard(
-              title: 'Why choose us',
-              body:
-                  'Easy app booking, flexible service options, verified professionals, and a customer-first approach create a seamless car care experience for every order.',
+              title: 'why_choose_us'.tr,
+              body: 'why_choose_us_body'.tr,
             ),
           ],
         ),

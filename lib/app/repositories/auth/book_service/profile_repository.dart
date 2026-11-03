@@ -14,18 +14,4 @@ class ProfileRepository {
   Future<Response> getPrivacyPolicy() async {
     return await ApiService.get(EndPoints.apiGetPrivacyPolicy);
   }
-
-  Future<Response> getCustomerCoupon(String bookingCode) async {
-    return await ApiService.get(
-      "${EndPoints.apiGetcoupons}?booking_code=$bookingCode",
-    );
-  }
-
-  Future<Response> apiGetcouponslist() async {
-    return await ApiService.get(EndPoints.apiGetcouponslist);
-  }
-
-  Future<Response> apiGetCouponDetails() async {
-    return await ApiService.get(EndPoints.apigetcoupondetails);
-  }
 }

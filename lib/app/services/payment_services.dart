@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:car_wash_customer_app/app/models/payment/saved_card_model.dart';
 import 'package:car_wash_customer_app/app/services/api_service.dart';
 import 'package:car_wash_customer_app/app/services/endpoints.dart';
 
@@ -15,11 +16,14 @@ class PaymentService {
     double? latitude,
     double? longitude,
     String? pincode,
+    String? city,
     String? formattedAddress,
     String? address,
     String? houseNumber,
     String? landmark,
     String? addressLabel,
+    bool saveCard = false,
+    int? savedCardId,
   }) async {
     try {
       final requestBody = {
@@ -34,17 +38,22 @@ class PaymentService {
         "latitude": latitude,
         "longitude": longitude,
         "pincode": pincode,
+        "city": city,
         "formatted_address": formattedAddress,
         "address": address,
         "house_number": houseNumber,
         "landmark": landmark,
         "address_label": addressLabel,
+        // Tokenization: `save_card` only applies to a newly typed card, while
+        // `saved_card_id` tells the backend to reuse a stored Paymob token.
+        "save_card": saveCard,
+        "saved_card_id": savedCardId,
       };
 
       print("========================================");
       print("💳 PAYMENT CREATE REQUEST");
       print("ENDPOINT: ${EndPoints.apiPaymentCreate}");
-      print("Pincode: $pincode");
+      print("Pincode: $pincode | City: $city");
       print("BODY: $requestBody");
       print("========================================");
 
@@ -75,6 +84,223 @@ class PaymentService {
     } catch (e) {
       print("❌ PAYMENT CREATE ERROR: $e");
       throw Exception("Payment create failed: $e");
+    }
+  }
+
+  /// Returns the cards the signed-in customer saved with Paymob.
+  ///
+  /// Expected shape:
+  /// ```json
+  /// { "success": true,
+  ///   "cards": [ { "id": 3, "masked_pan": "xxxx-1111",
+  ///                "card_brand": "VISA", "is_default": true } ] }
+  /// ```
+  /// The Paymob token itself never leaves the backend — only `id` is used.
+  Future<List<SavedCardModel>> fetchSavedCards() async {
+    try {
+      final response = await ApiService.get(
+        EndPoints.apiSavedCards,
+        requireAuthToken: true,
+      );
+
+      print("========================================");
+      print("💳 SAVED CARDS RESPONSE");
+      print("Status: ${response.statusCode}");
+      print("Data: ${response.data}");
+      print("========================================");
+
+      final data = response.data;
+
+      if (data is! Map) return [];
+
+      final cards = data["cards"];
+
+      if (cards is! List) return [];
+
+      return cards
+          .whereType<Map>()
+          .map((card) => SavedCardModel.fromJson(
+                Map<String, dynamic>.from(card),
+              ))
+          .where((card) => card.id > 0)
+          .toList();
+    } on DioException catch (e) {
+      // A logged-out / expired session must not break checkout: the customer
+      // can still pay by typing the card.
+      print(
+        "⚠️ SAVED CARDS ERROR: "
+        "${e.response?.statusCode} - ${e.response?.data}",
+      );
+
+      return [];
+    } catch (e) {
+      print("⚠️ SAVED CARDS ERROR: $e");
+      return [];
+    }
+  }
+
+  /// Removes a saved card from the account.
+  ///
+  /// Returns true only when the backend confirms the deletion, so the UI never
+  /// hides a card that still exists on the server.
+  Future<bool> deleteSavedCard(int cardId) async {
+    try {
+      final response = await ApiService.delete(
+        "${EndPoints.apiSavedCards}/$cardId",
+        requireAuthToken: true,
+      );
+
+      print("========================================");
+      print("🗑️ DELETE SAVED CARD");
+      print("Card ID: $cardId");
+      print("Status: ${response.statusCode}");
+      print("Data: ${response.data}");
+      print("========================================");
+
+      final data = response.data;
+
+      return data is Map && data["success"] == true;
+    } on DioException catch (e) {
+      print(
+        "❌ DELETE SAVED CARD ERROR: "
+        "${e.response?.statusCode} - ${e.response?.data}",
+      );
+
+      return false;
+    } catch (e) {
+      print("❌ DELETE SAVED CARD ERROR: $e");
+      return false;
+    }
+  }
+
+  /// Returns the payment methods the backend currently has enabled.
+  ///
+  /// Expected shape:
+  /// ```json
+  /// { "success": true,
+  ///   "payment_methods": { "card": { "enabled": true },
+  ///                        "apple_pay": { "enabled": true } } }
+  /// ```
+  /// Nothing is assumed about Apple Pay: it is offered only when the backend
+  /// reports it as enabled.
+  Future<Map<String, dynamic>> fetchPaymentMethods() async {
+    try {
+      final response = await ApiService.get(
+        EndPoints.apiPaymentMethods,
+        requireAuthToken: true,
+      );
+
+      print("========================================");
+      print("💳 PAYMENT METHODS RESPONSE");
+      print("Status: ${response.statusCode}");
+      print("Data: ${response.data}");
+      print("========================================");
+
+      final data = response.data;
+
+      if (data is Map) {
+        return Map<String, dynamic>.from(data);
+      }
+
+      throw Exception("Unexpected payment methods response: ${response.data}");
+    } on DioException catch (e) {
+      print("❌ PAYMENT METHODS ERROR: "
+          "${e.response?.statusCode} - ${e.response?.data}");
+
+      throw Exception(
+        "Payment methods failed: "
+        "${e.response?.statusCode} - ${e.response?.data}",
+      );
+    }
+  }
+
+  /// Creates a Paymob payment intention for Apple Pay.
+  ///
+  /// A successful response only means the intention was created — the payment
+  /// is NOT complete until `/payment/status/attempt/:id` reports `PAID`.
+  ///
+  /// The request mirrors [createPayment]'s booking + location payload because
+  /// the backend re-validates the service area on this endpoint too.
+  Future<Map<String, dynamic>> createApplePayPayment({
+    required String customerId,
+    required String customerName,
+    required String vehicle,
+    required String serviceId,
+    required String serviceName,
+    required int slotId,
+    required String scheduledAt,
+    required double amount,
+    double? latitude,
+    double? longitude,
+    String? pincode,
+    String? city,
+    String? formattedAddress,
+    String? address,
+    String? houseNumber,
+    String? landmark,
+    String? addressLabel,
+  }) async {
+    try {
+      final requestBody = {
+        "customer_id": customerId,
+        "customer_name": customerName,
+        "vehicle": vehicle,
+        "service_id": serviceId,
+        "service_name": serviceName,
+        "slot_id": slotId,
+        "scheduled_at": scheduledAt,
+        "amount": amount,
+        "latitude": latitude,
+        "longitude": longitude,
+        "pincode": pincode,
+        "city": city,
+        "formatted_address": formattedAddress,
+        "address": address,
+        "house_number": houseNumber,
+        "landmark": landmark,
+        "address_label": addressLabel,
+      };
+
+      print("========================================");
+      print("🍎 APPLE PAY CREATE REQUEST");
+      print("ENDPOINT: ${EndPoints.apiApplePayCreate}");
+      print("Pincode: $pincode | City: $city");
+      print("BODY: $requestBody");
+      print("========================================");
+
+      final response = await ApiService.post(
+        EndPoints.apiApplePayCreate,
+        requestBody,
+        requireAuthToken: true,
+      );
+
+      print("========================================");
+      print("🍎 APPLE PAY CREATE RESPONSE");
+      print("Status: ${response.statusCode}");
+      print("Data: ${response.data}");
+      print("========================================");
+
+      final data = response.data;
+
+      if (data is Map) {
+        return Map<String, dynamic>.from(data);
+      }
+
+      throw Exception("Unexpected Apple Pay response: ${response.data}");
+    } on DioException catch (e) {
+      print("========================================");
+      print("❌ APPLE PAY CREATE DIO ERROR");
+      print("Status: ${e.response?.statusCode}");
+      print("Response: ${e.response?.data}");
+      print("========================================");
+
+      throw Exception(
+        "Apple Pay create failed: "
+        "${e.response?.statusCode} - ${e.response?.data}",
+      );
+    } catch (e) {
+      print("❌ APPLE PAY CREATE ERROR: $e");
+      throw Exception("Apple Pay create failed: $e");
     }
   }
 

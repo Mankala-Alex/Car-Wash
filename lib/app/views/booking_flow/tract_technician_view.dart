@@ -2,6 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/tract_technician_controller.dart';
 
+/// Maps a backend booking status to a localized label.
+String _localizedStatus(String status) {
+  switch (status.toUpperCase()) {
+    case 'PENDING':
+      return 'pending'.tr;
+    case 'ASSIGNED':
+      return 'assigned'.tr;
+    case 'ARRIVED':
+      return 'arrived'.tr;
+    case 'IN_PROGRESS':
+      return 'in_progress'.tr;
+    case 'COMPLETED':
+      return 'completed'.tr;
+    case 'CANCELLED':
+      return 'cancelled'.tr;
+    default:
+      return status;
+  }
+}
+
 class TractTechnicianView extends GetView<TrackTechnicianController> {
   const TractTechnicianView({super.key});
 
@@ -137,7 +157,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                     const SizedBox(height: 4),
 
                     Text(
-                      booking.status,
+                      _localizedStatus(booking.status),
                       style: const TextStyle(color: Colors.grey),
                     ),
 
@@ -168,7 +188,7 @@ class TractTechnicianView extends GetView<TrackTechnicianController> {
                                 ),
                               ),
                               Text(
-                                "Booking ID: ${booking.bookingCode}",
+                                "${'booking_id'.tr}: ${booking.bookingCode}",
                                 style: const TextStyle(color: Colors.grey),
                               ),
                             ],

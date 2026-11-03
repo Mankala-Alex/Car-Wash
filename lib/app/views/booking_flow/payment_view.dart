@@ -36,9 +36,9 @@ class PaymentScreen extends GetView<PaymentController> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        const Text(
-                          "Secure Checkout",
-                          style: TextStyle(
+                        Text(
+                          "secure_checkout".tr,
+                          style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
@@ -116,9 +116,9 @@ class PaymentScreen extends GetView<PaymentController> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const Text(
-                                            "Selected Service",
-                                            style: TextStyle(
+                                          Text(
+                                            "selected_service".tr,
+                                            style: const TextStyle(
                                               color: Colors.grey,
                                             ),
                                           ),
@@ -236,7 +236,7 @@ class PaymentScreen extends GetView<PaymentController> {
                                   children: [
                                     Text("subtotal".tr),
                                     Text(
-                                      "${controller.amount.toStringAsFixed(2)} SAR",
+                                      "${controller.amount.toStringAsFixed(2)} ${'sar'.tr}",
                                     ),
                                   ],
                                 ),
@@ -248,7 +248,7 @@ class PaymentScreen extends GetView<PaymentController> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text("${"tax".tr} (0%)"),
-                                    const Text("0.00 SAR"),
+                                    Text("0.00 ${'sar'.tr}"),
                                   ],
                                 ),
 
@@ -275,7 +275,7 @@ class PaymentScreen extends GetView<PaymentController> {
                                         ),
                                       ),
                                       Text(
-                                        "${controller.amount.toStringAsFixed(2)} SAR",
+                                        "${controller.amount.toStringAsFixed(2)} ${'sar'.tr}",
                                         style: const TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
@@ -367,9 +367,9 @@ class PaymentScreen extends GetView<PaymentController> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      "Secure 256-bit SSL Encrypted Payment",
-                      style: TextStyle(
+                    Text(
+                      "secure_payment_note".tr,
+                      style: const TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
                       ),

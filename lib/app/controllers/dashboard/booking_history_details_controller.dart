@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
+import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 
 class BookingHistoryDetailsController extends GetxController {
   late Datum booking;
@@ -19,6 +20,17 @@ class BookingHistoryDetailsController extends GetxController {
     booking = Get.arguments as Datum;
 
     loadReview();
+  }
+
+  /// Opens the booking-specific Help flow for THIS booking.
+  void openBookingHelp() {
+    Get.toNamed(
+      Routes.bookingHelp,
+      arguments: {
+        'booking_id': booking.id,
+        'booking_code': booking.bookingCode,
+      },
+    );
   }
 
   Future<void> loadReview() async {

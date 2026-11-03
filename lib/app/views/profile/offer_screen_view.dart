@@ -11,8 +11,8 @@ class OfferScreenView extends GetView<OfferScreenController> {
 
     /// Discount title logic
     String discountTitle = offer.discountType == "percentage"
-        ? "${offer.discountValue}% OFF"
-        : "SAR ${offer.discountValue} OFF";
+        ? "${offer.discountValue}${'percent_off'.tr}"
+        : "${'sar'.tr} ${offer.discountValue} ${'off'.tr}";
 
     /// Expiry date
     String expiryDate = controller.getExpiryDate(offer.expiryDays);
@@ -105,9 +105,9 @@ class OfferScreenView extends GetView<OfferScreenController> {
                             ),
                           ),
                           const SizedBox(width: 10),
-                          const Text(
-                            "Expires on",
-                            style: TextStyle(
+                          Text(
+                            "expires_on".tr,
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                             ),
@@ -157,26 +157,26 @@ class OfferScreenView extends GetView<OfferScreenController> {
             const SizedBox(height: 40),
 
             /// Redeem button (no backend yet)
-            Container(
-              width: double.infinity,
-              height: 52,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.orange,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: TextButton(
-                onPressed: () {},
-                child: Text(
-                  "redeem_now".tr,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            // Container(
+            //   width: double.infinity,
+            //   height: 52,
+            //   margin: const EdgeInsets.only(bottom: 16),
+            //   decoration: BoxDecoration(
+            //     color: Colors.orange,
+            //     borderRadius: BorderRadius.circular(25),
+            //   ),
+            //   child: TextButton(
+            //     onPressed: () {},
+            //     child: Text(
+            //       "redeem_now".tr,
+            //       style: const TextStyle(
+            //         fontSize: 17,
+            //         fontWeight: FontWeight.w700,
+            //         color: Colors.white,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

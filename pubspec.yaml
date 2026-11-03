@@ -2,13 +2,15 @@ name: car_wash_customer_app
 description: "A template Flutter project for future apps."
 publish_to: "none"
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=3.4.3 <4.0.0"
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   # Core UI and utility packages
@@ -17,7 +19,7 @@ dependencies:
   shared_preferences: ^2.3.2
   flutter_secure_storage: ^9.2.4
   fluttertoast: ^8.2.12
-  intl: ^0.19.0
+  intl: ^0.20.2
   flutter_svg: ^2.0.17
   cached_network_image: ^3.4.1
   url_launcher: ^6.3.1
@@ -79,7 +81,7 @@ flutter:
 
 flutter_launcher_icons:
   android: true
-  ios: false
+  ios: true
   image_path: "assets/app_icon/app_icon.png"
   remove_alpha_ios: true
 

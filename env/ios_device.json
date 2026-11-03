@@ -1,0 +1,5 @@
+{
+    "APP_NAME": "My APP",
+    "IS_PRODUCTION": false,
+    "API_BASE_URL": "http://192.168.1.196:3000/api/"
+}

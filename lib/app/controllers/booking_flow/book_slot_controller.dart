@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
+import 'package:car_wash_customer_app/app/models/booking slot/services_model.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/slot_dates_model.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/slot_times_model.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/saved_location_model.dart';
@@ -23,6 +25,11 @@ class BookSlotController extends GetxController {
 
   final selectedDate = Rx<DateTime?>(null);
   final selectedTimeSlot = Rx<String?>(null);
+
+  /// 24-hour start time (e.g. "09:00") used to build `scheduled_at`.
+  /// The 12-hour label stored in [selectedTimeSlot] is display-only.
+  String selectedSlotTime24h = "";
+
   final selectedVehicle = Rx<String?>(null);
   final selectedAddress = Rx<String?>("Home");
 
@@ -43,6 +50,12 @@ class BookSlotController extends GetxController {
   final serviceabilityMessage = ''.obs;
   final selectedPincode = ''.obs;
 
+  /// City resolved by the availability check (`Jeddah`, `Riyadh`, …).
+  /// Sent to `payment/create`, otherwise the backend re-checks with the
+  /// pincode only and loses the city-level fallback that matched here.
+  final serviceAreaCity = ''.obs;
+  final serviceAreaMatch = ''.obs;
+
   //-----------------------
   // CUSTOMER INFO
   //-----------------------
@@ -55,10 +68,17 @@ class BookSlotController extends GetxController {
   //-----------------------
   late String name;
   late String description;
-  late String price;
   late String serviceId;
   late List<String> features;
   late String image;
+
+  /// Price breakdown, produced by the backend (services payload). The app never
+  /// computes VAT itself, so these stay reactive: they are refreshed from the
+  /// API every time the screen opens (see [refreshPricing]).
+  final price = ''.obs;
+  final vatPercentage = 0.0.obs;
+  final vatAmount = 0.0.obs;
+  final totalAmountValue = 0.0.obs;
 
   bool isSameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
@@ -86,6 +106,7 @@ class BookSlotController extends GetxController {
       selectedDate.value = null;
       selectedTimeSlot.value = null;
       selectedSlotId.value = 0;
+      selectedSlotTime24h = "";
 
       print("🟦 EDIT MODE ENABLED for $editBookingCode");
     }
@@ -93,12 +114,69 @@ class BookSlotController extends GetxController {
     image = data["image"] ?? "";
     name = data["name"] ?? "";
     description = data["description"] ?? "";
-    price = data["price"].toString();
+    price.value = data["price"].toString();
     serviceId = (data["service_id"] ?? data["id"] ?? "").toString();
     features = List<String>.from(data["features"] ?? []);
 
+    // VAT breakdown comes from the backend; missing values mean "no extra tax".
+    final double parsedPrice = double.tryParse(price.value) ?? 0.0;
+    vatPercentage.value = _toDouble(data["vat_percentage"]);
+    vatAmount.value = _toDouble(data["vat_amount"]);
+    totalAmountValue.value = _toDouble(
+      data["total_amount"],
+      fallback: parsedPrice + vatAmount.value,
+    );
+
     initData();
+    refreshPricing();
     loadSavedLocations(); // Load locations from storage
+  }
+
+  static double _toDouble(dynamic value, {double fallback = 0}) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? fallback;
+  }
+
+  /// Re-reads the price breakdown (price, VAT rate/amount and total) from the
+  /// backend whenever this screen opens.
+  ///
+  /// The breakdown reaches this screen through the route arguments, which are a
+  /// snapshot of the service list the home screen loaded. That list is only
+  /// reloaded on pull-to-refresh, so a VAT change made on the backend kept
+  /// showing the previous rate on every later visit. Fetching the service again
+  /// here keeps both this screen and the home screen cache truthful.
+  Future<void> refreshPricing() async {
+    if (serviceId.isEmpty) return;
+
+    try {
+      final response = await repository.fetchAllServices();
+      final data = response.data;
+      if (data is! List) return;
+
+      final services = data
+          .map(
+            (e) => Servicesmodel.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
+          .toList();
+
+      // Hand the fresh list back to the home screen so it stops showing the
+      // stale prices/VAT as well (no manual pull-to-refresh needed).
+      if (Get.isRegistered<FeaturesListController>()) {
+        Get.find<FeaturesListController>().applyServices(services);
+      }
+
+      final match = services.firstWhereOrNull((s) => s.id == serviceId);
+      if (match == null) return;
+
+      price.value = match.price.toString();
+      vatPercentage.value = match.vatPercentage;
+      vatAmount.value = match.vatAmount;
+      totalAmountValue.value = match.totalAmount;
+
+      print("💰 Pricing refreshed → VAT ${match.vatPercentage}%");
+    } catch (e) {
+      print("❌ Failed to refresh pricing: $e");
+    }
   }
 
   Future<void> initData() async {
@@ -125,6 +203,7 @@ class BookSlotController extends GetxController {
     selectedDate.value = newDate;
     selectedTimeSlot.value = null;
     selectedSlotId.value = 0;
+    selectedSlotTime24h = "";
 
     final match = slotDates.firstWhereOrNull(
       (d) => isSameDate(d.date, newDate),
@@ -139,9 +218,11 @@ class BookSlotController extends GetxController {
   //-----------------------
   // TIME SLOT SELECTION
   //-----------------------
-  void updateSelectedTimeSlot(String timeLabel, int slotId) {
-    selectedTimeSlot.value = timeLabel;
-    selectedSlotId.value = slotId;
+  void updateSelectedTimeSlot(TimeslotDatum slot) {
+    selectedTimeSlot.value = slot.displayStartLabel;
+    selectedSlotTime24h =
+        slot.startTime.isNotEmpty ? slot.startTime : slot.time;
+    selectedSlotId.value = slot.id;
   }
 
   //-----------------------
@@ -200,16 +281,13 @@ class BookSlotController extends GetxController {
     try {
       isLoadingDates(true);
 
-      final resp = await repository.apiGetslotdates();
+      // The backend already drops dates with no bookable slot left (full,
+      // started, or inside the 60 min lead time), so a finished day never shows
+      // up in the picker.
+      final resp = await repository.apiGetslotdates(availableOnly: true);
       final data = Slotsdatemodel.fromJson(resp.data);
 
-      final today = DateTime.now();
-
-      slotDates.value = data.data.where((d) {
-        final dDate = DateTime(d.date.year, d.date.month, d.date.day);
-        final tOnly = DateTime(today.year, today.month, today.day);
-        return dDate.isAtSameMomentAs(tOnly) || dDate.isAfter(tOnly);
-      }).toList();
+      slotDates.value = data.data;
     } catch (e) {
       print("❌ Failed to load dates: $e");
     } finally {
@@ -224,14 +302,44 @@ class BookSlotController extends GetxController {
     try {
       isLoadingTimes(true);
 
-      final resp = await repository.apiGettimeslots(dateId);
+      final resp = await repository.apiGettimeslots(
+        dateId,
+        availableOnly: true,
+      );
       final data = Slottimesmodel.fromJson(resp.data);
 
-      slotTimes.value = data.data;
+      // Defensive: never show a slot that has no seat left, even if an older
+      // backend version ignores `availableOnly`.
+      slotTimes.value = data.data
+          .where(
+            (slot) =>
+                slot.maxBookings <= 0 ||
+                slot.currentBookings < slot.maxBookings,
+          )
+          .toList();
     } catch (e) {
       print("❌ Failed to load time slots: $e");
     } finally {
       isLoadingTimes(false);
+    }
+  }
+
+  /// Re-loads the slots of the selected date after coming back from the payment
+  /// flow, and clears the selection when the chosen time was taken meanwhile.
+  Future<void> refreshSelectedDateSlots() async {
+    final dateId = selectedDateId;
+
+    if (dateId == null) return;
+
+    final previousSlotId = selectedSlotId.value;
+
+    await fetchTimeslots(dateId);
+
+    final stillAvailable = slotTimes.any((slot) => slot.id == previousSlotId);
+
+    if (!stillAvailable) {
+      selectedSlotId.value = 0;
+      selectedTimeSlot.value = "";
     }
   }
 
@@ -264,15 +372,15 @@ class BookSlotController extends GetxController {
       return;
     }
     if (selectedSavedLocation.value == null) {
-      errorToast("Please select a location");
+      errorToast("please_select_a_location_msg".tr);
       return;
     }
     if (isCheckingServiceability.value) {
-      errorToast("Checking service availability. Please wait.");
+      errorToast("checking_service_availability".tr);
       return;
     }
     if (!isServiceable.value) {
-      errorToast("Service is not available in this area.");
+      errorToast("service_not_available_in_area".tr);
       return;
     }
     if (selectedSlotId.value == 0) {
@@ -286,11 +394,16 @@ class BookSlotController extends GetxController {
         return;
       }
 
+      // The stored booking amount must equal what the customer was actually
+      // charged (service price + VAT). The cancellation refund reverses
+      // `booking.amount * 100` cents, so sending the bare service price here
+      // overwrote 70.80 with 60.00 and the refund no longer matched the
+      // Paymob payment.
       final updateBody = {
         "vehicle": selectedVehicle.value,
         "service_id": serviceId,
         "service_name": name,
-        "amount": double.tryParse(price) ?? 0.0,
+        "amount": totalAmount,
         "slot_id": selectedSlotId.value,
         "scheduled_at": buildScheduledAt(),
       };
@@ -316,7 +429,7 @@ class BookSlotController extends GetxController {
 
     print("✅ VALIDATION PASSED — Building body…");
 
-    final double priceNumber = double.tryParse(price) ?? 0.0;
+    final double priceNumber = double.tryParse(price.value) ?? 0.0;
 
     final location = selectedSavedLocation.value;
 
@@ -361,6 +474,7 @@ class BookSlotController extends GetxController {
         "landmark": location?.landmark,
         "address_label": location?.label,
         "pincode": selectedPincode.value,
+        "city": serviceAreaCity.value,
         "image": image,
       },
     );
@@ -435,9 +549,7 @@ class BookSlotController extends GetxController {
   void updateSelectedAddress(String title) {
     selectedAddress.value = title;
 
-    final location = savedLocations.firstWhereOrNull(
-      (e) => e.label == title,
-    );
+    final location = savedLocations.firstWhereOrNull((e) => e.label == title);
 
     if (location != null) {
       selectedSavedLocation.value = location;
@@ -480,43 +592,69 @@ class BookSlotController extends GetxController {
     }
   }
 
-  Future<void> checkServiceability(String pincode) async {
+  /// Verifies serviceability using the saved location's map pin.
+  ///
+  /// Saudi postal codes are exactly 5 digits. When the geocoder cannot resolve
+  /// one, the coordinates are still sent so the backend can reverse-geocode.
+  Future<void> checkServiceability(
+    String pincode, {
+    double? latitude,
+    double? longitude,
+  }) async {
     final normalized = pincode.replaceAll(RegExp(r'[^0-9]'), '');
+    final hasValidPincode = RegExp(r'^\d{5}$').hasMatch(normalized);
+    final hasCoordinates = latitude != null && longitude != null;
 
-    if (!RegExp(r'^\d{5}$').hasMatch(normalized)) {
+    if (!hasValidPincode && !hasCoordinates) {
       selectedPincode.value = '';
+      serviceAreaCity.value = '';
+      serviceAreaMatch.value = '';
       isServiceable.value = false;
       isCheckingServiceability.value = false;
-      serviceabilityMessage.value =
-          'Unable to determine the postal code for this location.';
+      serviceabilityMessage.value = 'unable_to_determine_postal'.tr;
       return;
     }
 
-    selectedPincode.value = normalized;
+    selectedPincode.value = hasValidPincode ? normalized : '';
     isCheckingServiceability.value = true;
     isServiceable.value = false;
-    serviceabilityMessage.value = 'Checking service availability...';
+    serviceabilityMessage.value = 'checking_service_availability_short'.tr;
 
     try {
-      final response = await repository.checkCustomerServiceability(normalized);
+      final response = await repository.checkCustomerServiceability(
+        hasValidPincode ? normalized : null,
+        latitude: latitude,
+        longitude: longitude,
+      );
       final data = response.data is Map
           ? Map<String, dynamic>.from(response.data)
           : <String, dynamic>{};
 
       if (data['success'] == true && data['serviceable'] == true) {
         isServiceable.value = true;
-        final responsePincode = (data['pincode'] ?? normalized).toString();
-        selectedPincode.value = responsePincode;
-        serviceabilityMessage.value = 'Service is available in this area';
+        final responsePincode = (data['pincode'] ?? '').toString().trim();
+        if (responsePincode.isNotEmpty) {
+          selectedPincode.value = responsePincode;
+        }
+        serviceAreaCity.value = (data['city'] ?? '').toString().trim();
+        serviceAreaMatch.value = (data['match'] ?? '').toString().trim();
+        print(
+          '✅ Serviceable → match: ${data['match']}, source: ${data['pincode_source']}, pincode: ${data['pincode']}, city: ${data['city']}',
+        );
+        serviceabilityMessage.value = 'service_available_in_area'.tr;
         return;
       }
 
       isServiceable.value = false;
-      serviceabilityMessage.value = data['message']?.toString() ??
-          'Service is not available in this area.';
+      serviceAreaCity.value = '';
+      serviceAreaMatch.value = '';
+      serviceabilityMessage.value =
+          data['message']?.toString() ?? 'service_not_available_in_area'.tr;
     } catch (e) {
       isServiceable.value = false;
-      serviceabilityMessage.value = 'Unable to verify service availability.';
+      serviceAreaCity.value = '';
+      serviceAreaMatch.value = '';
+      serviceabilityMessage.value = 'unable_to_verify_service'.tr;
       print('Serviceability check failed: $e');
     } finally {
       isCheckingServiceability.value = false;
@@ -529,41 +667,33 @@ class BookSlotController extends GetxController {
       selectedPincode.value = '';
       isServiceable.value = false;
       isCheckingServiceability.value = false;
-      serviceabilityMessage.value = 'Please select a location.';
+      serviceabilityMessage.value = 'please_select_a_location_msg'.tr;
       return;
     }
 
+    // The saved pincode is only a hint — the map pin is always forwarded so
+    // the backend can resolve the real code (geocoder results are unreliable).
     final resolved = await _resolvePincodeForLocation(location);
-    if (resolved == null || resolved.isEmpty) {
-      selectedPincode.value = '';
-      isServiceable.value = false;
-      isCheckingServiceability.value = false;
-      serviceabilityMessage.value =
-          'Unable to determine the postal code for this location.';
-      return;
-    }
 
-    await checkServiceability(resolved);
+    await checkServiceability(
+      resolved ?? '',
+      latitude: location.latitude,
+      longitude: location.longitude,
+    );
   }
 
   String buildScheduledAt() {
     final date = selectedDate.value;
-    final time = selectedTimeSlot.value;
+    final time = selectedSlotTime24h;
 
-    if (date == null || time == null || time.isEmpty) return "";
+    if (date == null || time.isEmpty) return "";
 
     final parts = time.split(":");
     final hour = int.tryParse(parts[0]) ?? 0;
     final minute = int.tryParse(parts[1]) ?? 0;
 
     // Create LOCAL datetime
-    final local = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      hour,
-      minute,
-    );
+    final local = DateTime(date.year, date.month, date.day, hour, minute);
 
     // Convert to UTC but KEEP same time values
     final utcFixed = DateTime.utc(
@@ -578,17 +708,21 @@ class BookSlotController extends GetxController {
     return utcFixed.toIso8601String();
   }
 
-  //staically adding the $5 forprice as VAT
+  // Price breakdown: every value comes from the backend.
   double get servicePrice {
-    return double.tryParse(price) ?? 0.0;
+    return double.tryParse(price.value) ?? 0.0;
   }
 
-  double get vatAmount {
-    return servicePrice * 0.18;
+  /// VAT rate in percent (e.g. 15), as configured on the backend.
+  String get vatPercentLabel {
+    return vatPercentage.value % 1 == 0
+        ? vatPercentage.value.toStringAsFixed(0)
+        : vatPercentage.value.toStringAsFixed(2);
   }
 
+  /// Total (service price + VAT) as sent by the backend.
   double get totalAmount {
-    return servicePrice + vatAmount;
+    return totalAmountValue.value > 0 ? totalAmountValue.value : servicePrice;
   }
 
   // ===== LOCATION MANAGEMENT =====
@@ -610,10 +744,10 @@ class BookSlotController extends GetxController {
 
   /// Update an existing saved location
   void updateSavedLocation(
-      SavedLocation oldLocation, SavedLocation newLocation) {
-    int index = savedLocations.indexWhere(
-      (loc) => loc.id == oldLocation.id,
-    );
+    SavedLocation oldLocation,
+    SavedLocation newLocation,
+  ) {
+    int index = savedLocations.indexWhere((loc) => loc.id == oldLocation.id);
 
     if (index != -1) {
       savedLocations[index] = newLocation;
@@ -627,15 +761,17 @@ class BookSlotController extends GetxController {
       _saveSavedLocations();
 
       print(
-          '✏️ Location updated: ${newLocation.label} - ${newLocation.address}');
+        '✏️ Location updated: ${newLocation.label} - ${newLocation.address}',
+      );
     }
   }
 
   /// Load saved locations from SharedPreferences
   Future<void> loadSavedLocations() async {
     try {
-      String? locationsJson =
-          await SharedPrefsHelper.getString("savedLocations");
+      String? locationsJson = await SharedPrefsHelper.getString(
+        "savedLocations",
+      );
       if (locationsJson.isNotEmpty) {
         final List<dynamic> jsonList = jsonDecode(locationsJson);
         savedLocations.value = jsonList
@@ -647,7 +783,8 @@ class BookSlotController extends GetxController {
           refreshServiceabilityForSelectedLocation();
         }
         print(
-            '📍 Loaded ${savedLocations.length} saved locations from storage');
+          '📍 Loaded ${savedLocations.length} saved locations from storage',
+        );
       }
     } catch (e) {
       print('Error loading saved locations: $e');
@@ -690,8 +827,12 @@ class BookSlotController extends GetxController {
   }
 
   /// Add a new location to saved locations
-  void addLocation(String address, double latitude, double longitude,
-      {String? pincode}) {
+  void addLocation(
+    String address,
+    double latitude,
+    double longitude, {
+    String? pincode,
+  }) {
     final location = SavedLocation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       label: 'other'.tr,
@@ -708,7 +849,10 @@ class BookSlotController extends GetxController {
 
   /// Update selected location
   void updateSelectedLocation(
-      String address, double latitude, double longitude) {
+    String address,
+    double latitude,
+    double longitude,
+  ) {
     final location = SavedLocation(
       id: "",
       label: "",
@@ -731,8 +875,10 @@ class BookSlotController extends GetxController {
     List<Map<String, dynamic>> locations = [];
 
     // Add saved locations
-    locations.addAll(savedLocations
-        .map((loc) => {
+    locations.addAll(
+      savedLocations
+          .map(
+            (loc) => {
               'title': loc.label,
               'address': loc.address,
               'icon': 'location',
@@ -741,8 +887,10 @@ class BookSlotController extends GetxController {
               'houseNo': loc.houseNo,
               'landmark': loc.landmark,
               'phoneNumber': loc.phoneNumber,
-            })
-        .toList());
+            },
+          )
+          .toList(),
+    );
 
     return locations;
   }

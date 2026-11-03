@@ -14,6 +14,13 @@ class FeaturesListController extends GetxController {
     super.onInit();
   }
 
+  /// Applies a fresher services payload fetched by another screen (e.g. the
+  /// booking screen), so the cached list here never stays stale.
+  void applyServices(List<Servicesmodel> fresh) {
+    if (fresh.isEmpty) return;
+    services.assignAll(fresh);
+  }
+
   Future<void> getAllServices() async {
     try {
       isLoading.value = true;

@@ -43,7 +43,7 @@ class BookSlotView extends GetView<BookSlotController> {
                   _buildServiceCard(context),
                   const SizedBox(height: 16),
                   Text(
-                    "Select Your Vehicle",
+                    "select_your_vehicle".tr,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textDefaultLight,
@@ -82,8 +82,7 @@ class BookSlotView extends GetView<BookSlotController> {
           ),
 
           // ------------------ FIXED BOTTOM BUTTON ------------------
-          _buildBottomConfirmBookingBar(
-              context, MediaQuery.of(context).size.width, controller.price),
+          _buildBottomConfirmBookingBar(context),
         ],
       ),
     );
@@ -98,11 +97,7 @@ class BookSlotView extends GetView<BookSlotController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
+          BoxShadow(color: Colors.grey, blurRadius: 10, offset: Offset(0, 5)),
         ],
       ),
       child: Column(
@@ -165,12 +160,14 @@ class BookSlotView extends GetView<BookSlotController> {
                       height: 18,
                     ),
                     const SizedBox(width: 5),
-                    Text(
-                      controller.price,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                    Obx(
+                      () => Text(
+                        controller.price.value,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
                     ),
                   ],
                 ),
@@ -272,10 +269,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 borderRadius: BorderRadius.circular(14),
                 child: AspectRatio(
                   aspectRatio: 2.4, // same visual size as before
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
                 ),
               ),
               const SizedBox(height: 12),
@@ -325,8 +319,11 @@ class BookSlotView extends GetView<BookSlotController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_circle_outline,
-                size: 30, color: AppColors.textDefaultLight),
+            const Icon(
+              Icons.add_circle_outline,
+              size: 30,
+              color: AppColors.textDefaultLight,
+            ),
             const SizedBox(height: 8),
             Text(
               "add_new".tr,
@@ -349,60 +346,69 @@ class BookSlotView extends GetView<BookSlotController> {
       return SizedBox(
         height: 100,
         child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: controller.slotDates.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 15),
-            itemBuilder: (_, index) {
-              final d = controller.slotDates[index].date;
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.slotDates.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 15),
+          itemBuilder: (_, index) {
+            final d = controller.slotDates[index].date;
 
-              return Obx(() {
-                final bool isSelected = controller.selectedDate.value != null &&
-                    controller.isSameDate(controller.selectedDate.value!, d);
+            return Obx(() {
+              final bool isSelected = controller.selectedDate.value != null &&
+                  controller.isSameDate(controller.selectedDate.value!, d);
 
-                return GestureDetector(
-                  onTap: () => controller.updateSelectedDate(d),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primaryLight : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color:
-                            isSelected ? AppColors.primaryLight : Colors.grey,
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(DateFormat('MMM').format(d).toUpperCase(),
-                            style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.textDefaultLight,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold)),
-                        Text('${d.day}',
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.textDefaultLight)),
-                        Text(DateFormat('EEE').format(d).toUpperCase(),
-                            style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.textDefaultLight,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold)),
-                      ],
+              return GestureDetector(
+                onTap: () => controller.updateSelectedDate(d),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.primaryLight : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected ? AppColors.primaryLight : Colors.grey,
+                      width: isSelected ? 2 : 1,
                     ),
                   ),
-                );
-              });
-            }),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        DateFormat('MMM').format(d).toUpperCase(),
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textDefaultLight,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${d.day}',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textDefaultLight,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('EEE').format(d).toUpperCase(),
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textDefaultLight,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            });
+          },
+        ),
       );
     });
   }
@@ -439,7 +445,7 @@ class BookSlotView extends GetView<BookSlotController> {
         spacing: 12,
         runSpacing: 12,
         children: controller.slotTimes.map((slot) {
-          final label = slot.time;
+          final label = slot.displayStartLabel;
           //final String label = "${slot.startTime} - ${slot.endTime}";
           final bool isSelected = controller.selectedTimeSlot.value == label;
 
@@ -448,7 +454,7 @@ class BookSlotView extends GetView<BookSlotController> {
             label: Text(label),
             selected: isSelected,
             onSelected: slot.isActive
-                ? (_) => controller.updateSelectedTimeSlot(label, slot.id)
+                ? (_) => controller.updateSelectedTimeSlot(slot)
                 : null,
             selectedColor: AppColors.primaryLight,
             disabledColor: Colors.grey.shade300,
@@ -512,7 +518,9 @@ class BookSlotView extends GetView<BookSlotController> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                message.isEmpty ? 'Checking service availability...' : message,
+                message.isEmpty
+                    ? 'checking_service_availability_short'.tr
+                    : message,
                 style: TextStyle(
                   color: color,
                   fontSize: 12,
@@ -705,10 +713,9 @@ class BookSlotView extends GetView<BookSlotController> {
                     ),
                     Text(
                       address,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: AppColors.textLightGrayLight),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textLightGrayLight,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -768,9 +775,11 @@ class BookSlotView extends GetView<BookSlotController> {
                   const Spacer(),
                   Image.asset("assets/carwash/SAR.png", width: 15),
                   const SizedBox(width: 5),
-                  Text(
-                    controller.servicePrice.toStringAsFixed(2),
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                  Obx(
+                    () => Text(
+                      controller.servicePrice.toStringAsFixed(2),
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ],
               ),
@@ -778,17 +787,19 @@ class BookSlotView extends GetView<BookSlotController> {
               const SizedBox(height: 12),
 
               // VAT
-              Row(
-                children: [
-                  Text('vat'.tr),
-                  const Spacer(),
-                  Image.asset("assets/carwash/SAR.png", width: 15),
-                  const SizedBox(width: 5),
-                  Text(
-                    controller.vatAmount.toStringAsFixed(2),
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                ],
+              Obx(
+                () => Row(
+                  children: [
+                    Text('${'vat'.tr} (${controller.vatPercentLabel}%)'),
+                    const Spacer(),
+                    Image.asset("assets/carwash/SAR.png", width: 15),
+                    const SizedBox(width: 5),
+                    Text(
+                      controller.vatAmount.value.toStringAsFixed(2),
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
               ),
 
               const Divider(height: 25),
@@ -799,17 +810,21 @@ class BookSlotView extends GetView<BookSlotController> {
                   Text(
                     'total_amount'.tr,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const Spacer(),
                   Image.asset("assets/carwash/SAR.png", width: 18),
                   const SizedBox(width: 5),
-                  Text(
-                    controller.totalAmount.toStringAsFixed(2),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textDefaultLight,
+                  Obx(
+                    () => Text(
+                      controller.totalAmount.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textDefaultLight,
+                      ),
                     ),
                   ),
                 ],
@@ -823,8 +838,7 @@ class BookSlotView extends GetView<BookSlotController> {
 
   // ---------------- BOTTOM BAR ----------------
 
-  Widget _buildBottomConfirmBookingBar(
-      BuildContext context, double screenWidth, String totalAmount) {
+  Widget _buildBottomConfirmBookingBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
@@ -849,9 +863,9 @@ class BookSlotView extends GetView<BookSlotController> {
               children: [
                 Text(
                   "total".tr,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(color: Colors.grey[600]),
                 ),
                 Row(
                   children: [
@@ -861,12 +875,14 @@ class BookSlotView extends GetView<BookSlotController> {
                       height: 20,
                     ),
                     const SizedBox(width: 5),
-                    Text(
-                      controller.totalAmount.toStringAsFixed(2),
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1E293B),
-                          ),
+                    Obx(
+                      () => Text(
+                        controller.totalAmount.toStringAsFixed(2),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1E293B),
+                            ),
+                      ),
                     ),
                   ],
                 ),
@@ -884,8 +900,10 @@ class BookSlotView extends GetView<BookSlotController> {
                       ? AppColors.secondaryLight
                       : Colors.grey,
                   foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),

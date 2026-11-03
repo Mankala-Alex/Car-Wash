@@ -10,6 +10,9 @@ class Servicesmodel {
     required this.descriptionEn,
     required this.descriptionAr,
     required this.price,
+    required this.vatPercentage,
+    required this.vatAmount,
+    required this.totalAmount,
     required this.features,
     required this.isActive,
     required this.imageUrl,
@@ -30,6 +33,16 @@ class Servicesmodel {
   final String descriptionAr;
 
   final double price;
+
+  /// VAT rate in percent, computed by the backend (never hardcoded in the app).
+  final double vatPercentage;
+
+  /// VAT amount for one booking of this service.
+  final double vatAmount;
+
+  /// price + vatAmount, i.e. what the customer pays.
+  final double totalAmount;
+
   final List<String> features;
   final bool isActive;
   final String imageUrl;
@@ -46,21 +59,24 @@ class Servicesmodel {
       descriptionEn: json["description_en"]?.toString() ?? "",
       descriptionAr: json["description_ar"]?.toString() ?? "",
       price: json["price"] is num ? (json["price"] as num).toDouble() : 0.0,
+      vatPercentage: json["vat_percentage"] is num
+          ? (json["vat_percentage"] as num).toDouble()
+          : 0.0,
+      vatAmount: json["vat_amount"] is num
+          ? (json["vat_amount"] as num).toDouble()
+          : 0.0,
+      totalAmount: json["total_amount"] is num
+          ? (json["total_amount"] as num).toDouble()
+          : (json["price"] is num ? (json["price"] as num).toDouble() : 0.0),
       features: json["features"] == null
           ? []
           : List<String>.from(
-              (json["features"] as List).map(
-                (x) => x.toString(),
-              ),
+              (json["features"] as List).map((x) => x.toString()),
             ),
       isActive: json["is_active"] ?? json["isActive"] ?? false,
       imageUrl: json["image_url"]?.toString() ?? "",
-      createdAt: DateTime.tryParse(
-        json["created_at"]?.toString() ?? "",
-      ),
-      updatedAt: DateTime.tryParse(
-        json["updated_at"]?.toString() ?? "",
-      ),
+      createdAt: DateTime.tryParse(json["created_at"]?.toString() ?? ""),
+      updatedAt: DateTime.tryParse(json["updated_at"]?.toString() ?? ""),
     );
   }
 

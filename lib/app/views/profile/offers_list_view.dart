@@ -14,9 +14,9 @@ class OffersListView extends GetView<OffersController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Offers",
-          style: TextStyle(
+        title: Text(
+          "offers".tr,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -40,8 +40,8 @@ class OffersListView extends GetView<OffersController> {
 
             /// Discount title logic
             String discountTitle = offer.discountType == "percentage"
-                ? "${offer.discountValue}% OFF"
-                : "SAR ${offer.discountValue}";
+                ? "${offer.discountValue}${'percent_off'.tr}"
+                : "${'sar'.tr} ${offer.discountValue}";
 
             /// Expiry date logic
             String expiryDate =
@@ -96,7 +96,7 @@ class OffersListView extends GetView<OffersController> {
                         Text(
                           offer.terms.isNotEmpty
                               ? offer.title
-                              : "No description available",
+                              : "no_description_available".tr,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade700,
@@ -110,7 +110,7 @@ class OffersListView extends GetView<OffersController> {
                           children: [
                             /// EXPIRY
                             Text(
-                              "Expires: $expiryDate",
+                              "${'expires_colon'.tr} $expiryDate",
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey.shade600,

@@ -33,8 +33,8 @@ class PrivacyPolicyView extends GetView<PrivacyPolicyController> {
 
         final htmlContent = controller.documentContent;
         if (htmlContent.isEmpty) {
-          return const Center(
-            child: Text('No privacy policy available.'),
+          return Center(
+            child: Text('no_privacy_available'.tr),
           );
         }
 

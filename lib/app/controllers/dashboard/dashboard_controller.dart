@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/cancel_booking_sheet.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/secure_store.dart';
 import 'package:car_wash_customer_app/app/models/advertisement/advertisement_model.dart';
@@ -70,9 +71,8 @@ class DashboardController extends GetxController {
       if (data is List) {
         final List<AdvertisementModel> loadedAdvertisements = data
             .map(
-              (item) => AdvertisementModel.fromJson(
-                Map<String, dynamic>.from(item),
-              ),
+              (item) =>
+                  AdvertisementModel.fromJson(Map<String, dynamic>.from(item)),
             )
             .where((ad) => ad.status.toLowerCase() == 'active')
             .toList();
@@ -83,9 +83,7 @@ class DashboardController extends GetxController {
 
         advertisements.assignAll(loadedAdvertisements);
 
-        print(
-          "✅ Advertisements loaded: ${advertisements.length}",
-        );
+        print("✅ Advertisements loaded: ${advertisements.length}");
       } else {
         advertisements.clear();
 
@@ -291,6 +289,9 @@ class DashboardController extends GetxController {
         if (socketData.containsKey('washer_name')) {
           updatedJson['washer_name'] = socketData['washer_name'];
         }
+        if (socketData.containsKey('washer_phone')) {
+          updatedJson['washer_phone'] = socketData['washer_phone'];
+        }
 
         final updatedBooking = Datum.fromJson(updatedJson);
         currentBookings[currentIndex] = updatedBooking;
@@ -406,26 +407,38 @@ class DashboardController extends GetxController {
   void splitBookings(List<Datum> allBookings) {
     // CURRENT BOOKINGS (VISIBLE LIST)
     currentBookings.value = allBookings
-        .where((b) =>
-            b.status == "PENDING" ||
-            b.status == "ASSIGNED" ||
-            b.status == "ARRIVED" ||
-            b.status == "IN_PROGRESS")
+        .where(
+          (b) =>
+              b.status == "PENDING" ||
+              b.status == "ASSIGNED" ||
+              b.status == "ARRIVED" ||
+              b.status == "IN_PROGRESS",
+        )
         .toList();
 
     // TRACKING BOOKING (PRIORITY BASED)
     final trackingList = allBookings
-        .where((b) =>
-            b.status == "IN_PROGRESS" ||
-            b.status == "ARRIVED" ||
-            b.status == "ASSIGNED")
+        .where(
+          (b) =>
+              b.status == "IN_PROGRESS" ||
+              b.status == "ARRIVED" ||
+              b.status == "ASSIGNED",
+        )
         .toList();
 
     trackingBooking.value = trackingList.isNotEmpty ? trackingList.first : null;
 
     // PAST BOOKINGS
-    pastBookings.value =
-        allBookings.where((b) => b.status == "COMPLETED").toList();
+    // Completed services AND cancelled ones (an approved cancellation keeps the
+    // booking row, so the customer can still see its details and refund state).
+    pastBookings.value = allBookings
+        .where(
+          (b) =>
+              b.status == "COMPLETED" ||
+              b.status == "CANCELLED" ||
+              b.status == "CANCELED",
+        )
+        .toList();
 
     for (final booking in pastBookings) {
       if (booking.id.isNotEmpty &&
@@ -523,7 +536,7 @@ class DashboardController extends GetxController {
 
       if (code == 401 || code == 403) {
         reviewsByBookingId.remove(bookingId);
-        errorToast('Please login again to continue');
+        errorToast('please_login_again'.tr);
         return;
       }
 
@@ -549,12 +562,12 @@ class DashboardController extends GetxController {
     required String comment,
   }) async {
     if (bookingId.trim().isEmpty) {
-      errorToast('Invalid booking');
+      errorToast('invalid_booking'.tr);
       return;
     }
 
     if (rating < 1 || rating > 5) {
-      errorToast('Please select a rating between 1 and 5 stars');
+      errorToast('select_rating_range'.tr);
       return;
     }
 
@@ -568,23 +581,23 @@ class DashboardController extends GetxController {
       final review = ReviewModel.fromResponse(response.data);
       if (review != null) {
         reviewsByBookingId[bookingId] = review;
-        successToast('Review submitted successfully');
+        successToast('review_submitted'.tr);
         await fetchBookingHistory();
         await loadReviewForBooking(bookingId);
         update();
         return;
       }
 
-      errorToast('Review could not be submitted');
+      errorToast('review_failed'.tr);
     } on DioException catch (e) {
       final errorMessage = _extractReviewErrorMessage(e);
       if (errorMessage.isNotEmpty) {
         errorToast(errorMessage);
       } else {
-        errorToast('Unable to submit review right now');
+        errorToast('unable_submit_review'.tr);
       }
     } catch (e) {
-      errorToast('Unable to submit review right now');
+      errorToast('unable_submit_review'.tr);
     }
   }
 
@@ -614,25 +627,84 @@ class DashboardController extends GetxController {
     return '';
   }
 
-  Future<void> cancelBooking(String bookingCode) async {
+  /// Opens the cancellation sheet for a booking.
+  ///
+  /// Loads the cancellation policy + the reason list + whether this booking is
+  /// still cancellable (technician not assigned and inside the allowed window),
+  /// then shows [CancelBookingSheet]. Submitting only creates a request — an
+  /// admin approves it in the portal and only then is the payment refunded.
+  Future<void> openCancellationSheet(String bookingCode) async {
+    if (bookingCode.isEmpty) return;
+
     isLoading.value = true;
 
     try {
-      final resp = await repo.cancelBooking(bookingCode);
+      final resp = await repo.getCancellationPolicy(bookingCode);
+      final data = Map<String, dynamic>.from(resp.data as Map);
+
+      if (data["success"] != true) {
+        errorToast("failed_to_load_cancellation_policy".tr);
+        return;
+      }
+
+      final isArabic = Get.locale?.languageCode == 'ar';
+
+      Get.bottomSheet(
+        CancelBookingSheet(
+          data: data,
+          isArabic: isArabic,
+          onSubmit: (reasonCode, notes) async {
+            return await submitCancellationRequest(
+              bookingCode,
+              reasonCode: reasonCode,
+              notes: notes,
+            );
+          },
+        ),
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black54,
+      );
+    } catch (e) {
+      print("❌ Cancellation policy error: $e");
+      errorToast("failed_to_load_cancellation_policy".tr);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Sends the cancellation request to the backend.
+  Future<bool> submitCancellationRequest(
+    String bookingCode, {
+    required String reasonCode,
+    String? notes,
+  }) async {
+    try {
+      final resp = await repo.requestCancellation(
+        bookingCode,
+        reasonCode: reasonCode,
+        notes: notes,
+      );
 
       if (resp.data["success"] == true) {
-        successToast("booking_cancelled_successfully".tr);
-
-        // re-fetch history
+        successToast("cancellation_request_sent".tr);
         fetchBookingHistory();
-      } else {
-        errorToast("failed_to_cancel_booking".tr);
+        return true;
       }
-    } catch (e) {
-      errorToast("Error: $e");
-    }
 
-    isLoading.value = false;
+      errorToast("failed_to_cancel_booking".tr);
+      return false;
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      final message = data is Map ? data["message"]?.toString() : null;
+
+      errorToast(message ?? "failed_to_cancel_booking".tr);
+      return false;
+    } catch (e) {
+      print("❌ Cancellation request error: $e");
+      errorToast("failed_to_cancel_booking".tr);
+      return false;
+    }
   }
 
   // EDIT

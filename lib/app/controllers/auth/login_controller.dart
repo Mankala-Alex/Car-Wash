@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../helpers/api_error_helper.dart';
 import '../../helpers/flutter_toast.dart';
 import '../../repositories/auth/auth_repository.dart';
 import '../../models/auth/login_model.dart';
@@ -56,7 +57,11 @@ class LoginController extends GetxController {
       );
     } catch (e) {
       isLoading(false);
-      errorToast("something_went_wrong".tr);
+      print("Request OTP Error: $e");
+
+      errorToast(
+        apiErrorMessage(e, "something_went_wrong".tr),
+      );
     }
   }
 }

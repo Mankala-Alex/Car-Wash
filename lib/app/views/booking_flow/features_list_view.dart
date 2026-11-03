@@ -99,25 +99,26 @@ class FeaturesListView extends GetView<FeaturesListController> {
                         Expanded(
                           child: Text(
                             service.getLocalizedName(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
+                            style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
                           ),
                         ),
-                        Image.asset("assets/carwash/SAR.png",
-                            width: 18, height: 18),
+                        Image.asset(
+                          "assets/carwash/SAR.png",
+                          width: 18,
+                          height: 18,
+                        ),
                         const SizedBox(width: 5),
                         Text(
                           service.price.toString(),
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: AppColors.bgBlackLight,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AppColors.bgBlackLight,
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                       ],
                     ),
@@ -128,9 +129,9 @@ class FeaturesListView extends GetView<FeaturesListController> {
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                     child: Text(
                       service.getLocalizedDescription(),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.black,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.black),
                     ),
                   ),
 
@@ -144,8 +145,11 @@ class FeaturesListView extends GetView<FeaturesListController> {
                           padding: const EdgeInsets.symmetric(vertical: 2),
                           child: Row(
                             children: [
-                              const Icon(Icons.check_circle,
-                                  color: AppColors.textGreenLight, size: 18),
+                              const Icon(
+                                Icons.check_circle,
+                                color: AppColors.textGreenLight,
+                                size: 18,
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -170,7 +174,8 @@ class FeaturesListView extends GetView<FeaturesListController> {
                           foregroundColor: AppColors.textWhiteLight,
                           backgroundColor: AppColors.secondaryLight,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
                         onPressed: () {
@@ -191,6 +196,10 @@ class FeaturesListView extends GetView<FeaturesListController> {
                               "price": service.price.toString(),
                               "service_id": service.id,
                               "features": service.features,
+                              // VAT breakdown from the backend
+                              "vat_percentage": service.vatPercentage,
+                              "vat_amount": service.vatAmount,
+                              "total_amount": service.totalAmount,
                             },
                           );
                         },

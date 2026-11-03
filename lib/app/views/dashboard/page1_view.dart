@@ -8,6 +8,8 @@ import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
 import '../../routes/app_routes.dart'; // To navigate to Routes.BOOK_SLOT
@@ -98,8 +100,9 @@ class Page1View extends GetView<DashboardController> {
                       enlargeCenterPage: true,
                       viewportFraction: 0.95,
                       autoPlayInterval: const Duration(seconds: 3),
-                      autoPlayAnimationDuration:
-                          const Duration(milliseconds: 800),
+                      autoPlayAnimationDuration: const Duration(
+                        milliseconds: 800,
+                      ),
                       enableInfiniteScroll:
                           controller.advertisements.length > 1,
                     ),
@@ -108,6 +111,7 @@ class Page1View extends GetView<DashboardController> {
                     }).toList(),
                   );
                 }),
+
                 // --- Top Carousel Section ---
                 // Obx(() {
                 //   if (featuresController.isLoading.value) {
@@ -260,7 +264,6 @@ class Page1View extends GetView<DashboardController> {
                 //     }),
                 //   );
                 // }),
-
                 const SizedBox(height: 25),
 
                 // --- Doorstep & In-Store Wash Buttons ---
@@ -307,7 +310,8 @@ class Page1View extends GetView<DashboardController> {
                                   separatorBuilder: (_, __) =>
                                       const SizedBox(width: 14),
                                   itemBuilder: (context, index) => SizedBox(
-                                    width: MediaQuery.of(context).size.width *
+                                    width:
+                                        MediaQuery.of(context).size.width *
                                         0.52,
                                     child: const SkeletonBox(
                                       width: double.infinity,
@@ -405,21 +409,23 @@ class Page1View extends GetView<DashboardController> {
                                     onTap: () {
                                       _showServiceDetails(
                                         name: service.getLocalizedName(),
-                                        description:
-                                            service.getLocalizedDescription(),
+                                        description: service
+                                            .getLocalizedDescription(),
                                         price: service.price,
                                       );
                                     },
                                     child: Container(
-                                      width: MediaQuery.of(context).size.width *
+                                      width:
+                                          MediaQuery.of(context).size.width *
                                           0.52,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(18),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black
-                                                .withValues(alpha: 0.08),
+                                            color: Colors.black.withValues(
+                                              alpha: 0.08,
+                                            ),
                                             blurRadius: 12,
                                             offset: const Offset(0, 4),
                                           ),
@@ -433,9 +439,9 @@ class Page1View extends GetView<DashboardController> {
                                           ClipRRect(
                                             borderRadius:
                                                 const BorderRadius.only(
-                                              topLeft: Radius.circular(18),
-                                              topRight: Radius.circular(18),
-                                            ),
+                                                  topLeft: Radius.circular(18),
+                                                  topRight: Radius.circular(18),
+                                                ),
                                             child: Image.network(
                                               imageUrl,
                                               width: double.infinity,
@@ -443,18 +449,19 @@ class Page1View extends GetView<DashboardController> {
                                               fit: BoxFit.cover,
                                               errorBuilder:
                                                   (context, error, stackTrace) {
-                                                return Container(
-                                                  height: 120,
-                                                  color: Colors.grey.shade200,
-                                                  child: const Center(
-                                                    child: Icon(
-                                                      Icons.local_car_wash,
-                                                      size: 40,
-                                                      color: Colors.grey,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
+                                                    return Container(
+                                                      height: 120,
+                                                      color:
+                                                          Colors.grey.shade200,
+                                                      child: const Center(
+                                                        child: Icon(
+                                                          Icons.local_car_wash,
+                                                          size: 40,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
                                             ),
                                           ),
 
@@ -488,18 +495,20 @@ class Page1View extends GetView<DashboardController> {
                                                       // Price
                                                       Expanded(
                                                         child: Text(
-                                                          "SAR ${service.price}",
+                                                          "${'sar'.tr} ${service.price}",
                                                           maxLines: 1,
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                           style:
                                                               const TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Color(
-                                                                0xFF1E293B),
-                                                          ),
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Color(
+                                                                  0xFF1E293B,
+                                                                ),
+                                                              ),
                                                         ),
                                                       ),
 
@@ -512,9 +521,8 @@ class Page1View extends GetView<DashboardController> {
                                                               "image": imageUrl,
                                                               "name": service
                                                                   .getLocalizedName(),
-                                                              "description":
-                                                                  service
-                                                                      .description,
+                                                              "description": service
+                                                                  .getLocalizedDescription(),
                                                               "price": service
                                                                   .price
                                                                   .toString(),
@@ -523,29 +531,36 @@ class Page1View extends GetView<DashboardController> {
                                                               "features":
                                                                   service
                                                                       .features,
+                                                              // VAT breakdown from the backend
+                                                              "vat_percentage":
+                                                                  service
+                                                                      .vatPercentage,
+                                                              "vat_amount":
+                                                                  service
+                                                                      .vatAmount,
+                                                              "total_amount":
+                                                                  service
+                                                                      .totalAmount,
                                                             },
                                                           );
                                                         },
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                            horizontal: 12,
-                                                            vertical: 8,
-                                                          ),
-                                                          decoration:
-                                                              BoxDecoration(
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 12,
+                                                                vertical: 8,
+                                                              ),
+                                                          decoration: BoxDecoration(
                                                             color: AppColors
                                                                 .secondaryLight,
                                                             borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
+                                                                BorderRadius.circular(
+                                                                  20,
+                                                                ),
                                                           ),
                                                           child: Text(
                                                             "book_now".tr,
-                                                            style:
-                                                                const TextStyle(
+                                                            style: const TextStyle(
                                                               color: AppColors
                                                                   .textWhiteLight,
                                                               fontSize: 12,
@@ -582,9 +597,7 @@ class Page1View extends GetView<DashboardController> {
                       //     Get.toNamed(Routes.featureslist);
                       //   },
                       // ),
-                      const SizedBox(
-                        height: 15,
-                      ),
+                      const SizedBox(height: 15),
                       ServiceCard(
                         title: "in_store_car_wash".tr,
                         subtitle: "visit_us_for_a_premium_clean".tr,
@@ -637,8 +650,8 @@ class Page1View extends GetView<DashboardController> {
 
                               final discountTitle =
                                   offer.discountType == "percentage"
-                                      ? "${offer.discountValue}% OFF"
-                                      : "SAR ${offer.discountValue} OFF";
+                                  ? "${offer.discountValue}${'percent_off'.tr}"
+                                  : "${'sar'.tr} ${offer.discountValue} ${'off'.tr}";
 
                               return Container(
                                 width: MediaQuery.of(context).size.width - 40,
@@ -717,7 +730,7 @@ class Page1View extends GetView<DashboardController> {
                                                   ),
                                                   const Spacer(),
                                                   Text(
-                                                    "${"expires_in".tr} ${offer.expiryDays} days",
+                                                    "${"expires_in".tr} ${offer.expiryDays} ${"days".tr}",
                                                     style: const TextStyle(
                                                       color: Colors.black87,
                                                       fontSize: 13,
@@ -732,8 +745,9 @@ class Page1View extends GetView<DashboardController> {
                                                 Get.toNamed(Routes.mycoupons);
                                               },
                                               child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(10),
+                                                padding: const EdgeInsets.all(
+                                                  10,
+                                                ),
                                                 decoration: BoxDecoration(
                                                   color: Colors.white
                                                       .withValues(alpha: 0.75),
@@ -742,10 +756,13 @@ class Page1View extends GetView<DashboardController> {
                                                     BoxShadow(
                                                       color: Colors.black
                                                           .withValues(
-                                                              alpha: 0.06),
+                                                            alpha: 0.06,
+                                                          ),
                                                       blurRadius: 8,
-                                                      offset:
-                                                          const Offset(0, 3),
+                                                      offset: const Offset(
+                                                        0,
+                                                        3,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -768,6 +785,7 @@ class Page1View extends GetView<DashboardController> {
                           ),
                         );
                       }),
+
                       // ---------------- PROMO BANNER AFTER WALLET ----------------
                       // Obx(() {
                       //   final list = offersController.offers;
@@ -881,10 +899,7 @@ class Page1View extends GetView<DashboardController> {
                       //     ),
                       //   );
                       // }),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -906,11 +921,7 @@ Widget _trackingCard(Datum b) {
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 8,
-          offset: Offset(0, 3),
-        )
+        BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
       ],
     ),
     child: Column(
@@ -942,6 +953,11 @@ Widget _trackingCard(Datum b) {
                 ],
               ),
             ),
+            // Call the assigned technician. Only shown once a technician is
+            // assigned and a usable number exists, so the customer never taps a
+            // dead button.
+            if ((b.washerPhone ?? "").isNotEmpty)
+              _callTechnicianButton(b.washerPhone!),
             // ElevatedButton(
             //   onPressed: () {
             //     Get.toNamed(
@@ -963,6 +979,39 @@ Widget _trackingCard(Datum b) {
   );
 }
 
+/// Round call button for the assigned technician, shown on the right of the
+/// tracking card.
+Widget _callTechnicianButton(String phone) {
+  return IconButton(
+    tooltip: "call_technician".tr,
+    onPressed: () => _dialTechnician(phone),
+    style: IconButton.styleFrom(
+      backgroundColor: AppColors.blue.withValues(alpha: .12),
+      foregroundColor: AppColors.blue,
+      minimumSize: const Size(44, 44),
+    ),
+    icon: const Icon(Icons.call),
+  );
+}
+
+/// Opens the phone dialer with the technician's number.
+///
+/// Uses `tel:` so the call app (dialer/WhatsApp/Truecaller chooser) handles the
+/// call itself — the app never places a call on its own.
+Future<void> _dialTechnician(String phone) async {
+  final uri = Uri(scheme: "tel", path: phone);
+
+  try {
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!opened) errorToast("could_not_open_dialer".tr);
+  } catch (e) {
+    print("❌ Could not open dialer for $phone: $e");
+
+    errorToast("could_not_open_dialer".tr);
+  }
+}
+
 void _showServiceDetails({
   required String name,
   required String description,
@@ -971,9 +1020,7 @@ void _showServiceDetails({
   Get.dialog(
     Dialog(
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -996,10 +1043,7 @@ void _showServiceDetails({
                   ),
                   IconButton(
                     onPressed: () => Get.back(),
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.black,
-                    ),
+                    icon: const Icon(Icons.close, color: Colors.black),
                   ),
                 ],
               ),
@@ -1014,13 +1058,12 @@ void _showServiceDetails({
               //     fontWeight: FontWeight.bold,
               //   ),
               // ),
-
               const SizedBox(height: 8),
 
               Text(
                 description.isNotEmpty
                     ? description
-                    : "No description available for this service.",
+                    : "no_description_for_service".tr,
                 style: const TextStyle(
                   fontSize: 15,
                   height: 1.5,
@@ -1085,9 +1128,7 @@ Widget _advertisementCard(AdvertisementModel advertisement) {
         return Container(
           width: double.infinity,
           color: Colors.grey.shade200,
-          child: const Center(
-            child: CircularProgressIndicator(),
-          ),
+          child: const Center(child: CircularProgressIndicator()),
         );
       },
     ),
@@ -1106,36 +1147,35 @@ Widget _trackingTimeline(String status) {
       // ASSIGNED
       _timelineStep(
         active: assigned,
-        label: "ASSIGNED",
+        label: "assigned".tr,
         icon: Icons.check_circle,
       ),
 
       // ARRIVED
       _timelineStep(
         active: arrived,
-        label: "ARRIVED",
+        label: "arrived".tr,
         icon: Icons.radio_button_checked,
       ),
 
       // IN_PROGRESS
       _timelineStep(
         active: inProgress,
-        label: "IN PROGRESS",
+        label: "in_progress".tr,
         icon: Icons.local_car_wash,
       ),
 
       // COMPLETED (always inactive here)
-      _timelineStep(
-        active: false,
-        label: "COMPLETED",
-        icon: Icons.flag,
-      ),
+      _timelineStep(active: false, label: "completed".tr, icon: Icons.flag),
     ],
   );
 }
 
-Widget _timelineStep(
-    {required bool active, required String label, required IconData icon}) {
+Widget _timelineStep({
+  required bool active,
+  required String label,
+  required IconData icon,
+}) {
   return Column(
     children: [
       Container(
@@ -1147,11 +1187,7 @@ Widget _timelineStep(
             color: active ? Colors.orange : Colors.grey.shade400,
           ),
         ),
-        child: Icon(
-          icon,
-          size: 18,
-          color: active ? Colors.white : Colors.grey,
-        ),
+        child: Icon(icon, size: 18, color: active ? Colors.white : Colors.grey),
       ),
       const SizedBox(height: 6),
       Text(
@@ -1174,14 +1210,15 @@ class ServiceCard extends StatelessWidget {
   final String? discountText;
   final VoidCallback? onTap;
 
-  const ServiceCard(
-      {super.key,
-      required this.title,
-      required this.subtitle,
-      required this.buttonText,
-      required this.imagePath,
-      this.discountText,
-      this.onTap});
+  const ServiceCard({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.buttonText,
+    required this.imagePath,
+    this.discountText,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1195,11 +1232,7 @@ class ServiceCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 15,
-              offset: Offset(5, 5),
-            ),
+            BoxShadow(color: Colors.grey, blurRadius: 15, offset: Offset(5, 5)),
           ],
         ),
         child: Row(
@@ -1213,7 +1246,9 @@ class ServiceCard extends StatelessWidget {
                   if (discountText != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.blue,
                         borderRadius: BorderRadius.circular(12),
@@ -1241,30 +1276,29 @@ class ServiceCard extends StatelessWidget {
 
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade900,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade900),
                   ),
 
                   const SizedBox(height: 12),
 
                   // Button
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                        // color: Colors.blue.shade50,
-                        borderRadius: BorderRadius.circular(30),
-                        color: AppColors.secondaryLight
-                        //   colors: [
-                        //     Color(0xFF6B42F2),
-                        //     Color(0xFF825AD9),
-                        //   ],
-                        //   begin: Alignment.centerLeft,
-                        //   end: Alignment.centerRight,
-                        // ),
-                        ),
+                      // color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(30),
+                      color: AppColors.secondaryLight,
+                      //   colors: [
+                      //     Color(0xFF6B42F2),
+                      //     Color(0xFF825AD9),
+                      //   ],
+                      //   begin: Alignment.centerLeft,
+                      //   end: Alignment.centerRight,
+                      // ),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

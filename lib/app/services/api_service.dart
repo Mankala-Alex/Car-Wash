@@ -17,6 +17,7 @@ class ApiService {
       receiveTimeout: const Duration(seconds: 15),
       headers: {
         "Content-Type": "application/json",
+        "Accept": "application/json",
       },
     ),
   );
@@ -34,12 +35,14 @@ class ApiService {
         onRequest: (options, handler) async {
           // 🔥 Add Auth Token if needed
           if (options.extra["auth"] == true) {
-            final token = await FlutterSecureStore()
-                .getSingleValue(SharedPrefsHelper.accessToken);
+            final token = await FlutterSecureStore().getSingleValue(
+              SharedPrefsHelper.accessToken,
+            );
 
             // Debug: print token presence (do NOT log tokens in production)
             print(
-                "🔐 Auth requested. token present: ${token != null && token.isNotEmpty}");
+              "🔐 Auth requested. token present: ${token != null && token.isNotEmpty}",
+            );
 
             // Only add header when token is non-null and non-empty
             if (token != null && token.isNotEmpty) {
@@ -47,7 +50,8 @@ class ApiService {
             } else {
               // Helpful debug info when token missing — server will likely return 401
               print(
-                  "⚠️ Authorization header not set because token is empty or null");
+                "⚠️ Authorization header not set because token is empty or null",
+              );
             }
 
             // Try to decode JWT payload to show claims (debugging only)
@@ -65,7 +69,8 @@ class ApiService {
 
             // Debug: print final headers for this request
             print(
-                "➡️ Request ${options.method} ${options.path} headers: ${options.headers}");
+              "➡️ Request ${options.method} ${options.path} headers: ${options.headers}",
+            );
           }
 
           return handler.next(options);
@@ -173,6 +178,7 @@ class ApiService {
 
   static Future<Response> delete(
     String endpoint, {
+    Map<String, dynamic>? data,
     bool requireAuthToken = false,
   }) async {
     if (await isInternet()) {
@@ -180,6 +186,7 @@ class ApiService {
 
       return await _dio.delete(
         endpoint,
+        data: data,
         options: Options(extra: {"auth": requireAuthToken}),
       );
     } else {

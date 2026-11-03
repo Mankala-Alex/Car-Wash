@@ -1,5 +1,5 @@
 {
     "APP_NAME": "My APP",
     "IS_PRODUCTION": false,
-    "API_BASE_URL": "https://www.aguawash.com/api/"
+    "API_BASE_URL": "http://127.0.0.1/api/"
 }

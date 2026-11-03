@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/saved_location_model.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/book_slot_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
 
 class LocationDetailsController extends GetxController {
   late BookSlotController bookSlotController;
@@ -50,10 +51,53 @@ class LocationDetailsController extends GetxController {
       phoneController =
           TextEditingController(text: editingLocation!.phoneNumber);
     } else {
-      selectedSaveAs = 'Home';
+      selectedSaveAs = _firstAvailableLabel();
       houseNoController = TextEditingController();
       landmarkController = TextEditingController();
       phoneController = TextEditingController();
+      _prefillCustomerPhone();
+    }
+  }
+
+  /// Whether another saved location already uses [label] (case-insensitive).
+  /// The location currently being edited is ignored so its own label stays
+  /// selectable.
+  bool _isLabelTaken(String label) {
+    final normalized = label.trim().toLowerCase();
+
+    return bookSlotController.savedLocations.any((location) {
+      if (editingLocation != null && location.id == editingLocation!.id) {
+        return false;
+      }
+      return location.label.trim().toLowerCase() == normalized;
+    });
+  }
+
+  /// First label the customer hasn't used yet, so a new address doesn't start
+  /// on a label that is already taken.
+  String _firstAvailableLabel() {
+    for (final option in saveAsOptions) {
+      if (!_isLabelTaken(option)) return option;
+    }
+    return saveAsOptions.first;
+  }
+
+  /// Pre-fills the phone field with the logged-in customer's mobile number so
+  /// the user doesn't have to type it for every new address. The value is
+  /// still editable, and an existing address keeps its own stored number.
+  Future<void> _prefillCustomerPhone() async {
+    try {
+      var phone = (await SharedPrefsHelper.getString("customerPhone")).trim();
+
+      if (phone.isEmpty) {
+        phone = bookSlotController.customerPhone.trim();
+      }
+
+      if (phone.isNotEmpty && phoneController.text.trim().isEmpty) {
+        phoneController.text = phone;
+      }
+    } catch (e) {
+      print('Could not prefill customer phone: $e');
     }
   }
 
@@ -65,6 +109,20 @@ class LocationDetailsController extends GetxController {
     super.onClose();
   }
 
+  /// Localizes the stored English label (Home / Work / Other) for display.
+  String _localizedLocationLabel(String label) {
+    switch (label) {
+      case 'Home':
+        return 'home'.tr;
+      case 'Work':
+        return 'work'.tr;
+      case 'Other':
+        return 'other'.tr;
+      default:
+        return label;
+    }
+  }
+
   void saveLocation() {
     // Validate required fields
     if (houseNoController.text.isEmpty) {
@@ -74,6 +132,13 @@ class LocationDetailsController extends GetxController {
 
     if (phoneController.text.isEmpty) {
       errorToast('please_enter_phone_number'.tr);
+      return;
+    }
+
+    // Only one address per label (Home / Work / Other).
+    if (_isLabelTaken(selectedSaveAs)) {
+      errorToast(
+          '${_localizedLocationLabel(selectedSaveAs)} ${'already_added'.tr}');
       return;
     }
 

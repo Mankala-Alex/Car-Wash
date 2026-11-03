@@ -13,9 +13,9 @@ class NotificationsView extends GetView<NotificationController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          "Notifications",
-          style: TextStyle(
+        title: Text(
+          "notifications".tr,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -24,9 +24,9 @@ class NotificationsView extends GetView<NotificationController> {
         actions: [
           TextButton(
             onPressed: controller.markAllRead,
-            child: const Text(
-              "Mark all read",
-              style: TextStyle(color: Colors.blue, fontSize: 14),
+            child: Text(
+              "mark_all_read".tr,
+              style: const TextStyle(color: Colors.blue, fontSize: 14),
             ),
           )
         ],
@@ -51,10 +51,10 @@ class NotificationsView extends GetView<NotificationController> {
                 Expanded(
                   child: TextField(
                     style: const TextStyle(fontSize: 14),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Search notifications",
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintText: "search_notifications".tr,
+                      hintStyle: const TextStyle(color: Colors.grey),
                     ),
                     onChanged: controller.searchNotifications,
                   ),
@@ -66,10 +66,10 @@ class NotificationsView extends GetView<NotificationController> {
           Expanded(
             child: Obx(() {
               if (controller.filteredList.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    "No notifications found",
-                    style: TextStyle(color: Colors.grey),
+                    "no_notifications_found".tr,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 );
               }
