@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
+import 'package:car_wash_customer_app/app/helpers/amount_formatter.dart';
+import 'package:car_wash_customer_app/app/helpers/media_url.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -84,10 +86,18 @@ class FeaturesListView extends GetView<FeaturesListController> {
                             fit: BoxFit.cover,
                           )
                         : Image.network(
-                            Constants.imageBaseUrl + service.imageUrl,
+                            resolveMediaUrl(service.imageUrl),
                             height: 155,
                             width: double.infinity,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                "assets/carwash/car1.png",
+                                height: 155,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
                   ),
 
@@ -99,26 +109,33 @@ class FeaturesListView extends GetView<FeaturesListController> {
                         Expanded(
                           child: Text(
                             service.getLocalizedName(),
-                            style: Theme.of(context).textTheme.titleMedium
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
                           ),
                         ),
-                        Image.asset(
-                          "assets/carwash/SAR.png",
-                          width: 18,
-                          height: 18,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          service.price.toString(),
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: AppColors.bgBlackLight,
-                                fontWeight: FontWeight.bold,
-                              ),
+
+                        // Final price (VAT included)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            RiyalAmount(
+                              formatAmount(service.totalAmount),
+                              maxLines: 1,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: AppColors.bgBlackLight,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -189,8 +206,8 @@ class FeaturesListView extends GetView<FeaturesListController> {
                               "vehicle": prevArgs["vehicle"],
 
                               // Service the user selected now
-                              "image":
-                                  Constants.imageBaseUrl + service.imageUrl,
+                              "image": resolveMediaUrl(service.imageUrl),
+
                               "name": service.getLocalizedName(),
                               "description": service.getLocalizedDescription(),
                               "price": service.price.toString(),

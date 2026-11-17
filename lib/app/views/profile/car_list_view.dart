@@ -77,7 +77,10 @@ class CarListView extends GetView<CarListController> {
 
             return _vehicleCard(
               imagePath: "assets/carwash/car1.png", // static image
-              title: "${v["make"]} ${v["model"]}",
+              title: [v["make"], v["model"]]
+                  .map((e) => (e ?? '').toString().trim())
+                  .where((e) => e.isNotEmpty)
+                  .join(' '),
               subtitle: v["vehicle_number"],
             );
           },
@@ -98,11 +101,7 @@ class CarListView extends GetView<CarListController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(26),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
+          BoxShadow(color: Colors.grey, blurRadius: 10, offset: Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -130,12 +129,15 @@ class CarListView extends GetView<CarListController> {
             ),
           ),
           const SizedBox(height: 14),
-          Text(title,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 4),
-          Text(subtitle,
-              style: const TextStyle(fontSize: 14, color: Colors.grey)),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
           const SizedBox(height: 18),
         ],
       ),

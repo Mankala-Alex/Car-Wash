@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/dashboard/dashboard_controller.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_dialog.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/custom_feedback_dialog.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/helpers/amount_formatter.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
@@ -256,9 +257,19 @@ class Page2View extends GetView<DashboardController> {
     dateText = b.slotDateLabel ?? dateText;
     timeText = b.slotStartLabel ?? timeText;
 
-    if (b.slotDateLabel == null && b.scheduledAt != null) {
-      dateText = DateFormat('dd MMM yyyy').format(b.scheduledAt!);
-      timeText = DateFormat('hh:mm a').format(b.scheduledAt!);
+    // if (b.slotDateLabel == null && b.scheduledAt != null) {
+    //   dateText = DateFormat('dd MMM yyyy').format(b.scheduledAt!);
+    //   timeText = DateFormat('hh:mm a').format(b.scheduledAt!);
+    // }
+
+    if (b.scheduledAt != null) {
+      dateText = (b.slotDateLabel == null || b.slotDateLabel!.trim().isEmpty)
+          ? DateFormat('dd MMM yyyy').format(b.scheduledAt!)
+          : b.slotDateLabel!;
+
+      timeText = (b.slotStartLabel == null || b.slotStartLabel!.trim().isEmpty)
+          ? DateFormat('hh:mm a').format(b.scheduledAt!)
+          : b.slotStartLabel!;
     }
 
     return Container(
@@ -345,11 +356,7 @@ class Page2View extends GetView<DashboardController> {
                 // PRICE
                 Column(
                   children: [
-                    Image.asset(
-                      "assets/carwash/SAR.png",
-                      width: 20,
-                      height: 20,
-                    ),
+                    const RiyalSymbol(size: 20),
                     const SizedBox(height: 4),
                     Text(
                       formatAmount(b.amount),
@@ -393,61 +400,115 @@ class Page2View extends GetView<DashboardController> {
             Row(
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.dialog(
-                        CustomConfirmationDialog(
-                          header: "edit_booking".tr,
-                          body: "do_you_want_to_edit_this_booking".tr,
-                          yesText: "yes_edit".tr,
-                          noText: "no".tr,
-                          onYes: () {
-                            Get.back();
-
-                            controller.editBooking({
-                              "booking_code": b.bookingCode,
-                              "vehicle": b.vehicle,
-                              "service_id": b.serviceId,
-                              "service_name": b.serviceName,
-                              "slot_id": b.slotId,
-                              "price": formatAmount(b.amount),
-                              "image": "",
-                              "description": "",
-                              "features": [],
-                            });
+                  child: b.hasTechnicianAssigned
+                      // Same rule as cancelling: once a technician took the
+                      // job the slot belongs to him, so the edit flow stays
+                      // closed and the button only explains why.
+                      ? GestureDetector(
+                          onTap: () {
+                            Get.dialog(
+                              CustomConfirmationDialog(
+                                header: "edit_booking".tr,
+                                body: "edit_blocked_technician_assigned".tr,
+                                yesText: "close".tr,
+                                isCancel: false,
+                                onYes: Get.back,
+                              ),
+                            );
                           },
-                        ),
-                        barrierDismissible: false,
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.blue),
-                      ),
-                      child: Center(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.edit, color: Colors.blue),
-                            const SizedBox(width: 7),
-                            Text(
-                              "edit".tr,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blue,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              color: const Color(0xFFF1F5F9),
+                              border: Border.all(
+                                color: const Color(0xFFCBD5E1),
                               ),
                             ),
-                          ],
+                            child: Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.lock_outline,
+                                    size: 18,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      "edit_locked_technician_assigned".tr,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            Get.dialog(
+                              CustomConfirmationDialog(
+                                header: "edit_booking".tr,
+                                body: "do_you_want_to_edit_this_booking".tr,
+                                yesText: "yes_edit".tr,
+                                noText: "no".tr,
+                                onYes: () {
+                                  Get.back();
+
+                                  controller.editBooking({
+                                    "booking_code": b.bookingCode,
+                                    "vehicle": b.vehicle,
+                                    "service_id": b.serviceId,
+                                    "service_name": b.serviceName,
+                                    "slot_id": b.slotId,
+                                    "price": formatAmount(b.amount),
+                                    "image": "",
+                                    "description": "",
+                                    "features": [],
+                                  });
+                                },
+                              ),
+                              barrierDismissible: false,
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: AppColors.blue),
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.edit, color: Colors.blue),
+                                  const SizedBox(width: 7),
+                                  Text(
+                                    "edit".tr,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -534,7 +595,15 @@ class Page2View extends GetView<DashboardController> {
             // VIEW DETAILS - opens the full booking details page
             GestureDetector(
               onTap: () {
-                Get.toNamed(Routes.bookinghistorydetailsview, arguments: b);
+                // Get.toNamed(Routes.bookinghistorydetailsview, arguments: b);
+                Get.toNamed(
+                  Routes.bookinghistorydetailsview,
+                  arguments: {
+                    'booking': b,
+                    'dateText': dateText,
+                    'timeText': timeText,
+                  },
+                );
               },
               child: Container(
                 height: 46,
@@ -583,9 +652,7 @@ class Page2View extends GetView<DashboardController> {
     // stays with us, so never pretend a refund is on its way.
     final rejected = status == "REJECTED";
 
-    final String amount = formatAmount(
-      booking.refundAmount ?? booking.amount,
-    );
+    final String amount = formatAmount(booking.refundAmount ?? booking.amount);
 
     final String label;
     if (failed) {
@@ -726,7 +793,7 @@ class Page2View extends GetView<DashboardController> {
                       ),
                     ),
                   ),
-                Image.asset("assets/carwash/SAR.png", width: 18, height: 18),
+                const RiyalSymbol(size: 18),
                 const SizedBox(width: 5),
                 Text(
                   formatAmount(booking.amount),
@@ -908,7 +975,11 @@ class Page2View extends GetView<DashboardController> {
               onTap: () {
                 Get.toNamed(
                   Routes.bookinghistorydetailsview,
-                  arguments: booking,
+                  arguments: {
+                    'booking': booking,
+                    'dateText': dateText,
+                    'timeText': timeText,
+                  },
                 );
               },
               child: Container(

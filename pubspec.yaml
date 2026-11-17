@@ -2,7 +2,7 @@ name: car_wash_customer_app
 description: "A template Flutter project for future apps."
 publish_to: "none"
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ">=3.4.3 <4.0.0"

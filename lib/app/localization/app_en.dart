@@ -15,6 +15,14 @@ const Map<String, String> enUS = {
   "enter_the_otp_sent_to_your_number": "Enter the OTP sent to your number",
   "verify": "Verify",
   "enter_valid_otp": "Enter valid OTP",
+  "otp_expires_in": "OTP expires in",
+  "otp_expired_request_new": "This OTP has expired. Please request a new one.",
+  "resend_otp": "Resend OTP",
+  "resend_otp_in": "Resend OTP in",
+  "otp_resent_successfully": "A new OTP has been sent",
+  "your_name": "Your Name",
+  "enter_your_name": "Enter your name",
+  "name_updated_successfully": "Name updated",
   "invalid_customer_id": "Invalid customer ID",
   "otp_verification_failed": "OTP verification failed",
   "my_bookings": "My Bookings",
@@ -40,6 +48,10 @@ const Map<String, String> enUS = {
   "edit_booking": "Edit Booking",
   "do_you_want_to_edit_this_booking": "Do you want to edit this booking?",
   "yes_edit": "Yes, Edit",
+  "edit_locked_technician_assigned": "Locked - technician assigned",
+  "edit_blocked_technician_assigned":
+      "A technician has already been assigned to this booking, so it can no longer be edited from the app. Please contact support.",
+  "close": "Close",
   "no": "No",
   "cancel_booking": "Cancel Booking",
   "are_you_sure_you_want_to_cancel_this_booking":
@@ -130,6 +142,17 @@ const Map<String, String> enUS = {
   "are_you_sure_you_want_to_delete": "Are you sure you want to delete",
   "delete": "Delete",
   "offer_details": "Offer Details",
+  "later": "Later",
+  "use_this_offer": "Use this offer",
+  "offer_code": "Coupon Code",
+  "valid_days": "Valid Days",
+  "valid_time_slots": "Valid Time Slots",
+  "uses_per_customer": "Uses Per Customer",
+  "total_uses": "Total Uses",
+  "all_services": "All services",
+  "every_day": "Every day",
+  "any_time": "Any time",
+  "unlimited": "Unlimited",
   "no_description_available": "No description available.",
   "terms_conditions": "Terms & Conditions",
   "redeem_now": "Redeem Now",
@@ -151,10 +174,20 @@ const Map<String, String> enUS = {
   "add_new": "Add New",
   "please_select_a_date": "Please select a date",
   "no_slots_available_for_this_date": "No slots available for this date",
+  "choose_location_for_slots":
+      "Add your address first — the available times depend on your area.",
+  "slots_for_your_area": "Times available in your area",
+  "no_dates_for_your_area":
+      "No times are open yet for your area. Please try again later.",
   "price_details": "Price Details",
   "service_price": "Service Price",
   "vat": "VAT",
   "total_amount": "Total Amount",
+  "incl_vat": "Incl. VAT",
+  "available_coupons_hint": "Enter Your Coupon",
+  "View_coupons": "View Coupons",
+  "coupon_removed": "Coupon removed",
+  "coupon_not_valid": "This coupon cannot be used for this booking.",
   "address": "Address",
   "landmark": "Landmark",
   "pincode": "Postal Code",
@@ -198,6 +231,11 @@ const Map<String, String> enUS = {
   "tax": "Tax",
   "pay_now": "Pay Now",
   "payment_failed": "Payment failed",
+  "payment_failed_message":
+      "Your payment was not completed and no money was deducted. Please try again, or use a different card.",
+  "payment_pending_title": "Payment not confirmed yet",
+  "payment_pending_message":
+      "We could not confirm your payment with the bank yet. If the amount was deducted, your booking will be confirmed automatically and you will receive a notification. Please check My Bookings before paying again.",
   "payment_successful": "Payment Successful",
   "slot_no_longer_available":
       "This time slot is no longer available. Please choose another time.",
@@ -261,7 +299,7 @@ const Map<String, String> enUS = {
   "mark_all_read": "Mark all read",
   "search_notifications": "Search notifications",
   "no_notifications_found": "No notifications found",
-  "guest_user": "Guest User",
+  "customer": "Customer",
   "about_us": "About Us",
   "privacy_policy": "Privacy Policy",
   "booking_number": "Booking #",
@@ -329,6 +367,9 @@ const Map<String, String> enUS = {
   "not_now": "Not Now",
   "open": "Open",
   "closed": "Closed",
+  "away": "away",
+  "km": "km",
+  "m_short": "m",
   "no_locations_found": "No Locations Found",
   "no_partner_locations_body":
       "We couldn't find any partner locations.\nTry again later.",
@@ -380,6 +421,14 @@ const Map<String, String> enUS = {
       "You can reset your password using the 'Forgot Password' option on the login page.",
   "internet_not_available": "Internet not available",
   "cons_check_internet": "Please check your internet connection",
+
+  // ---------- Friendly network / server errors ----------
+  "connection_problem_try_again":
+      "Can't connect right now. Check your internet and try again.",
+  "request_took_too_long": "The connection is slow. Please try again.",
+  "server_busy_try_again":
+      "Something went wrong on our side. Please try again in a moment.",
+
   "cons_enter_crt_emial": "Enter a valid email",
   "cons_enter_mobile_no": "Enter mobile number",
   "cons_enter_mobile_no_digits": "Mobile number must be at least 10 digits",
@@ -527,4 +576,11 @@ const Map<String, String> enUS = {
   "delete_account_item_payments": "Saved cards and unused coupons",
   "delete_account_item_history_kept":
       "Past bookings and payment records are kept for accounting, without your personal details",
+
+  // ---------- Notification permission ----------
+  "notifications_title": "Turn on notifications",
+  "notifications_body":
+      "Allow notifications so we can tell you the moment your booking is confirmed, your technician is on the way, or your car is ready.",
+  "allow_notifications": "Allow notifications",
+  "offers_for_you": "Offers for you",
 };

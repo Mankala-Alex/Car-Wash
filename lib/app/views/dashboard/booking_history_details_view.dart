@@ -1,15 +1,15 @@
 import 'package:car_wash_customer_app/app/helpers/amount_formatter.dart';
 import 'package:car_wash_customer_app/app/helpers/ful_screen_image.dart';
+import 'package:car_wash_customer_app/app/helpers/media_url.dart';
 import 'package:car_wash_customer_app/app/helpers/video_player.dart';
 import 'package:car_wash_customer_app/app/helpers/video_thumbnail.dart';
 import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/dashboard/booking_history_details_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
-import 'package:intl/intl.dart';
 
 class BookingHistoryDetailsView
     extends GetView<BookingHistoryDetailsController> {
@@ -177,27 +177,27 @@ class BookingHistoryDetailsView
                 ),
                 const SizedBox(height: 10),
               ],
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondaryLight,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                  ),
-                  child: Text(
-                    "book_again".tr,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              // SizedBox(
+              //   width: double.infinity,
+              //   height: 56,
+              //   child: ElevatedButton(
+              //     onPressed: () {},
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: AppColors.secondaryLight,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(14),
+              //       ),
+              //     ),
+              //     child: Text(
+              //       "book_again".tr,
+              //       style: const TextStyle(
+              //         fontSize: 17,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.white,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -370,8 +370,8 @@ class BookingHistoryDetailsView
                   ),
                 ),
               ),
-              Text(
-                "${'sar'.tr} ${formatAmount(b.amount)}",
+              RiyalAmount(
+                formatAmount(b.amount),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -396,10 +396,10 @@ class BookingHistoryDetailsView
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.chat_bubble_outline),
-              ),
+              // IconButton(
+              //   onPressed: () {},
+              //   icon: const Icon(Icons.chat_bubble_outline),
+              // ),
             ],
           ),
         ],
@@ -519,6 +519,34 @@ class BookingHistoryDetailsView
   }
 
   // ================= BOOKING DETAILS =================
+  // Widget _detailsCard(b) {
+  //   return Container(
+  //     padding: const EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(22),
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         _detailRow(
+  //           Icons.calendar_today,
+  //           "date_time".tr,
+  //           b.scheduledAt == null
+  //               ? "not_available".tr
+  //               : DateFormat('dd MMM yyyy • hh:mm a').format(b.scheduledAt!),
+  //         ),
+  //         const Divider(),
+  //         _detailRow(
+  //           Icons.location_on,
+  //           "service".tr,
+  //           b.serviceName, // ✅ FIXED
+  //         ),
+  //         const Divider(),
+  //         _detailRow(Icons.credit_card, "payment".tr, b.status),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _detailsCard(b) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -531,18 +559,20 @@ class BookingHistoryDetailsView
           _detailRow(
             Icons.calendar_today,
             "date_time".tr,
-            b.scheduledAt == null
-                ? "not_available".tr
-                : DateFormat('dd MMM yyyy • hh:mm a').format(b.scheduledAt!),
+            "${controller.dateText} • ${controller.timeText}",
           ),
           const Divider(),
           _detailRow(
             Icons.location_on,
             "service".tr,
-            b.serviceName, // ✅ FIXED
+            b.serviceName,
           ),
           const Divider(),
-          _detailRow(Icons.credit_card, "payment".tr, b.status),
+          _detailRow(
+            Icons.credit_card,
+            "payment".tr,
+            b.status,
+          ),
         ],
       ),
     );
@@ -581,6 +611,32 @@ class BookingHistoryDetailsView
           const SizedBox(height: 14),
           _amountRow("service_price".tr, serviceAmount),
           const SizedBox(height: 10),
+          // Offer coupon used on this booking.
+          if (b.discountAmount > 0) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "${"discount".tr}${b.couponCode != null ? " (${b.couponCode})" : ""}",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textGreenLight,
+                    ),
+                  ),
+                ),
+                RiyalAmount(
+                  "- ${formatAmount(b.discountAmount)}",
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textGreenLight,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
           _amountRow("$vatLabel ($rate%)", vatAmount),
           const Divider(height: 26),
           _amountRow("total_amount".tr, total, bold: true),
@@ -606,7 +662,7 @@ class BookingHistoryDetailsView
     return Row(
       children: [
         Expanded(child: Text(label, style: style)),
-        Text("${'sar'.tr} ${formatAmount(value)}", style: style),
+        RiyalAmount(formatAmount(value), style: style),
       ],
     );
   }
@@ -701,7 +757,7 @@ Widget _imageCard({required String title, required List<String> images}) {
     return Text("no_images_available".tr);
   }
 
-  final imageUrl = Constants.imageBaseUrl + images.first.replaceAll("\\", "/");
+  final imageUrl = resolveMediaUrl(images.first);
 
   return ClipRRect(
     borderRadius: BorderRadius.circular(22),
@@ -777,7 +833,7 @@ Widget _mediaSection({
 
   // 🔹 Images
   for (var img in images) {
-    final imageUrl = Constants.imageBaseUrl + img.url.replaceAll("\\", "/");
+    final imageUrl = resolveMediaUrl(img.url);
 
     mediaWidgets.add(
       GestureDetector(
@@ -807,8 +863,7 @@ Widget _mediaSection({
 
     final fileName = cleanPath.split('/').last;
 
-    final videoUrl =
-        "${Constants.imageBaseUrl}/api/employee/bookings/stream/$fileName";
+    final videoUrl = "${mediaOrigin()}/api/employee/bookings/stream/$fileName";
 
     print("VIDEO URL: $videoUrl");
 

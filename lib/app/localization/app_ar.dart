@@ -15,6 +15,14 @@ const Map<String, String> arSA = {
   "enter_the_otp_sent_to_your_number": "أدخل رمز OTP المرسل إلى رقمك",
   "verify": "تحقق",
   "enter_valid_otp": "أدخل OTP صالح",
+  "otp_expires_in": "ينتهي رمز OTP خلال",
+  "otp_expired_request_new": "انتهت صلاحية رمز OTP. يرجى طلب رمز جديد.",
+  "resend_otp": "إعادة إرسال OTP",
+  "resend_otp_in": "إعادة الإرسال خلال",
+  "otp_resent_successfully": "تم إرسال رمز OTP جديد",
+  "your_name": "اسمك",
+  "enter_your_name": "أدخل اسمك",
+  "name_updated_successfully": "تم تحديث الاسم",
   "invalid_customer_id": "معرف العميل غير صالح",
   "otp_verification_failed": "فشل التحقق من OTP",
   "my_bookings": "حجوزاتي",
@@ -40,6 +48,10 @@ const Map<String, String> arSA = {
   "edit_booking": "تعديل الحجز",
   "do_you_want_to_edit_this_booking": "هل تريد تعديل هذا الحجز؟",
   "yes_edit": "نعم، تعديل",
+  "edit_locked_technician_assigned": "التعديل مقفل - تم تعيين الفني",
+  "edit_blocked_technician_assigned":
+      "تم تعيين فني لهذا الحجز، لذلك لم يعد من الممكن تعديله من التطبيق. يرجى التواصل مع الدعم.",
+  "close": "إغلاق",
   "no": "لا",
   "cancel_booking": "إلغاء الحجز",
   "are_you_sure_you_want_to_cancel_this_booking":
@@ -127,6 +139,17 @@ const Map<String, String> arSA = {
   "are_you_sure_you_want_to_delete": "هل أنت متأكد أنك تريد الحذف",
   "delete": "حذف",
   "offer_details": "تفاصيل العرض",
+  "later": "لاحقاً",
+  "use_this_offer": "استخدم هذا العرض",
+  "offer_code": "رمز الكوبون",
+  "valid_days": "الأيام المتاحة",
+  "valid_time_slots": "المواعيد المتاحة",
+  "uses_per_customer": "عدد مرات الاستخدام للعميل",
+  "total_uses": "إجمالي الاستخدامات",
+  "all_services": "جميع الخدمات",
+  "every_day": "كل يوم",
+  "any_time": "أي وقت",
+  "unlimited": "غير محدود",
   "no_description_available": "لا يوجد وصف متاح.",
   "terms_conditions": "الشروط والأحكام",
   "redeem_now": "استرد الآن",
@@ -149,10 +172,20 @@ const Map<String, String> arSA = {
   "add_new": "إضافة جديد",
   "please_select_a_date": "يرجى اختيار تاريخ",
   "no_slots_available_for_this_date": "لا توجد مواعيد متاحة لهذا التاريخ",
+  "choose_location_for_slots":
+      "أضف عنوانك أولاً — المواعيد المتاحة تعتمد على منطقتك.",
+  "slots_for_your_area": "المواعيد المتاحة في منطقتك",
+  "no_dates_for_your_area":
+      "لا توجد مواعيد مفتوحة لمنطقتك حالياً. حاول مرة أخرى لاحقاً.",
   "price_details": "تفاصيل السعر",
   "service_price": "سعر الخدمة",
   "vat": "ضريبة القيمة المضافة",
   "total_amount": "المبلغ الإجمالي",
+  "incl_vat": "شامل ضريبة القيمة المضافة",
+  "available_coupons_hint": "أدخل القسيمة الخاصة بك",
+  "View_coupons": "عرض القسائم",
+  "coupon_removed": "تم إزالة الكوبون",
+  "coupon_not_valid": "لا يمكن استخدام هذا الكوبون لهذا الحجز.",
   "address": "العنوان",
   "landmark": "علامة مميزة",
   "pincode": "الرمز البريدي",
@@ -196,6 +229,11 @@ const Map<String, String> arSA = {
   "tax": "الضريبة",
   "pay_now": "ادفع الآن",
   "payment_failed": "فشل الدفع",
+  "payment_failed_message":
+      "لم يكتمل الدفع ولم يتم خصم أي مبلغ. يرجى المحاولة مرة أخرى أو استخدام بطاقة أخرى.",
+  "payment_pending_title": "لم يتم تأكيد الدفع بعد",
+  "payment_pending_message":
+      "لم نتمكن من تأكيد عملية الدفع مع البنك حتى الآن. إذا تم خصم المبلغ فسيتم تأكيد حجزك تلقائيًا وستصلك رسالة إشعار. يرجى مراجعة حجوزاتي قبل الدفع مرة أخرى.",
   "payment_successful": "تم الدفع بنجاح",
   "slot_no_longer_available": "هذا الوقت لم يعد متاحًا. يرجى اختيار وقت آخر.",
   "slot_taken_payment_refunded":
@@ -256,7 +294,7 @@ const Map<String, String> arSA = {
   "mark_all_read": "تحديد الكل كمقروء",
   "search_notifications": "ابحث في الإشعارات",
   "no_notifications_found": "لا توجد إشعارات",
-  "guest_user": "زائر",
+  "customer": "عميل",
   "about_us": "من نحن",
   "privacy_policy": "سياسة الخصوصية",
   "booking_number": "حجز رقم",
@@ -322,6 +360,9 @@ const Map<String, String> arSA = {
   "not_now": "ليس الآن",
   "open": "مفتوح",
   "closed": "مغلق",
+  "away": "بعيدًا",
+  "km": "كم",
+  "m_short": "م",
   "no_locations_found": "لم يتم العثور على مواقع",
   "no_partner_locations_body":
       "لم نتمكن من العثور على مواقع شركاء.\nحاول مرة أخرى لاحقًا.",
@@ -368,6 +409,13 @@ const Map<String, String> arSA = {
       "يمكنك إعادة تعيين كلمة المرور باستخدام خيار «نسيت كلمة المرور» في صفحة تسجيل الدخول.",
   "internet_not_available": "لا يوجد اتصال بالإنترنت",
   "cons_check_internet": "يرجى التحقق من اتصالك بالإنترنت",
+
+  // ---------- Friendly network / server errors ----------
+  "connection_problem_try_again":
+      "تعذر الاتصال حاليًا. تحقق من اتصالك بالإنترنت وحاول مرة أخرى.",
+  "request_took_too_long": "الاتصال بطيء. يرجى المحاولة مرة أخرى.",
+  "server_busy_try_again": "حدث خطأ من جانبنا. يرجى المحاولة بعد قليل.",
+
   "cons_enter_crt_emial": "أدخل بريدًا إلكترونيًا صالحًا",
   "cons_enter_mobile_no": "أدخل رقم الجوال",
   "cons_enter_mobile_no_digits":
@@ -512,4 +560,11 @@ const Map<String, String> arSA = {
   "delete_account_item_payments": "البطاقات المحفوظة والكوبونات غير المستخدمة",
   "delete_account_item_history_kept":
       "يتم الاحتفاظ بالحجوزات السابقة وسجلات الدفع لأغراض المحاسبة دون بياناتك الشخصية",
+
+  // ---------- Notification permission ----------
+  "notifications_title": "تفعيل الإشعارات",
+  "notifications_body":
+      "اسمح بالإشعارات لنخبرك فور تأكيد حجزك، أو عند انطلاق الفني إليك، أو عند جاهزية سيارتك.",
+  "allow_notifications": "السماح بالإشعارات",
+  "offers_for_you": "العروض لك",
 };

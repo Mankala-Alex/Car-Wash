@@ -23,9 +23,7 @@ class LoginController extends GetxController {
     try {
       final input = emailController.text.trim();
 
-      final resp = await repository.postRequestOtpPhone({
-        "phone": input,
-      });
+      final resp = await repository.postRequestOtpPhone({"phone": input});
 
       isLoading(false);
 
@@ -36,32 +34,27 @@ class LoginController extends GetxController {
         return;
       }
 
-      /// NEW USER → SIGNUP
-      if (data.exists == false) {
-        Get.toNamed(
-          Routes.signUp,
-          arguments: {
-            "phone": input,
-          },
-        );
-        return;
-      }
-
-      /// EXISTING USER → OTP
+      /// EVERY number goes to the OTP screen.
+      ///
+      /// There is no signup screen any more: the backend creates the customer
+      /// record from the mobile number on the fly, so a brand new number and an
+      /// existing one follow exactly the same path.
       Get.toNamed(
         Routes.otpPage,
         arguments: {
           "customerId": data.id,
-          "phone": input,
+          "phone": data.phone.isNotEmpty ? data.phone : input,
+          "expiresInSeconds": data.expiresInSeconds,
+          "resendAfterSeconds": data.resendAfterSeconds,
+          "otpLength": data.otpLength,
+          "isNewCustomer": data.isNewCustomer,
         },
       );
     } catch (e) {
       isLoading(false);
       print("Request OTP Error: $e");
 
-      errorToast(
-        apiErrorMessage(e, "something_went_wrong".tr),
-      );
+      errorToast(apiErrorMessage(e, "something_went_wrong".tr));
     }
   }
 }

@@ -26,6 +26,10 @@ class AddCarView extends GetView<AddCarController> {
       ),
 
       // ---------------- BOTTOM BUTTON ----------------
+      //
+      // Disabled while saving - the controller shows a non-dismissible wheel
+      // loader overlay (transparent background) until the vehicle is saved
+      // (min 1s), so tapping again could add the vehicle twice.
       bottomNavigationBar: Obx(() {
         return SafeArea(
           top: false,
@@ -39,21 +43,22 @@ class AddCarView extends GetView<AddCarController> {
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryLight,
+                disabledBackgroundColor: AppColors.secondaryLight.withValues(
+                  alpha: 0.6,
+                ),
                 minimumSize: const Size(double.infinity, 55),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              child: controller.isLoading.value
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                      "save_vehicle".tr,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+              child: Text(
+                "save_vehicle".tr,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         );
@@ -65,17 +70,17 @@ class AddCarView extends GetView<AddCarController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _inputField("vehicle_number".tr, controller.vehicleNumberController,
-                TextInputType.text),
+            _inputField(
+              "vehicle_number".tr,
+              controller.vehicleNumberController,
+              TextInputType.text,
+            ),
             const SizedBox(height: 16),
             _inputField(
-                "brand".tr, controller.makeController, TextInputType.text),
-            const SizedBox(height: 16),
-            _inputField(
-                "model".tr, controller.modelController, TextInputType.text),
-            const SizedBox(height: 16),
-            _inputField("type_sedan_suv_etc".tr, controller.typeController,
-                TextInputType.text),
+              "brand".tr,
+              controller.makeController,
+              TextInputType.text,
+            ),
             const SizedBox(height: 60),
           ],
         ),
@@ -85,7 +90,10 @@ class AddCarView extends GetView<AddCarController> {
 
   // ---- INPUT FIELD WIDGET ----
   Widget _inputField(
-      String label, TextEditingController ctrl, TextInputType type) {
+    String label,
+    TextEditingController ctrl,
+    TextInputType type,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,8 +117,10 @@ class AddCarView extends GetView<AddCarController> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
           ),
         ),
       ],

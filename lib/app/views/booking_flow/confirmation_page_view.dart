@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/confirmation_page_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/helpers/amount_formatter.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
@@ -115,8 +116,9 @@ class ConfirmationPageView extends GetView<ConfirmationPageController> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          Text(
-                            "${"total".tr} SAR ${formatAmount(controller.amount)}",
+                          RiyalAmount(
+                            formatAmount(controller.amount),
+                            prefix: "${"total".tr} ",
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,

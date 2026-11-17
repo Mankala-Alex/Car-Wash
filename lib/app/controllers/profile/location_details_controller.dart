@@ -2,17 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/saved_location_model.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/book_slot_controller.dart';
+import 'package:car_wash_customer_app/app/controllers/dashboard/dashboard_controller.dart';
+import 'package:car_wash_customer_app/app/helpers/api_error_helper.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
+import 'package:car_wash_customer_app/app/repositories/customers/customer_repository.dart';
 
 class LocationDetailsController extends GetxController {
+  final CustomerRepository _customerRepository = CustomerRepository();
+
   late BookSlotController bookSlotController;
   late TextEditingController houseNoController;
   late TextEditingController landmarkController;
   late TextEditingController phoneController;
-  late String selectedSaveAs;
 
-  final List<String> saveAsOptions = ['Home', 'Work', 'Other'];
+  /// The customer's own name. It is NOT part of the address: it is captured here
+  /// because the app no longer has a signup form (phone number only), and it is
+  /// stored once on the customer record so the profile tab and the technician
+  /// app can show it.
+  late TextEditingController nameController;
 
   // Variables passed from previous screen
   late double latitude;
@@ -20,6 +29,14 @@ class LocationDetailsController extends GetxController {
   late String address;
   String? pincode;
   SavedLocation? editingLocation;
+
+  /// True while the address is being saved. The Save button is disabled and
+  /// the wheel loader stays on screen until the write is done (minimum 1s).
+  final RxBool isSaving = false.obs;
+
+  /// How long the loader is kept visible at least, so a very fast save does
+  /// not make the screen flash and leaves the customer unsure it worked.
+  static const Duration _minimumLoaderTime = Duration(seconds: 1);
 
   @override
   void onInit() {
@@ -44,42 +61,62 @@ class LocationDetailsController extends GetxController {
 
   void _initializeControllers() {
     if (editingLocation != null) {
-      selectedSaveAs = editingLocation!.label;
       houseNoController = TextEditingController(text: editingLocation!.houseNo);
-      landmarkController =
-          TextEditingController(text: editingLocation!.landmark ?? '');
-      phoneController =
-          TextEditingController(text: editingLocation!.phoneNumber);
+      landmarkController = TextEditingController(
+        text: editingLocation!.landmark ?? '',
+      );
+      phoneController = TextEditingController(
+        text: editingLocation!.phoneNumber,
+      );
     } else {
-      selectedSaveAs = _firstAvailableLabel();
       houseNoController = TextEditingController();
       landmarkController = TextEditingController();
       phoneController = TextEditingController();
       _prefillCustomerPhone();
     }
+
+    nameController = TextEditingController();
+    _prefillCustomerName();
   }
 
-  /// Whether another saved location already uses [label] (case-insensitive).
-  /// The location currently being edited is ignored so its own label stays
-  /// selectable.
-  bool _isLabelTaken(String label) {
-    final normalized = label.trim().toLowerCase();
+  /// Shows the name we already know (saved profile / previous address).
+  Future<void> _prefillCustomerName() async {
+    try {
+      final stored = (await SharedPrefsHelper.getString("customerName")).trim();
 
-    return bookSlotController.savedLocations.any((location) {
-      if (editingLocation != null && location.id == editingLocation!.id) {
-        return false;
+      if (stored.isNotEmpty && nameController.text.trim().isEmpty) {
+        nameController.text = stored;
       }
-      return location.label.trim().toLowerCase() == normalized;
-    });
+    } catch (e) {
+      print('Could not prefill customer name: $e');
+    }
   }
 
-  /// First label the customer hasn't used yet, so a new address doesn't start
-  /// on a label that is already taken.
-  String _firstAvailableLabel() {
-    for (final option in saveAsOptions) {
-      if (!_isLabelTaken(option)) return option;
+  /// Persists the name on the customer record (once, only when it changed).
+  ///
+  /// The address itself is already saved locally at this point, so a failure
+  /// here never loses the address - it only means the name will be asked again
+  /// next time.
+  Future<void> _saveCustomerName(String name) async {
+    if (name.isEmpty) return;
+
+    final stored = (await SharedPrefsHelper.getString("customerName")).trim();
+
+    if (stored.toLowerCase() == name.toLowerCase()) return;
+
+    try {
+      await _customerRepository.updateMyName(name);
+
+      await SharedPrefsHelper.setString("customerName", name);
+
+      // Keep the profile tab in sync without a restart.
+      if (Get.isRegistered<DashboardController>()) {
+        Get.find<DashboardController>().customerName.value = name;
+      }
+    } catch (e) {
+      print('Could not save customer name: $e');
+      errorToast(apiErrorMessage(e, 'something_went_wrong'.tr));
     }
-    return saveAsOptions.first;
   }
 
   /// Pre-fills the phone field with the logged-in customer's mobile number so
@@ -106,25 +143,34 @@ class LocationDetailsController extends GetxController {
     houseNoController.dispose();
     landmarkController.dispose();
     phoneController.dispose();
+    nameController.dispose();
     super.onClose();
   }
 
-  /// Localizes the stored English label (Home / Work / Other) for display.
-  String _localizedLocationLabel(String label) {
-    switch (label) {
-      case 'Home':
-        return 'home'.tr;
-      case 'Work':
-        return 'work'.tr;
-      case 'Other':
-        return 'other'.tr;
-      default:
-        return label;
-    }
+  /// The label stored on the address.
+  ///
+  /// The app no longer asks the customer to pick Home / Work / Other: any number
+  /// of addresses can be saved, so the label is just the house number (used as
+  /// the title of the saved address card). The booking record keeps it as
+  /// `address_label` for the technician.
+  String get _addressLabel {
+    final houseNo = houseNoController.text.trim();
+    final label = houseNo.isNotEmpty ? houseNo : 'address'.tr;
+
+    // bookings.address_label is VARCHAR(30) - never send more than that.
+    return label.length > 30 ? label.substring(0, 30) : label;
   }
 
-  void saveLocation() {
+  Future<void> saveLocation() async {
+    // Guards against a double tap while the loader is showing.
+    if (isSaving.value) return;
+
     // Validate required fields
+    if (nameController.text.trim().isEmpty) {
+      errorToast('enter_your_name'.tr);
+      return;
+    }
+
     if (houseNoController.text.isEmpty) {
       errorToast('please_enter_house_number'.tr);
       return;
@@ -135,61 +181,78 @@ class LocationDetailsController extends GetxController {
       return;
     }
 
-    // Only one address per label (Home / Work / Other).
-    if (_isLabelTaken(selectedSaveAs)) {
-      errorToast(
-          '${_localizedLocationLabel(selectedSaveAs)} ${'already_added'.tr}');
-      return;
+    isSaving.value = true;
+    showWheelLoaderDialog(size: 120);
+
+    // Started now and awaited at the end: guarantees the wheel loader is shown
+    // for at least one second even when the save finishes instantly.
+    final minimumLoaderTime = Future<void>.delayed(_minimumLoaderTime);
+
+    String? successMessage;
+
+    try {
+      if (editingLocation != null) {
+        // Update existing location
+        final updatedLocation = SavedLocation(
+          id: editingLocation!.id,
+          label: _addressLabel,
+          address: address,
+          latitude: latitude,
+          longitude: longitude,
+          houseNo: houseNoController.text,
+          landmark:
+              landmarkController.text.isEmpty ? null : landmarkController.text,
+          phoneNumber: phoneController.text,
+          pincode: pincode ?? editingLocation!.pincode,
+        );
+
+        await bookSlotController.updateSavedLocation(
+          editingLocation!,
+          updatedLocation,
+        );
+
+        successMessage = 'location_updated_successfully'.tr;
+      } else {
+        // Create new location
+        final savedLocation = SavedLocation(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          label: _addressLabel,
+          address: address,
+          latitude: latitude,
+          longitude: longitude,
+          houseNo: houseNoController.text,
+          landmark:
+              landmarkController.text.isEmpty ? null : landmarkController.text,
+          phoneNumber: phoneController.text,
+          pincode: pincode,
+        );
+
+        await bookSlotController.addSavedLocation(savedLocation);
+
+        successMessage = 'location_saved_successfully'.tr;
+      }
+
+      // No signup form any more: this is where we finally learn the customer's
+      // name, so save it on the customer record too.
+      await _saveCustomerName(nameController.text.trim());
+
+      // Never dismiss the loader before the minimum time has elapsed.
+      await minimumLoaderTime;
+    } catch (e) {
+      print('Could not save location: $e');
+      successMessage = null;
+      errorToast(apiErrorMessage(e, 'something_went_wrong'.tr));
+    } finally {
+      hideWheelLoaderDialog();
+      isSaving.value = false;
     }
 
-    if (editingLocation != null) {
-      // Update existing location
-      final updatedLocation = SavedLocation(
-        id: editingLocation!.id,
-        label: selectedSaveAs,
-        address: address,
-        latitude: latitude,
-        longitude: longitude,
-        houseNo: houseNoController.text,
-        landmark:
-            landmarkController.text.isEmpty ? null : landmarkController.text,
-        phoneNumber: phoneController.text,
-        pincode: pincode ?? editingLocation!.pincode,
-      );
+    // Something failed - keep the customer on this screen so they can retry.
+    if (successMessage == null) return;
 
-      bookSlotController.updateSavedLocation(
-        editingLocation!,
-        updatedLocation,
-      );
-
-      successToast('location_updated_successfully'.tr);
-    } else {
-      // Create new location
-      final savedLocation = SavedLocation(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        label: selectedSaveAs,
-        address: address,
-        latitude: latitude,
-        longitude: longitude,
-        houseNo: houseNoController.text,
-        landmark:
-            landmarkController.text.isEmpty ? null : landmarkController.text,
-        phoneNumber: phoneController.text,
-        pincode: pincode,
-      );
-
-      bookSlotController.addSavedLocation(savedLocation);
-      successToast('location_saved_successfully'.tr);
-    }
+    successToast(successMessage);
 
     Get.back();
     Get.back();
-  }
-
-  void updateSaveAs(String? value) {
-    if (value != null) {
-      selectedSaveAs = value;
-      update();
-    }
   }
 }

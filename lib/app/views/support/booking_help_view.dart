@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:car_wash_customer_app/app/controllers/support/booking_help_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 /// Booking-specific Help: a booking summary plus a guided conversation of
@@ -106,8 +107,14 @@ class BookingHelpView extends GetView<BookingHelpController> {
               ),
             ),
             const SizedBox(height: 2),
-            Text(
-              "${_dateLabel(summary.scheduledAt)} · ${"payment".tr}: ${summary.paymentLabel(controller.languageCode)} · ${summary.amount.toStringAsFixed(2)} SAR",
+            Text.rich(
+              TextSpan(
+                children: riyalAmountSpans(
+                  amount: summary.amount.toStringAsFixed(2),
+                  prefix:
+                      "${_dateLabel(summary.scheduledAt)} · ${"payment".tr}: ${summary.paymentLabel(controller.languageCode)} · ",
+                ),
+              ),
               maxLines: 2,
               style: const TextStyle(
                 fontSize: 11.5,
@@ -199,14 +206,12 @@ class BookingHelpView extends GetView<BookingHelpController> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
-        crossAxisAlignment: isUser
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: isUser
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
+            mainAxisAlignment:
+                isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isUser) ...[_botAvatar(), const SizedBox(width: 8)],
@@ -220,8 +225,8 @@ class BookingHelpView extends GetView<BookingHelpController> {
                     color: isUser
                         ? AppColors.primaryLight
                         : (entry.isError
-                              ? const Color(0xFFFDECEA)
-                              : const Color(0xFFF4F5F7)),
+                            ? const Color(0xFFFDECEA)
+                            : const Color(0xFFF4F5F7)),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(15),
                       topRight: const Radius.circular(15),

@@ -1,8 +1,8 @@
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/instore_wash_controller.dart';
+import 'package:car_wash_customer_app/app/helpers/media_url.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
 class InstoreWashListView extends GetView<InstoreWashController> {
@@ -25,12 +25,12 @@ class InstoreWashListView extends GetView<InstoreWashController> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.map_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.map_outlined, color: Colors.black),
+        //     onPressed: () {},
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -94,15 +94,15 @@ class InstoreWashListView extends GetView<InstoreWashController> {
 
                 return Column(
                   children: controller.filteredStores.map((store) {
-                    final isApproved = store.status.toUpperCase() == "APPROVED";
                     return locationCard(
                       image: store.imageUrl,
                       title: store.companyName,
                       //rating: "0.0",
                       //reviews: "no_reviews_yet".tr,
                       address: "${store.streetName}, ${store.city}",
-                      statusText: isApproved ? "open".tr : "closed".tr,
-                      statusColor: isApproved ? Colors.green : Colors.red,
+                      // Distance from the customer (empty until the device
+                      // position is known).
+                      distanceText: controller.distanceLabel(store),
                       phoneNumber: store.phoneNumber,
                       latitude: store.location?.lat ?? 0.0,
                       longitude: store.location?.lng ?? 0.0,
@@ -129,8 +129,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
     //required String rating,
     //required String reviews,
     required String address,
-    required String statusText,
-    required Color statusColor,
+    required String distanceText,
     required String phoneNumber,
     required double latitude,
     required double longitude,
@@ -165,7 +164,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                     fit: BoxFit.cover,
                   )
                 : Image.network(
-                    Constants.imageBaseUrl + image,
+                    resolveMediaUrl(image),
                     height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -198,7 +197,7 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                 // Rating Row
                 const Row(
                   children: [
-                    Icon(Icons.star, size: 16, color: Colors.orange),
+                    // Icon(Icons.star, size: 16, color: Colors.orange),
                     SizedBox(width: 4),
                     // Text(
                     //   rating,
@@ -223,46 +222,46 @@ class InstoreWashListView extends GetView<InstoreWashController> {
                   style: const TextStyle(color: Colors.black87),
                 ),
 
-                const SizedBox(height: 8),
-
-                // Status
-                Row(
-                  children: [
-                    Icon(
-                      statusColor == Colors.red
-                          ? Icons.cancel
-                          : Icons.circle_rounded,
-                      size: 12,
-                      color: statusColor,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      statusText,
-                      style: TextStyle(
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
+                // Distance from the customer (only once the position is known)
+                if (distanceText.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.near_me_outlined,
+                        size: 14,
+                        color: Colors.grey,
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(width: 6),
+                      Text(
+                        "$distanceText ${'away'.tr}",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
 
                 const SizedBox(height: 10),
 
                 // ---- View Reviews ----
-                Row(
-                  children: [
-                    Text(
-                      "view_reviews".tr,
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.arrow_forward,
-                        size: 14, color: Colors.blue),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Text(
+                //       "view_reviews".tr,
+                //       style: const TextStyle(
+                //         color: Colors.blue,
+                //         fontWeight: FontWeight.w600,
+                //       ),
+                //     ),
+                //     const SizedBox(width: 4),
+                //     const Icon(Icons.arrow_forward,
+                //         size: 14, color: Colors.blue),
+                //   ],
+                // ),
 
                 const SizedBox(height: 12),
 

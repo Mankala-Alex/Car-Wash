@@ -10,15 +10,22 @@ class EndPoints {
   static const apiGetAllServices = "services";
   static const apiGetfetchoffers = "offers";
   static const apiGetPublicPartners = "partners/public";
+
+  //offer coupons (applied by the customer at booking time)
+  static const apiOfferCoupons = "offers/coupons";
+  static const apiValidateOfferCoupon = "offers/coupons/validate";
+
+  //new-customer login popup
+  static const apiOfferPopup = "offers/popup";
+  static const apiOfferPopupSeen = "offers/popup/seen";
   //auth
   static const apiPostrequstotp = 'auth/request-otp'; //login
   static const apiPostverifyotp = 'auth/verify-otp'; //sign up
   static const apiPostsignup = 'auth/complete-signup';
 
-  //sms login
+  //sms login (the customer app has no signup screen: phone -> OTP only)
   static const apiPostRequestOtpPhone = 'authentical/send-otp';
   static const apiPostVerifyOtpPhone = 'authentical/verify-otp';
-  static const apiPostSignupPhone = 'authentical/complete-signup';
 
   static const apiPostAddvehicle = 'customer-vehicles';
   static const apiGetslotdates = 'admin/dates';
@@ -36,6 +43,9 @@ class EndPoints {
 
   //account deletion (App Store / Play Store requirement)
   static const apiDeleteMyAccount = 'customers/me';
+
+  //customer name (there is no signup form, the name is captured in the app)
+  static const apiUpdateMyName = 'customers/me/name';
 
   static const apiPlaceAutocomplete = "maps/autocomplete";
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:car_wash_customer_app/app/controllers/support/support_chat_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/models/support/support_models.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -119,17 +120,21 @@ class SupportChatView extends GetView<SupportChatController> {
             ],
           ),
           const SizedBox(height: 3),
-          Text(
-            [
-              if (summary.serviceName.isNotEmpty) summary.serviceName,
-              if (summary.scheduledAt != null)
-                DateFormat(
-                  'dd MMM • hh:mm a',
-                ).format(summary.scheduledAt!.toLocal()),
-              if ((summary.paymentStatus ?? '').isNotEmpty)
-                "${"payment".tr}: ${summary.paymentStatus}",
-              "${summary.amount.toStringAsFixed(2)} SAR",
-            ].join(' · '),
+          Text.rich(
+            TextSpan(
+              children: riyalAmountSpans(
+                amount: summary.amount.toStringAsFixed(2),
+                prefix: [
+                  if (summary.serviceName.isNotEmpty) summary.serviceName,
+                  if (summary.scheduledAt != null)
+                    DateFormat(
+                      'dd MMM • hh:mm a',
+                    ).format(summary.scheduledAt!.toLocal()),
+                  if ((summary.paymentStatus ?? '').isNotEmpty)
+                    "${"payment".tr}: ${summary.paymentStatus}",
+                ].map((part) => "$part · ").join(),
+              ),
+            ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -244,8 +249,7 @@ class SupportChatView extends GetView<SupportChatController> {
     return ListView.builder(
       controller: controller.scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      itemCount:
-          controller.messages.length +
+      itemCount: controller.messages.length +
           (controller.hasMore.value ? 1 : 0) +
           typingRows,
       itemBuilder: (context, index) {
@@ -363,9 +367,8 @@ class SupportChatView extends GetView<SupportChatController> {
           ),
         ),
         child: Column(
-          crossAxisAlignment: isMine
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             if (!isMine && (message.senderName ?? '').isNotEmpty)
               Padding(

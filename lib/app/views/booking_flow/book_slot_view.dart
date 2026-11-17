@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/book_slot_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/saved_location_options_sheet.dart';
+import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+import 'package:car_wash_customer_app/app/models/booking%20slot/saved_location_model.dart';
+import 'package:car_wash_customer_app/app/models/offers/offer_coupon_model.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 
@@ -13,7 +18,7 @@ class BookSlotView extends GetView<BookSlotController> {
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
-        //backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.white,
@@ -53,6 +58,15 @@ class BookSlotView extends GetView<BookSlotController> {
                   _buildVehicleList(context),
 
                   const SizedBox(height: 16),
+
+                  // Slots are per service area, so WHERE comes before WHEN.
+                  // The date/time pickers stay empty until an address resolved
+                  // to one of the areas the business serves.
+                  _buildLocationSection(context),
+                  const SizedBox(height: 8),
+                  _buildServiceabilityStatus(context),
+                  const SizedBox(height: 20),
+
                   Text(
                     "select_date_and_time".tr,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -60,7 +74,9 @@ class BookSlotView extends GetView<BookSlotController> {
                           color: AppColors.textDefaultLight,
                         ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 6),
+                  _buildAreaGateHint(context),
+                  const SizedBox(height: 10),
 
                   _buildDatePicker(context),
                   const SizedBox(height: 15),
@@ -68,9 +84,9 @@ class BookSlotView extends GetView<BookSlotController> {
                   _buildTimeSlots(context),
                   const SizedBox(height: 30),
 
-                  _buildLocationSection(context),
-                  const SizedBox(height: 8),
-                  _buildServiceabilityStatus(context),
+// Apply Coupon - above Price Details
+                  _buildApplyCouponRow(context),
+
                   const SizedBox(height: 20),
                   _buildPriceDetails(context),
 
@@ -154,19 +170,15 @@ class BookSlotView extends GetView<BookSlotController> {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Image.asset(
-                      "assets/carwash/SAR.png",
-                      width: 18,
-                      height: 18,
-                    ),
+                    const RiyalSymbol(size: 18),
                     const SizedBox(width: 5),
                     Obx(
                       () => Text(
                         controller.price.value,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -223,7 +235,10 @@ class BookSlotView extends GetView<BookSlotController> {
 
             return _buildVehicleCard(
               context,
-              vehicleName: "${v["make"]} ${v["model"]}",
+              vehicleName: [v["make"], v["model"]]
+                  .map((e) => (e ?? '').toString().trim())
+                  .where((e) => e.isNotEmpty)
+                  .join(' '),
               plateNumber: v["vehicle_number"] ?? "",
               imagePath: "assets/carwash/car1.png",
             );
@@ -339,10 +354,81 @@ class BookSlotView extends GetView<BookSlotController> {
     );
   }
 
+  // ---------------- AREA GATE (slots are per area) ----------------
+
+  /// Slots belong to a service area, so nothing can be picked before the
+  /// address is known. This explains it instead of showing an empty row.
+  Widget _buildAreaGateHint(BuildContext context) {
+    return Obx(() {
+      if (!controller.hasServiceArea) {
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.amber.shade50,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.amber.shade200),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.location_on_outlined,
+                size: 18,
+                color: Colors.amber.shade800,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  "choose_location_for_slots".tr,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: Colors.amber.shade900,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      final area = controller.serviceAreaName.value;
+      return Text(
+        area.isEmpty
+            ? "slots_for_your_area".tr
+            : "$area · ${"slots_for_your_area".tr}",
+        style: TextStyle(
+          fontSize: 12.5,
+          color: AppColors.textDefaultLight.withOpacity(0.7),
+        ),
+      );
+    });
+  }
+
   // ---------------- DATE PICKER ----------------
 
   Widget _buildDatePicker(BuildContext context) {
     return Obx(() {
+      // No area yet -> no dates (they are per area).
+      if (!controller.hasServiceArea) return const SizedBox.shrink();
+
+      if (controller.isLoadingDates.value) {
+        return const SizedBox(
+          height: 100,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
+
+      if (controller.slotDates.isEmpty) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            "no_dates_for_your_area".tr,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+        );
+      }
+
       return SizedBox(
         height: 100,
         child: ListView.separated(
@@ -417,6 +503,9 @@ class BookSlotView extends GetView<BookSlotController> {
 
   Widget _buildTimeSlots(BuildContext context) {
     return Obx(() {
+      // No area yet -> the slots of the area are unknown.
+      if (!controller.hasServiceArea) return const SizedBox.shrink();
+
       if (controller.isLoadingTimes.value) {
         return const Center(child: CircularProgressIndicator());
       }
@@ -586,6 +675,7 @@ class BookSlotView extends GetView<BookSlotController> {
                   const SizedBox(height: 12),
                   _buildSavedLocationCard(
                     context,
+                    location: location,
                     icon: Icons.location_on_outlined,
                     title: location.label,
                     address: location.address,
@@ -657,6 +747,7 @@ class BookSlotView extends GetView<BookSlotController> {
 
   Widget _buildSavedLocationCard(
     BuildContext context, {
+    required SavedLocation location,
     required IconData icon,
     required String title,
     required String address,
@@ -667,7 +758,7 @@ class BookSlotView extends GetView<BookSlotController> {
     return Obx(
       () => GestureDetector(
         onTap: () {
-          controller.updateSelectedAddress(title);
+          controller.updateSelectedAddress(location);
         },
         child: Container(
           padding: const EdgeInsets.all(10),
@@ -675,10 +766,12 @@ class BookSlotView extends GetView<BookSlotController> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: controller.selectedAddress.value == title
+              color: controller.selectedSavedLocation.value?.id == location.id
                   ? AppColors.primaryLight
                   : Colors.grey[300]!,
-              width: controller.selectedAddress.value == title ? 2 : 1,
+              width: controller.selectedSavedLocation.value?.id == location.id
+                  ? 2
+                  : 1,
             ),
             boxShadow: [
               BoxShadow(
@@ -722,15 +815,16 @@ class BookSlotView extends GetView<BookSlotController> {
                   ],
                 ),
               ),
-              Radio<bool>(
-                value: true,
-                groupValue: controller.selectedAddress.value == title,
-                onChanged: (v) {
-                  if (v == true) {
-                    controller.updateSelectedAddress(title);
-                  }
+              // 3-dot menu: Edit / Delete, same sheet as the Addresses screen.
+              InkWell(
+                onTap: () {
+                  showSavedLocationOptionsSheet(controller, location);
                 },
-                activeColor: AppColors.secondaryLight,
+                borderRadius: BorderRadius.circular(20),
+                child: const Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Icon(Icons.more_vert, color: Colors.black54, size: 22),
+                ),
               ),
             ],
           ),
@@ -773,7 +867,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 children: [
                   Text('service_price'.tr),
                   const Spacer(),
-                  Image.asset("assets/carwash/SAR.png", width: 15),
+                  const RiyalSymbol(size: 15),
                   const SizedBox(width: 5),
                   Obx(
                     () => Text(
@@ -786,16 +880,57 @@ class BookSlotView extends GetView<BookSlotController> {
 
               const SizedBox(height: 12),
 
+              // DISCOUNT (only when a coupon is applied)
+              Obx(
+                () => controller.hasCouponApplied
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Text(
+                              'discount'.tr,
+                              style: const TextStyle(
+                                color: AppColors.textGreenLight,
+                              ),
+                            ),
+                            const Spacer(),
+                            const Text(
+                              '- ',
+                              style: TextStyle(
+                                color: AppColors.textGreenLight,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const RiyalSymbol(
+                              size: 15,
+                              color: AppColors.textGreenLight,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              controller.couponDiscountAmount.toStringAsFixed(
+                                2,
+                              ),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textGreenLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+
               // VAT
               Obx(
                 () => Row(
                   children: [
                     Text('${'vat'.tr} (${controller.vatPercentLabel}%)'),
                     const Spacer(),
-                    Image.asset("assets/carwash/SAR.png", width: 15),
+                    const RiyalSymbol(size: 15),
                     const SizedBox(width: 5),
                     Text(
-                      controller.vatAmount.value.toStringAsFixed(2),
+                      controller.displayVatAmount.toStringAsFixed(2),
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                   ],
@@ -815,7 +950,7 @@ class BookSlotView extends GetView<BookSlotController> {
                     ),
                   ),
                   const Spacer(),
-                  Image.asset("assets/carwash/SAR.png", width: 18),
+                  const RiyalSymbol(size: 18),
                   const SizedBox(width: 5),
                   Obx(
                     () => Text(
@@ -829,8 +964,352 @@ class BookSlotView extends GetView<BookSlotController> {
                   ),
                 ],
               ),
+
+              // const SizedBox(height: 6),
+              // const Divider(height: 25),
+
+              // APPLY COUPON
+              // _buildApplyCouponRow(context),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  /// "Apply coupon" row inside the price card. Opens a sheet with the coupons
+  /// the backend says are valid for the selected service + slot.
+  ///
+  Widget _buildApplyCouponRow(BuildContext context) {
+    return Obx(() {
+      final applied = controller.appliedCoupon.value;
+
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 13,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: applied != null
+                ? AppColors.textGreenLight
+                : AppColors.borderGray,
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryLight.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(
+                Icons.local_offer_outlined,
+                color: AppColors.secondaryLight,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    applied != null ? applied.code : 'apply_coupon'.tr,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDefaultLight,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  // Text(
+                  //   applied != null
+                  //       ? (applied.title.isNotEmpty
+                  //           ? applied.title
+                  //           : 'coupon_applied'.tr)
+                  //       : 'available_coupons_hint'.tr,
+                  //   maxLines: 1,
+                  //   overflow: TextOverflow.ellipsis,
+                  //   style: TextStyle(
+                  //     fontSize: 11,
+                  //     color: Colors.grey.shade600,
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            if (applied != null)
+              TextButton(
+                onPressed: () {
+                  controller.removeCoupon();
+                  successToast('coupon_removed'.tr);
+                },
+                child: Text(
+                  'remove'.tr.toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              )
+            else
+              OutlinedButton(
+                onPressed: () => _openCouponSheet(context),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.secondaryLight,
+                  side: const BorderSide(
+                    color: AppColors.secondaryLight,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 9,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                ),
+                child: Text(
+                  'View_coupons'.tr.toUpperCase(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    });
+  }
+  // Widget _buildApplyCouponRow(BuildContext context) {
+  //   return Obx(() {
+  //     final applied = controller.appliedCoupon.value;
+
+  //     if (applied != null) {
+  //       return Row(
+  //         children: [
+  //           const Icon(
+  //             Icons.local_offer,
+  //             size: 18,
+  //             color: AppColors.textGreenLight,
+  //           ),
+  //           const SizedBox(width: 8),
+  //           Expanded(
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Text(
+  //                   applied.code,
+  //                   style: const TextStyle(fontWeight: FontWeight.bold),
+  //                 ),
+  //                 if (applied.title.isNotEmpty)
+  //                   Text(
+  //                     applied.title,
+  //                     maxLines: 1,
+  //                     overflow: TextOverflow.ellipsis,
+  //                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+  //                   ),
+  //               ],
+  //             ),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               controller.removeCoupon();
+  //               successToast('coupon_removed'.tr);
+  //             },
+  //             child: Text('remove'.tr),
+  //           ),
+  //         ],
+  //       );
+  //     }
+
+  //     return InkWell(
+  //       onTap: () => _openCouponSheet(context),
+  //       borderRadius: BorderRadius.circular(12),
+  //       child: Padding(
+  //         padding: const EdgeInsets.symmetric(vertical: 6),
+  //         child: Row(
+  //           children: [
+  //             const Icon(
+  //               Icons.local_offer_outlined,
+  //               size: 18,
+  //               color: AppColors.secondaryLight,
+  //             ),
+  //             const SizedBox(width: 8),
+  //             Expanded(
+  //               child: Text(
+  //                 'apply_coupon'.tr,
+  //                 style: const TextStyle(
+  //                   fontWeight: FontWeight.w600,
+  //                   color: AppColors.secondaryLight,
+  //                 ),
+  //               ),
+  //             ),
+  //             const Icon(
+  //               Icons.chevron_right,
+  //               size: 20,
+  //               color: AppColors.secondaryLight,
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //   });
+  // }
+
+  /// Bottom sheet listing the coupons valid for the current service + slot.
+  Future<void> _openCouponSheet(BuildContext context) async {
+    if (controller.selectedSlotId.value == 0) {
+      errorToast('please_select_a_time_slot'.tr);
+      return;
+    }
+
+    controller.loadAvailableCoupons();
+
+    await Get.bottomSheet(
+      Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 45,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'apply_coupon'.tr,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'available_coupons_hint'.tr,
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 12),
+            Flexible(
+              child: Obx(() {
+                if (controller.isLoadingCoupons.value) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 30),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (controller.availableCoupons.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
+                    child: Center(
+                      child: Text(
+                        'no_coupons_available'.tr,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ),
+                  );
+                }
+
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: controller.availableCoupons.length,
+                  separatorBuilder: (_, __) => const Divider(height: 18),
+                  itemBuilder: (context, index) {
+                    final coupon = controller.availableCoupons[index];
+                    return _couponTile(context, coupon);
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _couponTile(BuildContext context, OfferCouponModel coupon) {
+    final restrictions = coupon.restrictionsLabel;
+
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.secondaryLight.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            coupon.discountLabel,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.secondaryLight,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                coupon.code,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              if (coupon.title.isNotEmpty)
+                Text(
+                  coupon.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                ),
+              if (restrictions.isNotEmpty)
+                Text(
+                  restrictions,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        TextButton(
+          onPressed: () async {
+            final error = await controller.applyCoupon(coupon);
+
+            if (error != null) {
+              errorToast(error);
+              return;
+            }
+
+            Get.back(); // close the sheet
+            successToast('coupon_applied'.tr);
+          },
+          child: Text('apply'.tr),
         ),
       ],
     );
@@ -869,11 +1348,7 @@ class BookSlotView extends GetView<BookSlotController> {
                 ),
                 Row(
                   children: [
-                    Image.asset(
-                      "assets/carwash/SAR.png",
-                      width: 20,
-                      height: 20,
-                    ),
+                    const RiyalSymbol(size: 20),
                     const SizedBox(width: 5),
                     Obx(
                       () => Text(

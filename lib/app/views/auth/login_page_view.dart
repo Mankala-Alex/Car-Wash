@@ -141,12 +141,11 @@ class LoginView extends GetView<LoginController> {
           ),
 
           // ================= FULL SCREEN LOADER =================
+          // Blurs the form behind it while the OTP is being requested.
           Obx(() {
             if (!controller.isLoading.value) return const SizedBox();
 
-            return Center(
-              child: wheelloader(), // 🔥 CENTERED LOADER
-            );
+            return const WheelLoaderOverlay();
           }),
         ],
       ),

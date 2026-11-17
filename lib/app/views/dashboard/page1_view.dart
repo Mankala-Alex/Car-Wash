@@ -2,13 +2,16 @@ import 'package:car_wash_customer_app/app/models/advertisement/advertisement_mod
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart'; // Ensure this import is correct
 import 'package:get/get.dart';
-import 'package:car_wash_customer_app/app/config/constants.dart';
 import 'package:car_wash_customer_app/app/controllers/booking_flow/features_list_controller.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/new_user_offer_popup.dart';
 import 'package:car_wash_customer_app/app/custome_widgets/skeleton_box.dart';
 import 'package:car_wash_customer_app/app/models/booking%20slot/booking_history_model.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
+import 'package:car_wash_customer_app/app/helpers/amount_formatter.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
+import 'package:car_wash_customer_app/app/helpers/media_url.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../controllers/dashboard/dashboard_controller.dart';
@@ -310,8 +313,7 @@ class Page1View extends GetView<DashboardController> {
                                   separatorBuilder: (_, __) =>
                                       const SizedBox(width: 14),
                                   itemBuilder: (context, index) => SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width *
+                                    width: MediaQuery.of(context).size.width *
                                         0.52,
                                     child: const SkeletonBox(
                                       width: double.infinity,
@@ -402,21 +404,22 @@ class Page1View extends GetView<DashboardController> {
                                 itemBuilder: (context, index) {
                                   final service = services[index];
 
+                                  // Resolved against the API origin the app is
+                                  // connected to (see `resolveMediaUrl`).
                                   final imageUrl =
-                                      Constants.imageBaseUrl + service.imageUrl;
+                                      resolveMediaUrl(service.imageUrl);
 
                                   return GestureDetector(
                                     onTap: () {
                                       _showServiceDetails(
                                         name: service.getLocalizedName(),
-                                        description: service
-                                            .getLocalizedDescription(),
+                                        description:
+                                            service.getLocalizedDescription(),
                                         price: service.price,
                                       );
                                     },
                                     child: Container(
-                                      width:
-                                          MediaQuery.of(context).size.width *
+                                      width: MediaQuery.of(context).size.width *
                                           0.52,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
@@ -439,29 +442,30 @@ class Page1View extends GetView<DashboardController> {
                                           ClipRRect(
                                             borderRadius:
                                                 const BorderRadius.only(
-                                                  topLeft: Radius.circular(18),
-                                                  topRight: Radius.circular(18),
-                                                ),
+                                              topLeft: Radius.circular(18),
+                                              topRight: Radius.circular(18),
+                                            ),
                                             child: Image.network(
                                               imageUrl,
                                               width: double.infinity,
-                                              height: 120,
+                                              // Slightly shorter than before so the
+                                              // "incl. VAT" line fits on 360dp phones.
+                                              height: 110,
                                               fit: BoxFit.cover,
                                               errorBuilder:
                                                   (context, error, stackTrace) {
-                                                    return Container(
-                                                      height: 120,
-                                                      color:
-                                                          Colors.grey.shade200,
-                                                      child: const Center(
-                                                        child: Icon(
-                                                          Icons.local_car_wash,
-                                                          size: 40,
-                                                          color: Colors.grey,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
+                                                return Container(
+                                                  height: 110,
+                                                  color: Colors.grey.shade200,
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.local_car_wash,
+                                                      size: 40,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                             ),
                                           ),
 
@@ -489,18 +493,38 @@ class Page1View extends GetView<DashboardController> {
 
                                                   const Spacer(),
 
-                                                  // Price + Book Now
+                                                  // Price (VAT inclusive) + Book Now
                                                   Row(
                                                     children: [
-                                                      // Price
+                                                      // Final price the customer pays
                                                       Expanded(
-                                                        child: Text(
-                                                          "${'sar'.tr} ${service.price}",
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style:
-                                                              const TextStyle(
+                                                        // The height cap keeps the row
+                                                        // from ever growing taller than
+                                                        // the "Book Now" chip, which used
+                                                        // to overflow the card by a
+                                                        // fraction of a pixel.
+                                                        child: SizedBox(
+                                                          height: 22,
+                                                          child: Align(
+                                                            alignment:
+                                                                AlignmentDirectional
+                                                                    .centerStart,
+                                                            child: RiyalAmount(
+                                                              // `totalAmount` is a `double`;
+                                                              // without formatting it can read
+                                                              // `13.800000000000001`.
+                                                              formatAmount(
+                                                                service
+                                                                    .totalAmount,
+                                                              ),
+                                                              maxLines: 1,
+                                                              // Fits the price to whatever
+                                                              // space the card has instead of
+                                                              // truncating it with `...`.
+                                                              fitToWidth: true,
+                                                              minFontSize: 11,
+                                                              style:
+                                                                  const TextStyle(
                                                                 fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
@@ -509,6 +533,8 @@ class Page1View extends GetView<DashboardController> {
                                                                   0xFF1E293B,
                                                                 ),
                                                               ),
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
 
@@ -546,21 +572,25 @@ class Page1View extends GetView<DashboardController> {
                                                         },
                                                         child: Container(
                                                           padding:
-                                                              const EdgeInsets.symmetric(
-                                                                horizontal: 12,
-                                                                vertical: 8,
-                                                              ),
-                                                          decoration: BoxDecoration(
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 8,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
                                                             color: AppColors
                                                                 .secondaryLight,
                                                             borderRadius:
-                                                                BorderRadius.circular(
-                                                                  20,
-                                                                ),
+                                                                BorderRadius
+                                                                    .circular(
+                                                              20,
+                                                            ),
                                                           ),
                                                           child: Text(
                                                             "book_now".tr,
-                                                            style: const TextStyle(
+                                                            style:
+                                                                const TextStyle(
                                                               color: AppColors
                                                                   .textWhiteLight,
                                                               fontSize: 12,
@@ -603,7 +633,7 @@ class Page1View extends GetView<DashboardController> {
                         subtitle: "visit_us_for_a_premium_clean".tr,
                         buttonText: "Partner_location".tr,
                         imagePath: "assets/carwash/in_store.png",
-                        discountText: "off_50".tr,
+                        // discountText: "off_50".tr,
                         onTap: () {
                           Get.toNamed(Routes.instorewash);
                         },
@@ -618,26 +648,42 @@ class Page1View extends GetView<DashboardController> {
 
                         return _trackingCard(b);
                       }),
-                      const SizedBox(height: 20),
+                      //const SizedBox(height: 20),
+
                       // ---------------- PROMO BANNERS AFTER WALLET ----------------
+                      Text(
+                        "offers_for_you".tr,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1E293B)),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Obx(() {
                         final list = offersController.offers;
 
+                        // One 2:1 box for the offer artwork on every device.
+                        final cardWidth =
+                            MediaQuery.sizeOf(context).width * 0.72;
+                        final cardHeight = cardWidth / offerImageAspectRatio;
+
                         if (list.isEmpty) {
                           return Container(
-                            height: 180,
+                            height: cardHeight,
                             width: double.infinity,
                             margin: const EdgeInsets.only(top: 10),
-                            child: const SkeletonBox(
+                            child: SkeletonBox(
                               width: double.infinity,
-                              height: 180,
+                              height: cardHeight,
                               radius: 18,
                             ),
                           );
                         }
 
                         return SizedBox(
-                          height: 180,
+                          height: cardHeight,
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
@@ -648,133 +694,79 @@ class Page1View extends GetView<DashboardController> {
                             itemBuilder: (context, index) {
                               final offer = list[index];
 
-                              final discountTitle =
+                              // Keep your existing discount formatting
+                              final List<InlineSpan> discountTitleSpans =
                                   offer.discountType == "percentage"
-                                  ? "${offer.discountValue}${'percent_off'.tr}"
-                                  : "${'sar'.tr} ${offer.discountValue} ${'off'.tr}";
+                                      ? [
+                                          TextSpan(
+                                            text:
+                                                "${offer.discountValue}${'percent_off'.tr}",
+                                          ),
+                                        ]
+                                      : riyalAmountSpans(
+                                          amount: offer.discountValue,
+                                          suffix: " ${'off'.tr}",
+                                        );
 
-                              return Container(
-                                width: MediaQuery.of(context).size.width - 40,
-                                height: 180,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18),
-                                  color: const Color(0xFFFFF4E5),
+                              return GestureDetector(
+                                onTap: () => Get.toNamed(
+                                  Routes.offerscreen,
+                                  arguments: offer,
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(18),
+                                child: Container(
+                                  width: cardWidth,
+                                  height: cardHeight,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(18),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withValues(alpha: 0.10),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
                                   child: Stack(
+                                    fit: StackFit.expand,
                                     children: [
-                                      // -------- BACKGROUND CIRCLES --------
-                                      Positioned(
-                                        top: -20,
-                                        right: -20,
-                                        child: Container(
-                                          height: 120,
-                                          width: 120,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xFFFFE7C5),
-                                            shape: BoxShape.circle,
+                                      // Full offer image (same 2:1 artwork)
+                                      OfferBanner(offer: offer),
+
+                                      // Bottom gradient for text visibility
+                                      const DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.black12,
+                                              Colors.black54,
+                                            ],
+                                            stops: [0.35, 0.65, 1.0],
                                           ),
                                         ),
                                       ),
 
+                                      // Discount text on image
                                       Positioned(
-                                        bottom: -30,
-                                        left: -30,
-                                        child: Container(
-                                          height: 140,
-                                          width: 140,
-                                          decoration: const BoxDecoration(
-                                            color: Color(0xFFFFE7C5),
-                                            shape: BoxShape.circle,
+                                        left: 16,
+                                        right: 16,
+                                        bottom: 16,
+                                        child: Text.rich(
+                                          TextSpan(
+                                            children: discountTitleSpans,
                                           ),
-                                        ),
-                                      ),
-
-                                      // -------- OFFER CONTENT --------
-                                      Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    discountTitle,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 28,
-                                                      fontWeight:
-                                                          FontWeight.w900,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    offer.title,
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  const Spacer(),
-                                                  Text(
-                                                    "${"expires_in".tr} ${offer.expiryDays} ${"days".tr}",
-                                                    style: const TextStyle(
-                                                      color: Colors.black87,
-                                                      fontSize: 13,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Get.toNamed(Routes.mycoupons);
-                                              },
-                                              child: Container(
-                                                padding: const EdgeInsets.all(
-                                                  10,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white
-                                                      .withValues(alpha: 0.75),
-                                                  shape: BoxShape.circle,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          .withValues(
-                                                            alpha: 0.06,
-                                                          ),
-                                                      blurRadius: 8,
-                                                      offset: const Offset(
-                                                        0,
-                                                        3,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                child: const Icon(
-                                                  Icons.card_giftcard_rounded,
-                                                  color:
-                                                      AppColors.secondaryLight,
-                                                  size: 50,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -785,6 +777,154 @@ class Page1View extends GetView<DashboardController> {
                           ),
                         );
                       }),
+
+                      // Obx(() {
+                      //   final list = offersController.offers;
+
+                      //   if (list.isEmpty) {
+                      //     return Container(
+                      //       height: 180,
+                      //       width: double.infinity,
+                      //       margin: const EdgeInsets.only(top: 10),
+                      //       child: const SkeletonBox(
+                      //         width: double.infinity,
+                      //         height: 180,
+                      //         radius: 18,
+                      //       ),
+                      //     );
+                      //   }
+
+                      //   return SizedBox(
+                      //     height: 200,
+                      //     child :
+                      // child: ListView.separated(
+                      //   scrollDirection: Axis.horizontal,
+                      //   physics: const BouncingScrollPhysics(),
+                      //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                      //   itemCount: list.length,
+                      //   separatorBuilder: (_, __) =>
+                      //       const SizedBox(width: 12),
+                      //   itemBuilder: (context, index) {
+                      //     final offer = list[index];
+
+                      //     final List<InlineSpan> discountTitleSpans =
+                      //         offer.discountType == "percentage"
+                      //             ? [
+                      //                 TextSpan(
+                      //                   text:
+                      //                       "${offer.discountValue}${'percent_off'.tr}",
+                      //                 ),
+                      //               ]
+                      //             : riyalAmountSpans(
+                      //                 amount: offer.discountValue,
+                      //                 suffix: " ${'off'.tr}",
+                      //               );
+
+                      //     return GestureDetector(
+                      //       onTap: () => Get.toNamed(
+                      //         Routes.offerscreen,
+                      //         arguments: offer,
+                      //       ),
+                      //       child: Container(
+                      //         width:
+                      //             MediaQuery.of(context).size.width * 0.62,
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.white,
+                      //           borderRadius: BorderRadius.circular(16),
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               color: Colors.black.withValues(
+                      //                 alpha: 0.08,
+                      //               ),
+                      //               blurRadius: 10,
+                      //               offset: const Offset(0, 4),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         clipBehavior: Clip.antiAlias,
+                      //         child: Column(
+                      //           crossAxisAlignment:
+                      //               CrossAxisAlignment.start,
+                      //           children: [
+                      //             // ---- OFFER IMAGE ----
+                      //             SizedBox(
+                      //               height: 110,
+                      //               width: double.infinity,
+                      //               child: OfferBanner(
+                      //                 offer: offer,
+                      //                 height: 110,
+                      //               ),
+                      //             ),
+
+                      //             // ---- WHITE FOOTER ----
+                      //             Padding(
+                      //               padding: const EdgeInsets.fromLTRB(
+                      //                 12,
+                      //                 10,
+                      //                 12,
+                      //                 12,
+                      //               ),
+                      //               child: Column(
+                      //                 crossAxisAlignment:
+                      //                     CrossAxisAlignment.start,
+                      //                 children: [
+                      //                   Row(
+                      //                     children: [
+                      //                       Expanded(
+                      //                         child: Text.rich(
+                      //                           TextSpan(
+                      //                             children:
+                      //                                 discountTitleSpans,
+                      //                           ),
+                      //                           maxLines: 1,
+                      //                           overflow:
+                      //                               TextOverflow.ellipsis,
+                      //                           style: const TextStyle(
+                      //                             color: Colors.black,
+                      //                             fontSize: 18,
+                      //                             fontWeight:
+                      //                                 FontWeight.w900,
+                      //                           ),
+                      //                         ),
+                      //                       ),
+                      //                       const Icon(
+                      //                         Icons.chevron_right,
+                      //                         size: 18,
+                      //                         color: Colors.grey,
+                      //                       ),
+                      //                     ],
+                      //                   ),
+                      //                   // const SizedBox(height: 2),
+                      //                   // Text(
+                      //                   //   offer.title,
+                      //                   //   maxLines: 1,
+                      //                   //   overflow: TextOverflow.ellipsis,
+                      //                   //   style: TextStyle(
+                      //                   //     color: Colors.grey.shade800,
+                      //                   //     fontSize: 12.5,
+                      //                   //   ),
+                      //                   // ),
+                      //                   // const SizedBox(height: 4),
+                      //                   // Text(
+                      //                   //   "${"expires_in".tr} ${offer.expiryDays} ${"days".tr}",
+                      //                   //   maxLines: 1,
+                      //                   //   overflow: TextOverflow.ellipsis,
+                      //                   //   style: TextStyle(
+                      //                   //     color: Colors.grey.shade500,
+                      //                   //     fontSize: 11,
+                      //                   //   ),
+                      //                   // ),
+                      //                 ],
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
+                      //   );
+                      // }),
 
                       // ---------------- PROMO BANNER AFTER WALLET ----------------
                       // Obx(() {
@@ -1092,7 +1232,25 @@ void _showServiceDetails({
 }
 
 Widget _advertisementCard(AdvertisementModel advertisement) {
-  final imageUrl = Constants.imageBaseUrl + advertisement.imageUrl;
+  // Some rows only carry the snake_case key, so fall back to it.
+  final imageUrl = resolveMediaUrl(
+    advertisement.imageUrl.isNotEmpty
+        ? advertisement.imageUrl
+        : advertisement.imageUrlSnake,
+  );
+
+  if (imageUrl.isEmpty) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 6),
+      color: Colors.grey.shade200,
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.image_not_supported_outlined,
+        size: 40,
+        color: Colors.grey,
+      ),
+    );
+  }
 
   return Container(
     margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -1125,11 +1283,8 @@ Widget _advertisementCard(AdvertisementModel advertisement) {
           return child;
         }
 
-        return Container(
-          width: double.infinity,
-          color: Colors.grey.shade200,
-          child: const Center(child: CircularProgressIndicator()),
-        );
+        // Placeholder while the image downloads — no spinner.
+        return Container(width: double.infinity, color: Colors.grey.shade200);
       },
     ),
   );

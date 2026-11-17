@@ -1,3 +1,4 @@
+import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -27,10 +28,12 @@ class PrivacyPolicyView extends GetView<PrivacyPolicyController> {
         ),
       ),
       body: Obx(() {
+        // if (controller.isLoading.value) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const WheelLoaderOverlay();
         }
-
         final htmlContent = controller.documentContent;
         if (htmlContent.isEmpty) {
           return Center(

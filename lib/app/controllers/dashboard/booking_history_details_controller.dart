@@ -7,6 +7,8 @@ import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 
 class BookingHistoryDetailsController extends GetxController {
   late Datum booking;
+  late String dateText;
+  late String timeText;
 
   final BookSlotRepository repo = BookSlotRepository();
 
@@ -17,7 +19,14 @@ class BookingHistoryDetailsController extends GetxController {
   void onInit() {
     super.onInit();
 
-    booking = Get.arguments as Datum;
+    // booking = Get.arguments as Datum;
+
+    // loadReview();
+    final args = Get.arguments as Map<String, dynamic>;
+
+    booking = args['booking'] as Datum;
+    dateText = args['dateText'] as String;
+    timeText = args['timeText'] as String;
 
     loadReview();
   }

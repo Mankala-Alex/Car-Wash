@@ -1,4 +1,5 @@
 import 'package:car_wash_customer_app/app/controllers/booking_flow/payment_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,9 @@ class PaymentScreen extends GetView<PaymentController> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("payment_details".tr),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
         ),
         backgroundColor: Colors.grey.shade100,
         body: Column(
@@ -47,9 +51,7 @@ class PaymentScreen extends GetView<PaymentController> {
                         Text(
                           "confirm_service_details_before_payment".tr,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                          ),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -75,8 +77,8 @@ class PaymentScreen extends GetView<PaymentController> {
                                 image: controller.image.isNotEmpty
                                     ? NetworkImage(controller.image)
                                     : const AssetImage(
-                                            "assets/images/service_placeholder.png")
-                                        as ImageProvider,
+                                        "assets/images/service_placeholder.png",
+                                      ) as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -136,8 +138,9 @@ class PaymentScreen extends GetView<PaymentController> {
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color:
-                                            Colors.blue.withValues(alpha: .1),
+                                        color: Colors.blue.withValues(
+                                          alpha: .1,
+                                        ),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: const Icon(
@@ -222,7 +225,6 @@ class PaymentScreen extends GetView<PaymentController> {
                                 //     ),
                                 //   ],
                                 // ),
-
                                 const SizedBox(height: 16),
 
                                 const Divider(),
@@ -235,20 +237,48 @@ class PaymentScreen extends GetView<PaymentController> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text("subtotal".tr),
-                                    Text(
-                                      "${controller.amount.toStringAsFixed(2)} ${'sar'.tr}",
+                                    RiyalAmount(
+                                      controller.subtotal.toStringAsFixed(2),
                                     ),
                                   ],
                                 ),
 
                                 const SizedBox(height: 8),
 
+                                /// COUPON DISCOUNT (only when a coupon was applied)
+                                if (controller.discountAmount > 0) ...[
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${'discount'.tr} (${controller.couponCode})",
+                                        style: const TextStyle(
+                                          color: AppColors.textGreenLight,
+                                        ),
+                                      ),
+                                      RiyalAmount(
+                                        controller.discountAmount
+                                            .toStringAsFixed(2),
+                                        style: const TextStyle(
+                                          color: AppColors.textGreenLight,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text("${"tax".tr} (0%)"),
-                                    Text("0.00 ${'sar'.tr}"),
+                                    Text(
+                                      "${"tax".tr} (${controller.vatPercentLabel}%)",
+                                    ),
+                                    RiyalAmount(
+                                      controller.vatAmount.toStringAsFixed(2),
+                                    ),
                                   ],
                                 ),
 
@@ -270,12 +300,10 @@ class PaymentScreen extends GetView<PaymentController> {
                                     children: [
                                       Text(
                                         "total_amount".tr,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                        ),
+                                        style: const TextStyle(fontSize: 16),
                                       ),
-                                      Text(
-                                        "${controller.amount.toStringAsFixed(2)} ${'sar'.tr}",
+                                      RiyalAmount(
+                                        controller.amount.toStringAsFixed(2),
                                         style: const TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.bold,
@@ -329,7 +357,6 @@ class PaymentScreen extends GetView<PaymentController> {
                     //     ],
                     //   ),
                     // ),
-
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -358,7 +385,9 @@ class PaymentScreen extends GetView<PaymentController> {
                           ),
                         ),
                         child: Text(
-                          "pay_now".tr,
+                          controller.amount <= 0
+                              ? "confirm_book".tr
+                              : "pay_now".tr,
                           style: const TextStyle(
                             fontSize: 18,
                             color: Colors.white,
@@ -369,10 +398,7 @@ class PaymentScreen extends GetView<PaymentController> {
                     const SizedBox(height: 8),
                     Text(
                       "secure_payment_note".tr,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 );

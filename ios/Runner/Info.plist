@@ -9,9 +9,13 @@
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 <string>We use your location to support location-based services when permitted.</string>
 
-<!-- Google Maps SDK for iOS key (read by AppDelegate -> GMSServices.provideAPIKey) -->
+<!-- Google Maps SDK for iOS key (read by AppDelegate -> GMSServices.provideAPIKey)
+     Project: washgate4carwash-500710 — key "Maps Platform API Key - iOS"
+     (Maps SDK for iOS + Places + Geocoding + Directions enabled).
+     NOTE: this must NOT be the Android key; an Android-restricted key can
+     never render tiles on iOS. -->
 <key>GMSApiKey</key>
-<string>AIzaSyANAQJobBddB0gkR2WJ2IanNnKaEK8Ee48</string>
+<string>AIzaSyDbyatsE6Lg2VDHTHTKkLc8uhPPPy6U9t8</string>
 
 <!-- Allow plain http:// to the local dev backend (localhost / LAN IPs) without
      weakening ATS for the public internet. -->
@@ -45,6 +49,13 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- FCM/APNs: lets a silent/data push wake the app while it is in the
+	     background (booking status changes, support chat messages). Without it
+	     iOS drops data-only messages as soon as the app leaves the foreground. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

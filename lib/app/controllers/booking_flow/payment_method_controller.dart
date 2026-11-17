@@ -92,6 +92,9 @@ class PaymentMethodController extends GetxController {
   String? landmark;
   String? addressLabel;
 
+  /// Offer coupon applied on the confirm screen ('' when none).
+  String couponCode = '';
+
   String image = '';
 
   bool get hasAnyMethod => cardEnabled.value || applePayEnabled.value;
@@ -135,6 +138,7 @@ class PaymentMethodController extends GetxController {
     houseNumber = args['house_number']?.toString();
     landmark = args['landmark']?.toString();
     addressLabel = args['address_label']?.toString();
+    couponCode = args['coupon_code']?.toString() ?? '';
 
     image = args['image']?.toString() ?? '';
   }
@@ -266,8 +270,10 @@ class PaymentMethodController extends GetxController {
         selectedSavedCardId.value = (preferred ?? cards.first).id;
       }
 
-      print("💳 Saved cards: ${cards.length} "
-          "(selected: ${selectedSavedCardId.value})");
+      print(
+        "💳 Saved cards: ${cards.length} "
+        "(selected: ${selectedSavedCardId.value})",
+      );
     } finally {
       isLoadingSavedCards.value = false;
     }
@@ -305,8 +311,9 @@ class PaymentMethodController extends GetxController {
       savedCards.removeWhere((saved) => saved.id == card.id);
 
       if (selectedSavedCardId.value == card.id) {
-        selectedSavedCardId.value =
-            savedCards.isEmpty ? null : savedCards.first.id;
+        selectedSavedCardId.value = savedCards.isEmpty
+            ? null
+            : savedCards.first.id;
       }
 
       successToast("card_removed".tr);
@@ -405,6 +412,7 @@ class PaymentMethodController extends GetxController {
         houseNumber: houseNumber,
         landmark: landmark,
         addressLabel: addressLabel,
+        couponCode: couponCode,
       );
 
       if (response['success'] != true) {
@@ -523,11 +531,13 @@ class PaymentMethodController extends GetxController {
 
     if (publicKey.isEmpty || clientSecret.isEmpty) return null;
 
-    return Uri.parse(paymobKsaUnifiedCheckout).replace(
-      queryParameters: {
-        'publicKey': publicKey,
-        'clientSecret': clientSecret,
-      },
-    ).toString();
+    return Uri.parse(paymobKsaUnifiedCheckout)
+        .replace(
+          queryParameters: {
+            'publicKey': publicKey,
+            'clientSecret': clientSecret,
+          },
+        )
+        .toString();
   }
 }

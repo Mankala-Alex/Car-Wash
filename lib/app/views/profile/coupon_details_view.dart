@@ -20,7 +20,7 @@ class CouponDetailsView extends GetView<CouponDetailsController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return wheelloader();
+          return const WheelLoaderOverlay();
         }
 
         if (controller.errorKey.value.isNotEmpty) {

@@ -23,7 +23,7 @@ class CustomFeedbackDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
       ),
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -56,25 +56,32 @@ class CustomFeedbackDialog extends StatelessWidget {
             const SizedBox(height: 24),
 
             // ⭐ RATING STARS
+            // `FittedBox` keeps the 5 stars from overflowing narrow dialogs
+            // (5 x 40px + padding > dialog width on small iPhones).
             Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return GestureDetector(
-                    onTap: () => rating.value = index + 1,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Icon(
-                        index < rating.value
-                            ? Icons.star_rounded
-                            : Icons.star_border_rounded,
-                        size: 40,
-                        color:
-                            index < rating.value ? Colors.orange : Colors.grey,
+              () => FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return GestureDetector(
+                      onTap: () => rating.value = index + 1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Icon(
+                          index < rating.value
+                              ? Icons.star_rounded
+                              : Icons.star_border_rounded,
+                          size: 40,
+                          color: index < rating.value
+                              ? Colors.orange
+                              : Colors.grey,
+                        ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
 

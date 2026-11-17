@@ -1,6 +1,5 @@
 import 'package:car_wash_customer_app/app/views/booking_flow/payment_webview.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:car_wash_customer_app/app/bindings/auth/sign_up_binding.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/book_slot_bindings.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/confirmation_page_bindings.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/features_list_bindings.dart';
@@ -37,7 +36,6 @@ import 'package:car_wash_customer_app/app/views/booking_flow/payment_view.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/payment_binding.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/payment_method_view.dart';
 import 'package:car_wash_customer_app/app/bindings/booking_flow/payment_method_binding.dart';
-import 'package:car_wash_customer_app/app/views/auth/sign_up_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/book_slot_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/confirmation_page_view.dart';
 import 'package:car_wash_customer_app/app/views/booking_flow/instore_wash_list_view.dart';
@@ -96,11 +94,6 @@ class AppPages {
       name: Routes.otpPage,
       page: () => const OtpScreenView(),
       binding: OtpBinding(),
-    ),
-    GetPage(
-      name: Routes.signUp,
-      page: () => const SignupView(),
-      binding: SignupBinding(),
     ),
 
     //dashboard

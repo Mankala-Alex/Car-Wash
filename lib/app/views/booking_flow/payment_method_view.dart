@@ -1,4 +1,5 @@
 import 'package:car_wash_customer_app/app/controllers/booking_flow/payment_method_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/models/payment/saved_card_model.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,9 @@ class PaymentMethodView extends GetView<PaymentMethodController> {
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
           title: Text("select_payment_method".tr),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
         ),
         body: Column(
           children: [
@@ -383,32 +387,39 @@ class PaymentMethodView extends GetView<PaymentMethodController> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "total_amount".tr,
-                style: const TextStyle(
-                  color: AppColors.textLightGrayLight,
-                  fontSize: 13,
+          // Expanded so a long service name wraps onto the next line instead of
+          // being cut off / pushed under the amount.
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "total_amount".tr,
+                  style: const TextStyle(
+                    color: AppColors.textLightGrayLight,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                controller.serviceName.isEmpty
-                    ? "booking_payment".tr
-                    : controller.serviceName,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 4),
+                Text(
+                  controller.serviceName.isEmpty
+                      ? "booking_payment".tr
+                      : controller.serviceName,
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          Text(
-            "${controller.amount.toStringAsFixed(2)} ${'sar'.tr}",
+          const SizedBox(width: 12),
+          RiyalAmount(
+            controller.amount.toStringAsFixed(2),
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,

@@ -1,6 +1,8 @@
+import 'package:car_wash_customer_app/app/custome_widgets/wheel_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/riyal_amount.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 
 class OffersListView extends GetView<OffersController> {
@@ -25,7 +27,7 @@ class OffersListView extends GetView<OffersController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const WheelLoaderOverlay();
         }
 
         if (controller.offers.isEmpty) {
@@ -39,9 +41,14 @@ class OffersListView extends GetView<OffersController> {
             final offer = controller.offers[index];
 
             /// Discount title logic
-            String discountTitle = offer.discountType == "percentage"
-                ? "${offer.discountValue}${'percent_off'.tr}"
-                : "${'sar'.tr} ${offer.discountValue}";
+            List<InlineSpan> discountTitleSpans =
+                offer.discountType == "percentage"
+                    ? [
+                        TextSpan(
+                          text: "${offer.discountValue}${'percent_off'.tr}",
+                        ),
+                      ]
+                    : riyalAmountSpans(amount: offer.discountValue);
 
             /// Expiry date logic
             String expiryDate =
@@ -82,8 +89,8 @@ class OffersListView extends GetView<OffersController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         /// TITLE (discount)
-                        Text(
-                          discountTitle,
+                        Text.rich(
+                          TextSpan(children: discountTitleSpans),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,

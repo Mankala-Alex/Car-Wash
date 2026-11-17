@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:car_wash_customer_app/app/controllers/booking_flow/book_slot_controller.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/payment_result_dialog.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/services/payment_services.dart';
@@ -259,7 +260,19 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
           print("❌ PAYMENT FAILED");
 
-          errorToast("payment_failed".tr);
+          // The backend stores the bank's own decline reason on the attempt, so
+          // the customer is told *why* nothing was charged instead of getting a
+          // generic "Payment failed" toast that disappears in two seconds.
+          final failureReason = result["failure_reason"]?.toString();
+
+          await showPaymentResultDialog(
+            title: "payment_failed".tr,
+            message: (failureReason != null && failureReason.isNotEmpty)
+                ? failureReason
+                : "payment_failed_message".tr,
+          );
+
+          if (!mounted) return;
 
           Get.back();
 
@@ -271,17 +284,33 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       }
 
       // ========================================
-      // TIMEOUT
+      // TIMEOUT — the bank never gave us a final answer
       // ========================================
-
+      // This is the dangerous case: the money may well have been taken while the
+      // callback was late or lost. Never say "failed" here — tell the customer
+      // how to check and where the booking will appear.
       if (mounted) {
-        errorToast("payment_processing".tr);
+        await showPaymentResultDialog(
+          title: "payment_pending_title".tr,
+          message: "payment_pending_message".tr,
+        );
+
+        if (!mounted) return;
+
+        Get.offAllNamed(Routes.dashboard);
       }
     } catch (e) {
       print("❌ Status check error: $e");
 
       if (mounted) {
-        errorToast("payment_verify_failed".tr);
+        await showPaymentResultDialog(
+          title: "payment_pending_title".tr,
+          message: "payment_pending_message".tr,
+        );
+
+        if (!mounted) return;
+
+        Get.offAllNamed(Routes.dashboard);
       }
     } finally {
       _checkingPayment = false;

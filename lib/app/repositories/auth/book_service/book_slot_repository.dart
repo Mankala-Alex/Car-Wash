@@ -39,28 +39,51 @@ class BookSlotRepository {
   /// `availableOnly=true` makes the backend drop dates that no longer have a
   /// slot a customer can book (full, already started, or starting within the
   /// 60 minute lead time) — so a finished day disappears from the picker.
-  Future<Response> apiGetslotdates({bool availableOnly = false}) async {
-    final url = availableOnly
-        ? "${EndPoints.apiGetslotdates}?availableOnly=true"
-        : EndPoints.apiGetslotdates;
+  ///
+  /// [serviceAreaId] is the service ZONE (map area) of the customer's address.
+  /// Slots/capacity are per area now, so the dates MUST be requested for that
+  /// area: without it the picker would show days that belong to other areas.
+  Future<Response> apiGetslotdates({
+    bool availableOnly = false,
+    String? serviceAreaId,
+  }) async {
+    final params = <String>[
+      if (availableOnly) 'availableOnly=true',
+      if (serviceAreaId != null && serviceAreaId.isNotEmpty)
+        'serviceAreaId=$serviceAreaId',
+    ];
+
+    final url = params.isEmpty
+        ? EndPoints.apiGetslotdates
+        : "${EndPoints.apiGetslotdates}?${params.join('&')}";
 
     return await ApiService.get(url);
   }
 
-  /// Loads the time slots of a date.
+  /// Loads the time slots of a date for ONE service area.
   ///
   /// [availableOnly] asks the backend to drop the slots whose seats are already
   /// taken (booked + temporarily reserved by an in-flight payment), so the
   /// customer can only pick a time that still has capacity.
+  ///
+  /// [serviceAreaId] keeps only the slots of the customer's area. The backend
+  /// also refuses a booking whose slot belongs to another area
+  /// (`SLOT_AREA_MISMATCH`), so this is the client-side half of that rule.
   Future<Response> apiGettimeslots(
     int dateId, {
     bool availableOnly = false,
+    String? serviceAreaId,
   }) async {
-    final url = availableOnly
-        ? "${EndPoints.apiGettimeslots}?dateId=$dateId&availableOnly=true"
-        : "${EndPoints.apiGettimeslots}?dateId=$dateId";
+    final params = <String>[
+      'dateId=$dateId',
+      if (availableOnly) 'availableOnly=true',
+      if (serviceAreaId != null && serviceAreaId.isNotEmpty)
+        'serviceAreaId=$serviceAreaId',
+    ];
 
-    return await ApiService.get(url);
+    return await ApiService.get(
+      "${EndPoints.apiGettimeslots}?${params.join('&')}",
+    );
   }
 
   Future<Response> postBookingsHistory(requestBody) async {

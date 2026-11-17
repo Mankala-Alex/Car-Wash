@@ -7,9 +7,12 @@ import 'package:car_wash_customer_app/app/models/booking slot/services_model.dar
 import 'package:car_wash_customer_app/app/models/booking slot/slot_dates_model.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/slot_times_model.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/saved_location_model.dart';
+import 'package:car_wash_customer_app/app/models/offers/offer_coupon_model.dart';
 import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
+import 'package:car_wash_customer_app/app/repositories/offers/offer_coupon_repository.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/services/api_service.dart';
+import 'package:dio/dio.dart';
 import 'package:geocoding/geocoding.dart';
 
 class BookSlotController extends GetxController {
@@ -18,6 +21,7 @@ class BookSlotController extends GetxController {
   bool isEditMode = false;
   String editBookingCode = "";
 
+  final RxString couponCodeInput = ''.obs;
   //-----------------------
   // REACTIVE VARIABLES
   //-----------------------
@@ -56,6 +60,17 @@ class BookSlotController extends GetxController {
   final serviceAreaCity = ''.obs;
   final serviceAreaMatch = ''.obs;
 
+  /// Service ZONE (map area) of the selected address.
+  ///
+  /// Slots are per area: `09:00-10:00` in "al rimal" and in "ol alaya" are two
+  /// different rows with their own capacity, so the date and time pickers may
+  /// only be filled AFTER the address is known and its area resolved.
+  final serviceAreaId = ''.obs;
+  final serviceAreaName = ''.obs;
+
+  /// True once the address resolved to an area -> the pickers may be shown.
+  bool get hasServiceArea => serviceAreaId.value.isNotEmpty;
+
   //-----------------------
   // CUSTOMER INFO
   //-----------------------
@@ -79,6 +94,26 @@ class BookSlotController extends GetxController {
   final vatPercentage = 0.0.obs;
   final vatAmount = 0.0.obs;
   final totalAmountValue = 0.0.obs;
+
+  //-----------------------
+  // COUPONS (offers)
+  //-----------------------
+  final OfferCouponRepository couponRepository = OfferCouponRepository();
+
+  /// Coupons the backend says are usable for the selected service + slot.
+  final availableCoupons = <OfferCouponModel>[].obs;
+  final isLoadingCoupons = false.obs;
+
+  /// The coupon the customer applied (null = none).
+  final appliedCoupon = Rx<OfferCouponModel?>(null);
+
+  /// Price split returned by `offers/coupons/validate` once a coupon is applied.
+  final couponBreakdown = Rx<CouponPriceBreakdown?>(null);
+
+  bool get hasCouponApplied =>
+      appliedCoupon.value != null && couponBreakdown.value != null;
+
+  String get appliedCouponCode => appliedCoupon.value?.code ?? '';
 
   bool isSameDate(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
@@ -182,7 +217,12 @@ class BookSlotController extends GetxController {
   Future<void> initData() async {
     await loadCustomerInfo();
     await fetchCustomerVehicles();
-    await fetchSlotDates();
+    // Dates are per area: nothing to load until an address is selected.
+    // (The address section appears first on the screen and calls
+    // `refreshServiceabilityForSelectedLocation` -> `fetchSlotDates`.)
+    if (hasServiceArea) {
+      await fetchSlotDates();
+    }
   }
 
   //-----------------------
@@ -223,6 +263,11 @@ class BookSlotController extends GetxController {
     selectedSlotTime24h =
         slot.startTime.isNotEmpty ? slot.startTime : slot.time;
     selectedSlotId.value = slot.id;
+
+    // Coupon rules can depend on the slot (day + start time), so a different
+    // slot means a different set of usable coupons.
+    if (hasCouponApplied) removeCoupon();
+    loadAvailableCoupons();
   }
 
   //-----------------------
@@ -277,19 +322,42 @@ class BookSlotController extends GetxController {
   //-----------------------
   // FETCH DATES
   //-----------------------
+  /// Loads the dates that are open for the customer's AREA.
+  ///
+  /// Does nothing (and clears the picker) while the address is unknown, because
+  /// a date/time slot only exists inside a service zone.
   Future<void> fetchSlotDates() async {
+    final areaId = serviceAreaId.value;
+
+    if (areaId.isEmpty) {
+      slotDates.clear();
+      slotTimes.clear();
+      selectedDate.value = null;
+      selectedDateId = null;
+      isLoadingDates(false);
+      return;
+    }
+
     try {
       isLoadingDates(true);
 
       // The backend already drops dates with no bookable slot left (full,
-      // started, or inside the 60 min lead time), so a finished day never shows
-      // up in the picker.
-      final resp = await repository.apiGetslotdates(availableOnly: true);
+      // started, or inside the 60 min lead time) *for that area*.
+      final resp = await repository.apiGetslotdates(
+        availableOnly: true,
+        serviceAreaId: areaId,
+      );
       final data = Slotsdatemodel.fromJson(resp.data);
 
       slotDates.value = data.data;
+
+      // Auto-select the first day that still has slots.
+      if (slotDates.isNotEmpty && selectedDateId == null) {
+        updateSelectedDate(slotDates.first.date);
+      }
     } catch (e) {
       print("❌ Failed to load dates: $e");
+      slotDates.clear();
     } finally {
       isLoadingDates(false);
     }
@@ -305,6 +373,7 @@ class BookSlotController extends GetxController {
       final resp = await repository.apiGettimeslots(
         dateId,
         availableOnly: true,
+        serviceAreaId: serviceAreaId.value,
       );
       final data = Slottimesmodel.fromJson(resp.data);
 
@@ -410,17 +479,33 @@ class BookSlotController extends GetxController {
 
       print("📤 UPDATE BOOKING BODY → $updateBody");
 
-      final resp = await repository.updateBooking(editBookingCode, updateBody);
-
-      if (resp.data["success"] == true) {
-        successToast("booking_updated_successfully".tr);
-
-        // GO DIRECTLY TO HISTORY PAGE (Page 2)
-        Get.offAllNamed(
-          Routes.dashboard,
-          arguments: 1, // <-- Page2 index
+      try {
+        final resp = await repository.updateBooking(
+          editBookingCode,
+          updateBody,
         );
-      } else {
+
+        if (resp.data["success"] == true) {
+          successToast("booking_updated_successfully".tr);
+
+          // GO DIRECTLY TO HISTORY PAGE (Page 2)
+          Get.offAllNamed(
+            Routes.dashboard,
+            arguments: 1, // <-- Page2 index
+          );
+        } else {
+          errorToast("failed_to_update_booking".tr);
+        }
+      } on DioException catch (e) {
+        // 409 = the backend locked this booking (a technician is already
+        // assigned, or it is completed/cancelled). Show its reason instead of
+        // a generic failure.
+        final data = e.response?.data;
+        final message = data is Map ? data["message"]?.toString() : null;
+        errorToast(message ?? "failed_to_update_booking".tr);
+        Get.back();
+      } catch (e) {
+        print("❌ Update booking error: $e");
         errorToast("failed_to_update_booking".tr);
       }
 
@@ -432,6 +517,17 @@ class BookSlotController extends GetxController {
     final double priceNumber = double.tryParse(price.value) ?? 0.0;
 
     final location = selectedSavedLocation.value;
+
+    // The name is captured on the address screen (there is no signup form), which
+    // runs AFTER this controller loaded its copy. Re-read it so the booking and
+    // the technician app get the real name instead of an empty string.
+    final latestName = (await SharedPrefsHelper.getString(
+      "customerName",
+    ))
+        .trim();
+    if (latestName.isNotEmpty) {
+      customerName = latestName;
+    }
 
     final body = {
       "customer_id": customerUuid,
@@ -466,6 +562,16 @@ class BookSlotController extends GetxController {
         "slot_id": selectedSlotId.value,
         "scheduled_at": buildScheduledAt(),
         "amount": totalAmount,
+        // Offer coupon (empty when none was applied). The backend re-validates
+        // it and recomputes the amount, so this is only a hint for the pay
+        // screen — never the source of truth.
+        "coupon_code": appliedCouponCode,
+        "discount_amount": couponDiscountAmount,
+        // Price breakdown so the payment screen shows the same VAT the
+        // backend charged (instead of a hardcoded 0%).
+        "price": servicePrice,
+        "vat_percentage": vatPercentage.value,
+        "vat_amount": displayVatAmount,
         "latitude": location?.latitude,
         "longitude": location?.longitude,
         "formatted_address": location?.address,
@@ -546,15 +652,10 @@ class BookSlotController extends GetxController {
   //-----------------------
   // ADDRESS
   //-----------------------
-  void updateSelectedAddress(String title) {
-    selectedAddress.value = title;
-
-    final location = savedLocations.firstWhereOrNull((e) => e.label == title);
-
-    if (location != null) {
-      selectedSavedLocation.value = location;
-      refreshServiceabilityForSelectedLocation();
-    }
+  void updateSelectedAddress(SavedLocation location) {
+    selectedSavedLocation.value = location;
+    selectedAddress.value = location.label;
+    refreshServiceabilityForSelectedLocation();
   }
 
   Future<String?> _resolvePincodeForLocation(SavedLocation location) async {
@@ -612,6 +713,7 @@ class BookSlotController extends GetxController {
       isServiceable.value = false;
       isCheckingServiceability.value = false;
       serviceabilityMessage.value = 'unable_to_determine_postal'.tr;
+      await _applyServiceArea('', '');
       return;
     }
 
@@ -639,9 +741,15 @@ class BookSlotController extends GetxController {
         serviceAreaCity.value = (data['city'] ?? '').toString().trim();
         serviceAreaMatch.value = (data['match'] ?? '').toString().trim();
         print(
-          '✅ Serviceable → match: ${data['match']}, source: ${data['pincode_source']}, pincode: ${data['pincode']}, city: ${data['city']}',
+          '✅ Serviceable → match: ${data['match']}, source: ${data['pincode_source']}, pincode: ${data['pincode']}, city: ${data['city']}, zone: ${data['zone_id']}',
         );
         serviceabilityMessage.value = 'service_available_in_area'.tr;
+
+        // Per-area slots: switch the pickers to this area's dates/slots.
+        await _applyServiceArea(
+          (data['zone_id'] ?? '').toString(),
+          (data['zone_name'] ?? '').toString(),
+        );
         return;
       }
 
@@ -650,15 +758,39 @@ class BookSlotController extends GetxController {
       serviceAreaMatch.value = '';
       serviceabilityMessage.value =
           data['message']?.toString() ?? 'service_not_available_in_area'.tr;
+      await _applyServiceArea('', '');
     } catch (e) {
       isServiceable.value = false;
       serviceAreaCity.value = '';
       serviceAreaMatch.value = '';
       serviceabilityMessage.value = 'unable_to_verify_service'.tr;
+      await _applyServiceArea('', '');
       print('Serviceability check failed: $e');
     } finally {
       isCheckingServiceability.value = false;
     }
+  }
+
+  /// Stores the area of the selected address and reloads the pickers when it
+  /// changed (a slot from another area can never be booked).
+  Future<void> _applyServiceArea(String id, String name) async {
+    final previous = serviceAreaId.value;
+    final next = id.trim();
+
+    serviceAreaId.value = next;
+    serviceAreaName.value = name.trim();
+
+    if (previous == next) return;
+
+    // Different area -> the chosen date/time belongs to another pool.
+    selectedDate.value = null;
+    selectedTimeSlot.value = null;
+    selectedSlotId.value = 0;
+    selectedSlotTime24h = '';
+    selectedDateId = null;
+    slotTimes.clear();
+
+    await fetchSlotDates();
   }
 
   Future<void> refreshServiceabilityForSelectedLocation() async {
@@ -668,6 +800,7 @@ class BookSlotController extends GetxController {
       isServiceable.value = false;
       isCheckingServiceability.value = false;
       serviceabilityMessage.value = 'please_select_a_location_msg'.tr;
+      await _applyServiceArea('', '');
       return;
     }
 
@@ -713,6 +846,21 @@ class BookSlotController extends GetxController {
     return double.tryParse(price.value) ?? 0.0;
   }
 
+  /// Money taken off by the applied coupon (0 when none).
+  double get couponDiscountAmount {
+    return couponBreakdown.value?.discountAmount ?? 0.0;
+  }
+
+  /// VAT to display: recomputed by the backend when a coupon is applied.
+  double get displayVatAmount {
+    return couponBreakdown.value?.vatAmount ?? vatAmount.value;
+  }
+
+  /// Price VAT is computed on (service price - coupon discount).
+  double get taxableAmount {
+    return couponBreakdown.value?.taxableAmount ?? servicePrice;
+  }
+
   /// VAT rate in percent (e.g. 15), as configured on the backend.
   String get vatPercentLabel {
     return vatPercentage.value % 1 == 0
@@ -720,15 +868,108 @@ class BookSlotController extends GetxController {
         : vatPercentage.value.toStringAsFixed(2);
   }
 
-  /// Total (service price + VAT) as sent by the backend.
+  /// Total as sent to `payment/create`: the discounted total when a coupon is
+  /// applied, otherwise service price + VAT from the backend.
   double get totalAmount {
+    final discounted = couponBreakdown.value?.totalAmount;
+    if (discounted != null) return discounted;
+
     return totalAmountValue.value > 0 ? totalAmountValue.value : servicePrice;
+  }
+
+  // ===== COUPONS (offers) =====
+
+  /// Asks the backend which coupons can be used for the selected service+slot.
+  Future<void> loadAvailableCoupons() async {
+    if (serviceId.isEmpty || selectedSlotId.value == 0) {
+      availableCoupons.clear();
+      return;
+    }
+
+    try {
+      isLoadingCoupons.value = true;
+
+      final response = await couponRepository.getAvailableCoupons(
+        serviceId: serviceId,
+        slotId: selectedSlotId.value,
+      );
+
+      final data = response.data;
+      final list = data is Map ? data['coupons'] : data;
+
+      if (list is List) {
+        availableCoupons.assignAll(
+          list
+              .whereType<Map>()
+              .map(
+                (item) =>
+                    OfferCouponModel.fromJson(Map<String, dynamic>.from(item)),
+              )
+              .where((coupon) => coupon.code.isNotEmpty)
+              .toList(),
+        );
+      } else {
+        availableCoupons.clear();
+      }
+
+      print("🎟️ Available coupons: ${availableCoupons.length}");
+    } catch (e) {
+      availableCoupons.clear();
+      print("❌ Failed to load coupons: $e");
+    } finally {
+      isLoadingCoupons.value = false;
+    }
+  }
+
+  /// Validates the coupon on the backend and stores the resulting breakdown.
+  /// Returns the error message to show, or null on success.
+  Future<String?> applyCoupon(OfferCouponModel coupon) async {
+    try {
+      final response = await couponRepository.validateCoupon(
+        code: coupon.code,
+        serviceId: serviceId,
+        slotId: selectedSlotId.value,
+      );
+
+      final data = response.data;
+      final breakdown = data is Map ? data['breakdown'] : null;
+
+      if (breakdown is! Map) {
+        return "coupon_not_valid".tr;
+      }
+
+      appliedCoupon.value = coupon;
+      couponBreakdown.value = CouponPriceBreakdown.fromJson(
+        Map<String, dynamic>.from(breakdown),
+      );
+
+      print(
+        "🎟️ Coupon ${coupon.code} applied: -$couponDiscountAmount → $totalAmount",
+      );
+
+      return null;
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      final message = data is Map ? data['message']?.toString() : null;
+      return (message != null && message.isNotEmpty)
+          ? message
+          : "coupon_not_valid".tr;
+    } catch (e) {
+      print("❌ Apply coupon error: $e");
+      return "coupon_not_valid".tr;
+    }
+  }
+
+  /// Removes the applied coupon and goes back to the normal price.
+  void removeCoupon() {
+    appliedCoupon.value = null;
+    couponBreakdown.value = null;
   }
 
   // ===== LOCATION MANAGEMENT =====
 
   /// Add a saved location
-  void addSavedLocation(SavedLocation location) {
+  Future<void> addSavedLocation(SavedLocation location) async {
     savedLocations.add(location);
 
     // Select the newly added location
@@ -736,17 +977,18 @@ class BookSlotController extends GetxController {
     selectedSavedLocation.value = location;
     refreshServiceabilityForSelectedLocation();
 
-    // Persist to storage
-    _saveSavedLocations();
+    // Persist to storage (awaited so the caller can show a loader until the
+    // address is really written).
+    await _saveSavedLocations();
 
     print('✅ Location saved: ${location.label} - ${location.address}');
   }
 
   /// Update an existing saved location
-  void updateSavedLocation(
+  Future<void> updateSavedLocation(
     SavedLocation oldLocation,
     SavedLocation newLocation,
-  ) {
+  ) async {
     int index = savedLocations.indexWhere((loc) => loc.id == oldLocation.id);
 
     if (index != -1) {
@@ -757,13 +999,37 @@ class BookSlotController extends GetxController {
       selectedSavedLocation.value = newLocation;
       refreshServiceabilityForSelectedLocation();
 
-      // Persist to storage
-      _saveSavedLocations();
+      // Persist to storage (awaited so the caller can show a loader until the
+      // address is really written).
+      await _saveSavedLocations();
 
       print(
         '✏️ Location updated: ${newLocation.label} - ${newLocation.address}',
       );
     }
+  }
+
+  /// Deletes a saved address and keeps the current selection valid.
+  ///
+  /// Used by the 3-dot menu on both the Addresses screen and the
+  /// "Confirm Car Wash" screen.
+  Future<void> removeSavedLocation(SavedLocation location) async {
+    final wasSelected = selectedSavedLocation.value?.id == location.id ||
+        selectedAddress.value == location.label;
+
+    savedLocations.removeWhere((item) => item.id == location.id);
+
+    if (wasSelected) {
+      final next = savedLocations.isNotEmpty ? savedLocations.first : null;
+      selectedSavedLocation.value = next;
+      selectedAddress.value = next?.label;
+
+      // Clears the area/slot pickers, or asks the customer to pick an address
+      // when nothing is saved anymore.
+      await refreshServiceabilityForSelectedLocation();
+    }
+
+    await saveSavedLocations();
   }
 
   /// Load saved locations from SharedPreferences
@@ -822,7 +1088,8 @@ class BookSlotController extends GetxController {
         successToast('location_saved'.tr);
       }
     } catch (e) {
-      errorToast('${'error_selecting_location'.tr} $e');
+      print("Location picker error: $e");
+      errorToast('error_selecting_location'.tr);
     }
   }
 

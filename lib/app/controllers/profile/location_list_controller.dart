@@ -13,9 +13,7 @@ class LocationListController extends GetxController {
 
   RxList<SavedLocation> get locations => bookSlotController.savedLocations;
 
-  void deleteLocation(SavedLocation location) {
-    locations.remove(location);
-    // Save changes to storage
-    bookSlotController.saveSavedLocations();
-  }
+  /// Removes the address, persists the list and keeps the selection valid.
+  Future<void> deleteLocation(SavedLocation location) =>
+      bookSlotController.removeSavedLocation(location);
 }

@@ -48,15 +48,6 @@ class AuthRepository {
     );
   }
 
-  // PHONE SIGNUP
-  Future<Response> postSignupPhone(requestBody) async {
-    return await ApiService.post(
-      EndPoints.apiPostSignupPhone,
-      requestBody,
-      requireAuthToken: false,
-    );
-  }
-
   Future<void> postLogout() async {
     await ApiService.post(
       EndPoints.apiPostLogOut, // ex: partners/logout

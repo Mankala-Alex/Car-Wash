@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -41,12 +39,17 @@ class NotificationService {
       const AndroidInitializationSettings androidSettings =
           AndroidInitializationSettings('@mipmap/ic_launcher');
 
-      // iOS permission prompt + foreground presentation defaults.
+      // Foreground presentation defaults only.
+      //
+      // `request*Permission` MUST stay false: those flags make `initialize()`
+      // pop the iOS alert straight away, which is why the permission was being
+      // asked on the splash screen. The customer is asked on the dashboard by
+      // `NotificationPermissionService` instead.
       const DarwinInitializationSettings darwinSettings =
           DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestSoundPermission: true,
-        requestBadgePermission: true,
+        requestAlertPermission: false,
+        requestSoundPermission: false,
+        requestBadgePermission: false,
         defaultPresentAlert: true,
         defaultPresentBanner: true,
         defaultPresentList: true,
@@ -88,16 +91,11 @@ class NotificationService {
             importance: Importance.max,
           ),
         );
-
-        await android.requestNotificationsPermission();
       }
 
-      if (Platform.isIOS) {
-        await _plugin
-            .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin>()
-            ?.requestPermissions(alert: true, badge: true, sound: true);
-      }
+      // No permission request here on purpose — see the comment on
+      // `darwinSettings` above. `NotificationPermissionService` asks after
+      // the customer reached the dashboard.
 
       _initialized = true;
       debugPrint('🔔 NotificationService ready');

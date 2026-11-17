@@ -50,7 +50,28 @@ class PaymentController extends GetxController {
   int slotId = 0;
   String scheduledAt = "";
 
+  /// Service price + VAT, as sent to `payment/create`.
   double amount = 0.0;
+
+  /// Service price WITHOUT VAT (provided by [BookSlotController]).
+  double subtotal = 0.0;
+
+  /// VAT percentage configured on the backend (e.g. 15 for 15%).
+  double vatPercentage = 0.0;
+
+  /// VAT amount as calculated by the backend.
+  double vatAmount = 0.0;
+
+  /// Coupon applied on the confirm screen ('' when none).
+  String couponCode = '';
+
+  /// Money taken off by [couponCode]. `subtotal` already excludes it.
+  double discountAmount = 0.0;
+
+  /// `15` / `12.5` — used in the "Tax (15%)" label.
+  String get vatPercentLabel => vatPercentage % 1 == 0
+      ? vatPercentage.toStringAsFixed(0)
+      : vatPercentage.toStringAsFixed(2);
 
   // ==============================
   // LOCATION
@@ -107,6 +128,34 @@ class PaymentController extends GetxController {
 
     amount = double.tryParse(args["amount"]?.toString() ?? "0") ?? 0.0;
 
+    subtotal = double.tryParse(args["price"]?.toString() ?? "0") ?? 0.0;
+    vatPercentage =
+        double.tryParse(args["vat_percentage"]?.toString() ?? "0") ?? 0.0;
+    vatAmount = double.tryParse(args["vat_amount"]?.toString() ?? "0") ?? 0.0;
+
+    // Coupon applied on the confirm screen. `price` already arrives as the
+    // discounted net amount, so the rows on this screen still add up.
+    couponCode = args["coupon_code"]?.toString() ?? "";
+    discountAmount =
+        double.tryParse(args["discount_amount"]?.toString() ?? "0") ?? 0.0;
+
+    // Older callers only pass the VAT-inclusive total. Derive the breakdown
+    // instead of showing "Tax (0%)" when we know the rate.
+    if (subtotal <= 0 && amount > 0) {
+      if (vatPercentage > 0) {
+        subtotal = amount / (1 + vatPercentage / 100);
+        if (vatAmount <= 0) vatAmount = amount - subtotal;
+      } else {
+        subtotal = amount;
+      }
+    }
+
+    // Some services only carry the rate, not the amount — compute it so the
+    // row never reads "Tax (15%) 0.00".
+    if (vatAmount <= 0 && vatPercentage > 0 && subtotal > 0) {
+      vatAmount = subtotal * vatPercentage / 100;
+    }
+
     // Location
     latitude = args["latitude"] == null
         ? null
@@ -143,6 +192,7 @@ class PaymentController extends GetxController {
     print("Slot: $slotId");
     print("Scheduled: $scheduledAt");
     print("Amount: $amount");
+    print("Breakdown: subtotal=$subtotal vat=$vatPercentage% ($vatAmount)");
     print("========================================");
   }
 
@@ -150,10 +200,34 @@ class PaymentController extends GetxController {
   /// the existing card call now runs only after the customer picks Card.
   /// The booking arguments are forwarded untouched so no field is lost.
   void payNow() {
+    // A coupon can bring the total down to 0.00 — there is nothing to charge,
+    // so card / Apple Pay make no sense: confirm the booking right away (the
+    // backend creates it without a Paymob order) and go to the confirmation
+    // screen from here.
+    if (amount <= 0) {
+      _confirmFreeBooking();
+      return;
+    }
+
     Get.toNamed(
       Routes.paymentMethod,
       arguments: Map<String, dynamic>.from(Get.arguments ?? const {}),
     );
+  }
+
+  /// 100% coupon flow: `payment/create` returns the confirmed booking straight
+  /// away (payment_status PAID, no Paymob order), which [payWithCard] already
+  /// routes to the confirmation page.
+  Future<void> _confirmFreeBooking() async {
+    if (isLoading.value) return;
+
+    final outcome = await payWithCard();
+
+    if (outcome == CardChargeOutcome.failed ||
+        outcome == CardChargeOutcome.savedCardRejected) {
+      // payWithCard already showed the reason; stay on this screen.
+      print("⚠️ Free booking could not be confirmed");
+    }
   }
 
   /// Returns to the slot picker with a fresh slot list after the chosen time
@@ -216,6 +290,7 @@ class PaymentController extends GetxController {
         addressLabel: addressLabel,
         saveCard: saveCard,
         savedCardId: savedCardId,
+        couponCode: couponCode,
       );
 
       print("========================================");
@@ -255,6 +330,19 @@ class PaymentController extends GetxController {
         return CardChargeOutcome.failed;
       }
 
+      // The backend fell back to a normal new-card checkout because Paymob
+      // refused the saved token (e.g. "Card Token Must Be Verified"). Explain
+      // why the card form opened instead of silently confusing the customer.
+      if (response["saved_card_rejected"] == true) {
+        final fallbackMessage = response["message"]?.toString();
+
+        errorToast(
+          (fallbackMessage != null && fallbackMessage.isNotEmpty)
+              ? fallbackMessage
+              : "saved_card_not_available".tr,
+        );
+      }
+
       if (paymentAttemptId.isEmpty) {
         print("❌ Payment attempt ID missing from backend response");
 
@@ -286,9 +374,7 @@ class PaymentController extends GetxController {
       if (paymentStatus == "FAILED") {
         print("❌ Saved card charge was declined");
 
-        errorToast(
-          response["message"]?.toString() ?? "payment_failed".tr,
-        );
+        errorToast(response["message"]?.toString() ?? "payment_failed".tr);
 
         return CardChargeOutcome.failed;
       }

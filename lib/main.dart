@@ -90,6 +90,7 @@ import 'app/helpers/shared_preferences.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/services/api_service.dart';
+import 'app/services/notification_permission_service.dart';
 import 'app/services/notification_service.dart';
 import 'app/services/socket_service.dart';
 import 'app/services/support_chat_presence.dart';
@@ -183,6 +184,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // setupFCM();
     //added for ios run
     setupFCMSafely();
+
+    // Once the customer accepts the notification permission on the dashboard,
+    // refresh the FCM token: on iOS the APNs token only exists after the
+    // permission is granted, so the device could otherwise stay unregistered.
+    NotificationPermissionService.instance.onPermissionGranted = () async {
+      await _resolveFcmToken(FirebaseMessaging.instance);
+    };
   }
 
   @override
@@ -265,6 +273,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           "customers/fcm-token",
           {
             "fcmToken": token,
+            // Lets the backend tell an iPhone token from an Android one, so a
+            // device that never registered is visible instead of silent.
+            "platform": Platform.operatingSystem,
           },
           requireAuthToken: true);
       debugPrint("FCM token refreshed and sent to backend");
@@ -273,18 +284,29 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
+  /// Topic the backend used to broadcast "new service"/"new offer".
+  /// Kept for backwards compatibility - the backend now also pushes per token.
+  static const String allUsersTopic = 'all_users';
+
+  /// Idempotent: makes sure this device is part of the broadcast topic.
+  /// Never throws - a failing subscription must not break the app.
+  Future<void> _subscribeToAllUsersTopic() async {
+    try {
+      await FirebaseMessaging.instance.subscribeToTopic(allUsersTopic);
+      debugPrint('Subscribed to $allUsersTopic topic');
+    } catch (e) {
+      debugPrint('Topic subscription failed: $e');
+    }
+  }
+
   Future<void> setupFCM() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    NotificationSettings settings = await messaging.requestPermission();
-
-    print("Permission: ${settings.authorizationStatus}");
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print("NOTIFICATION PERMISSION GRANTED");
-    } else {
-      print("NOTIFICATION PERMISSION DENIED");
-    }
+    // NOTE: the notification permission is deliberately NOT requested here.
+    // `setupFCM()` runs from `initState()`, i.e. while the splash / language
+    // screen is still showing. The alert is now asked once the customer is
+    // signed in and on the dashboard, by `NotificationPermissionService`
+    // (see `dashboard_controller.dart`).
 
     // The plugin, its channels, the iOS permission prompt and the tap handler
     // all live in NotificationService (shared with the socket-driven alerts).
@@ -308,6 +330,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       print("NEW TOKEN: $newToken");
       fcmToken = newToken;
       await _sendFcmTokenToBackend(newToken);
+      // A refreshed token starts with NO topic memberships: re-subscribe or the
+      // "new service / new offer" broadcast stops reaching this device.
+      await _subscribeToAllUsersTopic();
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
@@ -361,7 +386,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   /// On iOS the token only exists once APNs has registered the device, so this
   /// polls a few times. The iOS Simulator never gets an APNs token at all —
   /// that only disables *remote* push, the local notifications keep working.
-  Future<void> _resolveFcmToken(FirebaseMessaging messaging) async {
+  Future<void> _resolveFcmToken(
+    FirebaseMessaging messaging, {
+    int attempt = 1,
+  }) async {
     try {
       if (Platform.isIOS) {
         String? apnsToken;
@@ -373,6 +401,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         }
 
         if (apnsToken == null) {
+          // On a cold start (fresh TestFlight install, weak network) APNs can
+          // take longer than 10s. Without a retry this device never registers a
+          // token, and the backend then silently skips EVERY push for it
+          // (booking, assigned, arrived, started, completed, coupon, support...).
+          if (attempt < 3) {
+            debugPrint('APNs token not ready — retry $attempt/3 in 15s');
+            await Future.delayed(const Duration(seconds: 15));
+            return _resolveFcmToken(messaging, attempt: attempt + 1);
+          }
+
           debugPrint(
             'APNs token unavailable (iOS Simulator?) — remote push disabled, '
             'local notifications still enabled.',
@@ -390,6 +428,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       if (fcmToken != null && fcmToken!.isNotEmpty) {
         await _sendFcmTokenToBackend(fcmToken!);
       }
+
+      // Topic membership lives on the token, so a fresh install (TestFlight)
+      // has none until this runs. Doing it here - and not only after the OTP
+      // screen - is what makes the admin broadcasts reach iOS devices.
+      await _subscribeToAllUsersTopic();
     } catch (e, stackTrace) {
       debugPrint('Unable to retrieve FCM token: $e');
       debugPrintStack(stackTrace: stackTrace);

@@ -4,9 +4,13 @@ import 'package:car_wash_customer_app/app/custome_widgets/cancel_booking_sheet.d
 import 'package:car_wash_customer_app/app/controllers/profile/offers_controller.dart';
 import 'package:car_wash_customer_app/app/helpers/secure_store.dart';
 import 'package:car_wash_customer_app/app/models/advertisement/advertisement_model.dart';
+import 'package:car_wash_customer_app/app/models/offers_model.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/new_user_offer_popup.dart';
+import 'package:car_wash_customer_app/app/repositories/auth/book_service/profile_repository.dart';
 import 'package:car_wash_customer_app/app/repositories/advertisment/advertisement_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_dialog.dart';
 import 'package:car_wash_customer_app/app/helpers/flutter_toast.dart';
 import 'package:car_wash_customer_app/app/helpers/shared_preferences.dart';
 import 'package:car_wash_customer_app/app/models/booking slot/booking_history_model.dart';
@@ -14,6 +18,7 @@ import 'package:car_wash_customer_app/app/repositories/auth/auth_repository.dart
 import 'package:car_wash_customer_app/app/repositories/auth/book_service/book_slot_repository.dart';
 import 'package:car_wash_customer_app/app/repositories/customers/customer_repository.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
+import 'package:car_wash_customer_app/app/services/notification_permission_service.dart';
 import 'package:car_wash_customer_app/app/services/socket_service.dart';
 import 'package:car_wash_customer_app/app/models/reviews/review_model.dart';
 
@@ -44,6 +49,49 @@ class DashboardController extends GetxController {
   RxList<AdvertisementModel> advertisements = <AdvertisementModel>[].obs;
 
   RxBool isAdvertisementsLoading = false.obs;
+
+  //-----------------------
+  // NEW-CUSTOMER OFFER POPUP
+  //-----------------------
+  final ProfileRepository profileRepository = ProfileRepository();
+
+  /// Only one popup per app run.
+  bool _offerPopupChecked = false;
+
+  /// Asks the backend whether a new customer should see an offer popup.
+  ///
+  /// The backend decides everything (new customer = no bookings, offer active,
+  /// not used and never shown to him), so the app only renders the answer.
+  Future<void> maybeShowNewUserOfferPopup() async {
+    if (_offerPopupChecked) return;
+    _offerPopupChecked = true;
+
+    if (customerUuid.isEmpty) return;
+
+    try {
+      final response = await profileRepository.fetchPopupOffer();
+      final data = response.data;
+
+      final raw = data is Map ? data['offer'] : null;
+      if (raw is! Map) return;
+
+      final offer = Offersmodel.fromJson(Map<String, dynamic>.from(raw));
+      if (offer.offerCode.isEmpty) return;
+
+      // Wait for the home screen to be fully on screen.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.currentRoute.isEmpty) return;
+        showNewUserOfferPopup(offer);
+      });
+
+      // Remember it right away so it never pops twice (even if the customer
+      // closes the app while it is open).
+      profileRepository.markPopupSeen(offer.id);
+    } catch (e) {
+      // A popup must never break the home screen.
+      print("ℹ️ Offer popup skipped: $e");
+    }
+  }
 
   Future<void> refreshHomeData() async {
     try {
@@ -124,6 +172,15 @@ class DashboardController extends GetxController {
     _initializeController();
   }
 
+  @override
+  void onClose() {
+    // Leaving the home page (logout, or `Get.offAllNamed(Routes.dashboard)`
+    // after a booking) arms the notification prompt again, so coming back home
+    // asks once more while notifications are still disabled.
+    NotificationPermissionService.instance.resetPromptFlag();
+    super.onClose();
+  }
+
   Future<void> _initializeController() async {
     try {
       isLoading.value = true;
@@ -136,6 +193,14 @@ class DashboardController extends GetxController {
       }
 
       await fetchAdvertisements();
+
+      // New customers get the offer popup once, right after the home loads.
+      await maybeShowNewUserOfferPopup();
+
+      // The push-notification permission is asked here — never on the splash
+      // screen — and asked again on every launch until the customer accepts.
+      // Not awaited: the home screen must not wait for the customer's answer.
+      NotificationPermissionService.instance.promptAfterLoginIfNeeded();
 
       final arg = Get.arguments;
 
@@ -616,12 +681,18 @@ class DashboardController extends GetxController {
 
     if (error.response?.statusCode == 401 ||
         error.response?.statusCode == 403) {
-      return 'Please login again to continue';
+      return 'session_expired_login'.tr;
     }
 
     if (error.type == DioExceptionType.connectionError ||
         error.type == DioExceptionType.unknown) {
-      return 'Network error. Please try again';
+      return 'connection_problem_try_again'.tr;
+    }
+
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout) {
+      return 'request_took_too_long'.tr;
     }
 
     return '';
@@ -709,6 +780,26 @@ class DashboardController extends GetxController {
 
   // EDIT
   Future<void> editBooking(Map booking) async {
+    // Same rule as cancelling: a technician already took this booking, so the
+    // slot/service cannot be changed by the customer any more. Guarded here as
+    // well as in the card UI so no stale screen can open the edit flow.
+    final code = (booking["booking_code"] ?? "").toString();
+    final index = currentBookings.indexWhere((b) => b.bookingCode == code);
+    final locked =
+        index == -1 ? null : currentBookings[index].hasTechnicianAssigned;
+    if (locked == true) {
+      Get.dialog(
+        CustomConfirmationDialog(
+          header: "edit_booking".tr,
+          body: "edit_blocked_technician_assigned".tr,
+          yesText: "close".tr,
+          isCancel: false,
+          onYes: Get.back,
+        ),
+      );
+      return;
+    }
+
     /// Navigate to BookSlotView with booking details but EMPTY selections
     Get.toNamed(
       Routes.featureslist,

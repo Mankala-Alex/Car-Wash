@@ -34,13 +34,4 @@ class OffersController extends GetxController {
     final expiryDate = DateTime.now().add(Duration(days: days));
     return "${expiryDate.day}-${expiryDate.month}-${expiryDate.year}";
   }
-
-  /// Format discount display
-  String discountLabel(Offersmodel offer) {
-    if (offer.discountType == "percentage") {
-      return "${offer.discountValue}% OFF";
-    } else {
-      return "SAR ${offer.discountValue}";
-    }
-  }
 }

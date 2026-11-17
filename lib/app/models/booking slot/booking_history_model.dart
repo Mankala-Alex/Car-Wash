@@ -65,6 +65,11 @@ class Datum {
   final double vatAmount;
   final double totalAmount;
 
+  /// Offer coupon used on this booking (null when none) and the money it took
+  /// off. `serviceAmount` is the price BEFORE the discount.
+  final String? couponCode;
+  final double discountAmount;
+
   /// Where the service happens.
   final String? address;
   final String? formattedAddress;
@@ -105,6 +110,8 @@ class Datum {
     this.vatPercentage = 0,
     this.vatAmount = 0,
     this.totalAmount = 0,
+    this.couponCode,
+    this.discountAmount = 0,
     this.address,
     this.formattedAddress,
     this.pincode,
@@ -114,6 +121,22 @@ class Datum {
     this.paymentStatus,
     this.paymentMethod,
   });
+
+  /// True once a technician (washer) took the booking.
+  ///
+  /// From that moment the customer can neither cancel nor edit it: the
+  /// technician's schedule, the dispatch and any refund already depend on the
+  /// current slot/service, so support has to handle the change.
+  bool get hasTechnicianAssigned {
+    if ((washerId ?? "").trim().isNotEmpty) return true;
+    if ((washerName ?? "").trim().isNotEmpty) return true;
+    return const {
+      "ACCEPTED",
+      "ASSIGNED",
+      "ARRIVED",
+      "IN_PROGRESS",
+    }.contains(status.toUpperCase());
+  }
 
   /// "10:00 AM" from the slot (falls back to null when the slot is missing).
   String? get slotStartLabel {
@@ -211,6 +234,12 @@ class Datum {
       serviceAmount: _money(json["service_amount"]),
       vatPercentage: _money(json["vat_percentage"]),
       vatAmount: _money(json["vat_amount"]),
+      couponCode:
+          (json["coupon_code"] == null ||
+              json["coupon_code"].toString().isEmpty)
+          ? null
+          : json["coupon_code"].toString(),
+      discountAmount: _money(json["discount_amount"]),
       totalAmount: _money(
         json["total_amount"],
         fallback: _money(json["amount"]),

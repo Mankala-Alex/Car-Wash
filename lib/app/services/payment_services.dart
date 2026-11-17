@@ -24,6 +24,7 @@ class PaymentService {
     String? addressLabel,
     bool saveCard = false,
     int? savedCardId,
+    String? couponCode,
   }) async {
     try {
       final requestBody = {
@@ -35,6 +36,8 @@ class PaymentService {
         "slot_id": slotId,
         "scheduled_at": scheduledAt,
         "amount": amount,
+        // Offer coupon applied on the confirm screen (empty when none).
+        "coupon_code": (couponCode ?? '').isEmpty ? null : couponCode,
         "latitude": latitude,
         "longitude": longitude,
         "pincode": pincode,
@@ -119,9 +122,9 @@ class PaymentService {
 
       return cards
           .whereType<Map>()
-          .map((card) => SavedCardModel.fromJson(
-                Map<String, dynamic>.from(card),
-              ))
+          .map(
+            (card) => SavedCardModel.fromJson(Map<String, dynamic>.from(card)),
+          )
           .where((card) => card.id > 0)
           .toList();
     } on DioException catch (e) {
@@ -204,8 +207,10 @@ class PaymentService {
 
       throw Exception("Unexpected payment methods response: ${response.data}");
     } on DioException catch (e) {
-      print("❌ PAYMENT METHODS ERROR: "
-          "${e.response?.statusCode} - ${e.response?.data}");
+      print(
+        "❌ PAYMENT METHODS ERROR: "
+        "${e.response?.statusCode} - ${e.response?.data}",
+      );
 
       throw Exception(
         "Payment methods failed: "
@@ -239,6 +244,7 @@ class PaymentService {
     String? houseNumber,
     String? landmark,
     String? addressLabel,
+    String? couponCode,
   }) async {
     try {
       final requestBody = {
@@ -250,6 +256,8 @@ class PaymentService {
         "slot_id": slotId,
         "scheduled_at": scheduledAt,
         "amount": amount,
+        // Offer coupon applied on the confirm screen (empty when none).
+        "coupon_code": (couponCode ?? '').isEmpty ? null : couponCode,
         "latitude": latitude,
         "longitude": longitude,
         "pincode": pincode,
@@ -304,9 +312,7 @@ class PaymentService {
     }
   }
 
-  Future<String?> checkPaymentStatus(
-    String bookingId,
-  ) async {
+  Future<String?> checkPaymentStatus(String bookingId) async {
     try {
       final response = await ApiService.get(
         "${EndPoints.apiPaymentStatus}/$bookingId",
@@ -321,9 +327,7 @@ class PaymentService {
 
       return null;
     } catch (e) {
-      throw Exception(
-        "Payment status failed: $e",
-      );
+      throw Exception("Payment status failed: $e");
     }
   }
 
@@ -344,20 +348,14 @@ class PaymentService {
       print("========================================");
 
       if (response.data is Map<String, dynamic>) {
-        return Map<String, dynamic>.from(
-          response.data,
-        );
+        return Map<String, dynamic>.from(response.data);
       }
 
       return {};
     } catch (e) {
-      print(
-        "❌ Payment attempt status error: $e",
-      );
+      print("❌ Payment attempt status error: $e");
 
-      throw Exception(
-        "Payment attempt status failed: $e",
-      );
+      throw Exception("Payment attempt status failed: $e");
     }
   }
 }

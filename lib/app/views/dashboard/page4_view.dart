@@ -57,7 +57,7 @@ class Page4View extends GetView<DashboardController> {
                 Obx(
                   () => Text(
                     controller.customerName.value.isEmpty
-                        ? "guest_user".tr
+                        ? "customer".tr
                         : controller.customerName.value,
                     style: const TextStyle(
                       fontSize: 24,
@@ -65,15 +65,7 @@ class Page4View extends GetView<DashboardController> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Obx(
-                  () => Text(
-                    controller.customerEmail.value.isEmpty
-                        ? "no_email".tr
-                        : controller.customerEmail.value,
-                    style: const TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                ),
+
                 const SizedBox(height: 4),
                 Obx(
                   () => Text(
@@ -127,44 +119,98 @@ class Page4View extends GetView<DashboardController> {
                   children: [
                     const SizedBox(height: 10),
                     _simpleMenuTile(
+                      icon: Icons.location_on_outlined,
                       title: "my_locations".tr,
                       onTap: () => Get.toNamed(Routes.locationslist),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.language,
                       title: "language_selection".tr,
                       onTap: () => Get.toNamed(Routes.langchange),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.confirmation_number_outlined,
                       title: "my_coupons".tr,
                       onTap: () => Get.toNamed(Routes.mycoupons),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.local_offer_outlined,
                       title: "offers".tr,
                       onTap: () => Get.toNamed(Routes.offers),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.description_outlined,
                       title: "terms_conditions".tr,
                       onTap: () => Get.toNamed(Routes.termsconditions),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.support_agent,
                       title: "contact_support".tr,
                       onTap: () => Get.toNamed(Routes.helpCenter),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.info_outline,
                       title: "about_us".tr,
                       onTap: () => Get.toNamed(Routes.aboutus),
                     ),
                     const SizedBox(height: 10),
+
                     _simpleMenuTile(
+                      icon: Icons.privacy_tip_outlined,
                       title: "privacy_policy".tr,
                       onTap: () => Get.toNamed(Routes.privacypolicy),
                     ),
+                    // _simpleMenuTile(
+                    //   title: "my_locations".tr,
+                    //   onTap: () => Get.toNamed(Routes.locationslist),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "language_selection".tr,
+                    //   onTap: () => Get.toNamed(Routes.langchange),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "my_coupons".tr,
+                    //   onTap: () => Get.toNamed(Routes.mycoupons),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "offers".tr,
+                    //   onTap: () => Get.toNamed(Routes.offers),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "terms_conditions".tr,
+                    //   onTap: () => Get.toNamed(Routes.termsconditions),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "contact_support".tr,
+                    //   onTap: () => Get.toNamed(Routes.helpCenter),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "about_us".tr,
+                    //   onTap: () => Get.toNamed(Routes.aboutus),
+                    // ),
+                    // const SizedBox(height: 10),
+                    // _simpleMenuTile(
+                    //   title: "privacy_policy".tr,
+                    //   onTap: () => Get.toNamed(Routes.privacypolicy),
+                    // ),
                   ],
                 ),
 
@@ -291,7 +337,10 @@ class Page4View extends GetView<DashboardController> {
     );
   }
 
-  Widget _simpleMenuTile({required String title, required VoidCallback onTap}) {
+  Widget _simpleMenuTile(
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
@@ -304,6 +353,12 @@ class Page4View extends GetView<DashboardController> {
         ),
         child: Row(
           children: [
+            Icon(
+              icon,
+              size: 24,
+              color: Colors.black87,
+            ),
+            const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,

@@ -2,23 +2,9 @@ import 'package:car_wash_customer_app/app/models/booking%20slot/saved_location_m
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:car_wash_customer_app/app/controllers/profile/location_list_controller.dart';
-import 'package:car_wash_customer_app/app/custome_widgets/custome_confirmation_dialog.dart';
+import 'package:car_wash_customer_app/app/custome_widgets/saved_location_options_sheet.dart';
 import 'package:car_wash_customer_app/app/routes/app_routes.dart';
 import 'package:car_wash_customer_app/app/theme/app_theme.dart';
-
-/// Localizes the stored English label (Home / Work / Other) for display.
-String _localizedLocationLabel(String value) {
-  switch (value) {
-    case 'Home':
-      return 'home'.tr;
-    case 'Work':
-      return 'work'.tr;
-    case 'Other':
-      return 'other'.tr;
-    default:
-      return value;
-  }
-}
 
 class LocationsListView extends GetView<LocationListController> {
   const LocationsListView({super.key});
@@ -31,8 +17,9 @@ class LocationsListView extends GetView<LocationListController> {
         backgroundColor: const Color(0xFFF6F6F8),
 
         appBar: AppBar(
-          backgroundColor: const Color(0xFFF6F6F8),
+          backgroundColor: Colors.transparent,
           elevation: 0,
+          scrolledUnderElevation: 0,
           centerTitle: true,
           title: Text(
             "addresses".tr,
@@ -89,8 +76,10 @@ class LocationsListView extends GetView<LocationListController> {
                   Get.toNamed(Routes.locationPicker);
                 },
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.secondaryLight,
                     borderRadius: BorderRadius.circular(16),
@@ -115,13 +104,16 @@ class LocationsListView extends GetView<LocationListController> {
                         ),
                       ),
                       const Spacer(),
-                      const Icon(Icons.arrow_forward_ios,
-                          size: 18, color: AppColors.bgLight),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 18,
+                        color: AppColors.bgLight,
+                      ),
                     ],
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -141,13 +133,15 @@ class LocationsListView extends GetView<LocationListController> {
         children: [
           Row(
             children: [
-              const Icon(Icons.location_on_outlined,
-                  size: 26, color: Colors.black87),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 26,
+                color: Colors.black87,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  _localizedLocationLabel(
-                      location.label), // Home / Work / Other
+                  location.label, // house number of the saved address
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -157,7 +151,10 @@ class LocationsListView extends GetView<LocationListController> {
               ),
               InkWell(
                 onTap: () {
-                  _showLocationOptionsSheet(location);
+                  showSavedLocationOptionsSheet(
+                    controller.bookSlotController,
+                    location,
+                  );
                 },
                 child: const Icon(Icons.more_vert, color: Colors.black54),
               ),
@@ -178,98 +175,8 @@ class LocationsListView extends GetView<LocationListController> {
       ),
     );
   }
-
-  // Bottom sheet with Edit and Delete options
-  void _showLocationOptionsSheet(SavedLocation location) {
-    Get.bottomSheet(
-      SafeArea(
-        top: true,
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _localizedLocationLabel(location.label),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                location.address,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.black54,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 20),
-
-              // ---- Edit Button ----
-              ListTile(
-                leading: const Icon(Icons.edit, color: Colors.black87),
-                title: Text(
-                  "edit".tr,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                onTap: () {
-                  Get.back(); // Close bottom sheet
-                  // Navigate to location picker with location data for editing
-                  Get.toNamed(
-                    Routes.locationPicker,
-                    arguments: {
-                      'isEditing': true,
-                      'editingLocation': location,
-                    },
-                  );
-                },
-              ),
-
-              const Divider(),
-
-              // ---- Delete Button ----
-              ListTile(
-                leading: const Icon(Icons.delete, color: Colors.red),
-                title: Text(
-                  "delete".tr,
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.red),
-                ),
-                onTap: () {
-                  Get.back(); // Close bottom sheet
-                  // Show confirmation dialog
-                  Get.dialog(
-                    CustomConfirmationDialog(
-                      header: "delete_address".tr,
-                      body:
-                          "${"are_you_sure_you_want_to_delete".tr} ${location.label}?",
-                      yesText: "delete".tr,
-                      noText: "cancel".tr,
-                      onYes: () {
-                        controller.deleteLocation(location);
-                        Get.back();
-                      },
-                      onNo: () => Get.back(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      isScrollControlled: true,
-    );
-  }
 }
+
+// The 3-dot Edit / Delete bottom sheet lives in
+// `custom_widgets/saved_location_options_sheet.dart` so the "Confirm Car Wash"
+// screen can use exactly the same UI and behaviour.
